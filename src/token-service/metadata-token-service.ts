@@ -35,6 +35,10 @@ export class MetadataTokenService implements TokenService {
         return this.token;
     }
 
+    public invalidateCache() {
+        this.token = undefined;
+    }
+
     private async fetchToken(): Promise<string> {
         const res = await axios.get<{ access_token: string }>(this.url, this.opts);
 

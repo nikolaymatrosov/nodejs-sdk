@@ -1,6 +1,6 @@
 {
   "name": "@yandex-cloud/nodejs-sdk",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "description": "Yandex.Cloud NodeJS SDK",
   "keywords": [
     "yandex-cloud",
@@ -23,6 +23,7 @@
   "homepage": "https://github.com/yandex-cloud/nodejs-sdk#readme",
   "dependencies": {
     "@grpc/grpc-js": "^1.6.12",
+    "abort-controller-x": "^0.4.0",
     "axios": "^0.24.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
@@ -31,6 +32,7 @@
     "luxon": "^2.2.0",
     "nice-grpc": "^1.0.6",
     "nice-grpc-client-middleware-deadline": "^1.0.6",
+    "nice-grpc-common": "^2.0.0",
     "protobufjs": "^6.11.3",
     "utility-types": "^3.10.0"
   },

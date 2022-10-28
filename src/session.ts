@@ -1,20 +1,30 @@
 import {
-    ChannelCredentials, credentials, Metadata, ServiceDefinition,
+    ChannelCredentials,
+    credentials,
+    Metadata,
+    ServiceDefinition,
 } from '@grpc/grpc-js';
-import { createChannel } from 'nice-grpc';
+import {
+    createChannel,
+    createClientFactory,
+} from 'nice-grpc';
+import { deadlineMiddleware } from 'nice-grpc-client-middleware-deadline';
 import { Required } from 'utility-types';
+import { getServiceClientEndpoint } from './service-endpoints';
+import { IamTokenService } from './token-service/iam-token-service';
+import { MetadataTokenService } from './token-service/metadata-token-service';
+import { NoopTokenService } from './token-service/noop-token-service';
+import { OAuthTokenService } from './token-service/oauth-token-service';
+import { authRetryMiddlewareProvider } from './token-service/retry-middleware';
 import {
     GeneratedServiceClientCtor,
     IamTokenCredentialsConfig,
     OAuthCredentialsConfig,
-    ServiceAccountCredentialsConfig, WrappedServiceClientType,
+    ServiceAccountCredentialsConfig,
     SessionConfig,
+    TokenService,
+    WrappedServiceClientType,
 } from './types';
-import { IamTokenService } from './token-service/iam-token-service';
-import { MetadataTokenService } from './token-service/metadata-token-service';
-import { clientFactory } from './utils/client-factory';
-import { serviceClients, cloudApi } from '.';
-import { getServiceClientEndpoint } from './service-endpoints';
 
 const isOAuth = (config: SessionConfig): config is OAuthCredentialsConfig => 'oauthToken' in config;
 
@@ -22,32 +32,17 @@ const isIamToken = (config: SessionConfig): config is IamTokenCredentialsConfig 
 
 const isServiceAccount = (config: SessionConfig): config is ServiceAccountCredentialsConfig => 'serviceAccountJson' in config;
 
-const createIamToken = async (iamEndpoint: string, req: Partial<cloudApi.iam.iam_token_service.CreateIamTokenRequest>) => {
-    const channel = createChannel(iamEndpoint, credentials.createSsl());
-    const client = clientFactory.create(serviceClients.IamTokenServiceClient.service, channel);
-    const resp = await client.create(cloudApi.iam.iam_token_service.CreateIamTokenRequest.fromPartial(req));
-
-    return resp.iamToken;
-};
-
-const newTokenCreator = (config: SessionConfig): () => Promise<string> => {
+const newTokenService = (config: SessionConfig): TokenService => {
     if (isOAuth(config)) {
-        return () => {
-            const iamEndpoint = getServiceClientEndpoint(serviceClients.IamTokenServiceClient);
-
-            return createIamToken(iamEndpoint, {
-                yandexPassportOauthToken: config.oauthToken,
-            });
-        };
-    } if (isIamToken(config)) {
+        return new OAuthTokenService(config.oauthToken);
+    }
+    if (isIamToken(config)) {
         const { iamToken } = config;
 
-        return async () => iamToken;
+        return new NoopTokenService(iamToken);
     }
 
-    const tokenService = isServiceAccount(config) ? new IamTokenService(config.serviceAccountJson) : new MetadataTokenService();
-
-    return async () => tokenService.getToken();
+    return isServiceAccount(config) ? new IamTokenService(config.serviceAccountJson) : new MetadataTokenService();
 };
 
 const newChannelCredentials = (tokenCreator: TokenCreator) => credentials.combineChannelCredentials(
@@ -73,21 +68,20 @@ const newChannelCredentials = (tokenCreator: TokenCreator) => credentials.combin
 type TokenCreator = () => Promise<string>;
 
 export class Session {
-    private readonly config: Required<SessionConfig, 'pollInterval'>;
-    private readonly channelCredentials: ChannelCredentials;
-    private readonly tokenCreator: TokenCreator;
-
     private static readonly DEFAULT_CONFIG = {
         pollInterval: 1000,
     };
+    private readonly config: Required<SessionConfig, 'pollInterval'>;
+    private readonly channelCredentials: ChannelCredentials;
+    private readonly tokenService: TokenService;
 
     constructor(config?: SessionConfig) {
         this.config = {
             ...Session.DEFAULT_CONFIG,
             ...config,
         };
-        this.tokenCreator = newTokenCreator(this.config);
-        this.channelCredentials = newChannelCredentials(this.tokenCreator);
+        this.tokenService = newTokenService(this.config);
+        this.channelCredentials = newChannelCredentials(() => this.tokenService.getToken());
     }
 
     get pollInterval(): number {
@@ -98,6 +92,9 @@ export class Session {
         const endpoint = customEndpoint || getServiceClientEndpoint(clientClass);
         const channel = createChannel(endpoint, this.channelCredentials);
 
-        return clientFactory.create(clientClass.service, channel);
+        return createClientFactory()
+            .use(authRetryMiddlewareProvider(this.tokenService))
+            .use(deadlineMiddleware)
+            .create(clientClass.service, channel);
     }
 }

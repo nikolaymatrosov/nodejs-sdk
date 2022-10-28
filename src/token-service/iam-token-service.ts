@@ -2,7 +2,7 @@ import { credentials } from '@grpc/grpc-js';
 import * as jwt from 'jsonwebtoken';
 import { DateTime } from 'luxon';
 import { createChannel } from 'nice-grpc';
-import { cloudApi, serviceClients } from '..';
+import { cloudApi, serviceClients } from '../index';
 import { getServiceClientEndpoint } from '../service-endpoints';
 import { IIAmCredentials, ISslCredentials, TokenService } from '../types';
 import { clientFactory } from '../utils/client-factory';
@@ -39,6 +39,11 @@ export class IamTokenService implements TokenService {
         }
 
         return this.token;
+    }
+
+    public invalidateCache() {
+        this.tokenTimestamp = null;
+        this.token = '';
     }
 
     private client() {
