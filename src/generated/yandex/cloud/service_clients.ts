@@ -1,6 +1,9 @@
 import * as cloudApi from '.'
 export const TextRecognitionServiceClient = cloudApi.ai.ocr_service.TextRecognitionServiceClient;
+export const TextRecognitionAsyncServiceClient = cloudApi.ai.ocr_service.TextRecognitionAsyncServiceClient;
 export const SttServiceClient = cloudApi.ai.stt_service.SttServiceClient;
+export const RecognizerClient = cloudApi.ai.stt_service_v3.RecognizerClient;
+export const AsyncRecognizerClient = cloudApi.ai.stt_service_v3.AsyncRecognizerClient;
 export const TranslationServiceClient = cloudApi.ai.translate_translation_service.TranslationServiceClient;
 export const SynthesizerClient = cloudApi.ai.tts_service.SynthesizerClient;
 export const VisionServiceClient = cloudApi.ai.vision_service.VisionServiceClient;
@@ -59,6 +62,7 @@ export const NodeServiceClient = cloudApi.datasphere.node_service.NodeServiceCli
 export const ProjectDataServiceClient = cloudApi.datasphere.project_data_service.ProjectDataServiceClient;
 export const ProjectServiceClient = cloudApi.datasphere.project_service.ProjectServiceClient;
 export const CommunityServiceClient = cloudApi.datasphere.community_service.CommunityServiceClient;
+export const ProjectServiceClient = cloudApi.datasphere.project_service_v2.ProjectServiceClient;
 export const EndpointServiceClient = cloudApi.datatransfer.endpoint_service.EndpointServiceClient;
 export const TransferServiceClient = cloudApi.datatransfer.transfer_service.TransferServiceClient;
 export const DnsZoneServiceClient = cloudApi.dns.dns_zone_service.DnsZoneServiceClient;

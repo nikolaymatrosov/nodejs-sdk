@@ -66,10 +66,11 @@
     "typescript": "^4.5.4"
   },
   "scripts": {
+    "test:scripts": "jest -c config/jest-scripts.ts",
     "test": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" jest -c config/jest.ts --passWithNoTests '.*\\.test\\.ts$'",
     "lint": "eslint src config",
     "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" tsc -p .",
-    "generate-code": "ts-node scripts/generate-code.ts",
+    "generate-code": "ts-node scripts/generate-code/index.ts",
     "check-endpoints": "ts-node scripts/check-endpoints.ts",
     "prepare": "husky install",
     "prepublishOnly": "npm run build"

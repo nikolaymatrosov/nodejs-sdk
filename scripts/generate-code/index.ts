@@ -2,9 +2,11 @@ import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as fg from 'fast-glob';
-import * as _ from 'lodash';
 
-import { logger } from '../src/utils/logger';
+import { logger } from '../../src/utils/logger';
+import { buildExportStatements } from './export-statements';
+import { ProjectMeta } from './interfaces';
+import { rootIndex } from './root-index';
 import { servicesConfig } from './services';
 
 const GENERATED_CODE_DIR = path.resolve('./src/generated');
@@ -38,16 +40,6 @@ const projectsDirs = fg.sync('*', { cwd: GENERATED_PROJECTS_DIR, onlyDirectories
 
 logger.debug(`Found ${projectsDirs.length} project directories`, projectsDirs);
 
-interface ServiceMeta {
-    name: string;
-    exportAlias: string;
-}
-
-interface ProjectMeta {
-    name: string;
-    services: ServiceMeta[];
-}
-
 const projectsMeta: Record<string, ProjectMeta> = {};
 
 for (const projectDir of projectsDirs) {
@@ -71,33 +63,9 @@ for (const projectDir of projectsDirs) {
             services: [],
         };
 
-        const exportStatements = projectModules.map((modulePath) => {
-            const relativePath = path.relative(projectDir, modulePath);
-            const relativePathSegments = relativePath.split(path.sep);
-            const firstPathSegment = relativePathSegments[0];
-            const moduleName = path.basename(modulePath).replace('.ts', '');
-            const serviceName = moduleName.replace('_service', '');
-            // Do not use 'vX' as prefixes
-            const usePathSegmentAsPrefix = relativePathSegments.length > 1
-                && firstPathSegment.length > 2
-                && firstPathSegment !== serviceName;
-            const moduleAlias = [
-                usePathSegmentAsPrefix ? firstPathSegment : undefined,
-                moduleName,
-            ].filter(Boolean).join('_');
+        const moduleAliases: Set<string> = new Set();
 
-            const { ext } = path.parse(modulePath);
-            const moduleWithoutExt = relativePath.replace(ext, '');
-
-            if (moduleWithoutExt.endsWith('_service')) {
-                projectsMeta[indexModulePath].services.push({
-                    name: moduleName,
-                    exportAlias: moduleAlias,
-                });
-            }
-
-            return `export * as ${moduleAlias} from './${moduleWithoutExt}'`;
-        });
+        const exportStatements = buildExportStatements(projectModules, projectDir, moduleAliases, indexModulePath, projectsMeta);
 
         const indexModuleContent = exportStatements.join('\n');
 
@@ -111,30 +79,11 @@ logger.debug('Generating root index module');
 
 const rootIndexModulePath = path.join(GENERATED_PROJECTS_DIR, 'index.ts');
 const serviceClientsModulePath = path.join(GENERATED_PROJECTS_DIR, 'service_clients.ts');
-const rootModuleContentParts: string[] = [];
-const serviceClientsModuleContentParts: string[] = [
-    'import * as cloudApi from \'.\'',
-];
 
-for (const [indexModulePath, projectMeta] of Object.entries(projectsMeta)) {
-    logger.debug(`Processing ${indexModulePath} module`);
-    const relativePath = path.relative(GENERATED_PROJECTS_DIR, indexModulePath).replace('index.ts', '');
-
-    rootModuleContentParts.push(`export * as ${projectMeta.name} from './${relativePath}'`);
-
-    for (const serviceMeta of projectMeta.services) {
-        const serviceConfig = servicesConfig[projectMeta.name]?.[serviceMeta.exportAlias];
-
-        if (serviceConfig) {
-            serviceClientsModuleContentParts.push(
-                // eslint-disable-next-line max-len
-                `export const ${serviceConfig.exportClassName || serviceConfig.importClassName} = cloudApi.${projectMeta.name}.${serviceMeta.exportAlias}.${serviceConfig.importClassName};`,
-            );
-        } else {
-            logger.warn(`There is no configuration for service ${serviceMeta.exportAlias} in project ${projectMeta.name}`);
-        }
-    }
-}
+const {
+    rootModuleContentParts,
+    serviceClientsModuleContentParts,
+} = rootIndex(projectsMeta, servicesConfig, GENERATED_PROJECTS_DIR);
 
 logger.debug(`Writing result to ${rootIndexModulePath} module`);
 logger.debug(`Writing result to ${serviceClientsModulePath} module`);

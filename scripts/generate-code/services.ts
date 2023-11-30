@@ -1,20 +1,40 @@
-/* eslint-disable max-len */
-type ServicesConfig = Record<string, Record<string, { importClassName: string; exportClassName?: string; }>>;
+export type ClassNameMappingRule = {
+    importClassName: string;
+    exportClassName?: string;
+};
+
+export type ServicesConfig = Record<string, Record<string, ClassNameMappingRule[] | ClassNameMappingRule>>;
 
 export const servicesConfig: ServicesConfig = {
     ai: {
+        llm_service: [
+            { importClassName: 'TextGenerationServiceClient' },
+            { importClassName: 'TokenizerServiceClient' },
+            { importClassName: 'EmbeddingsServiceClient' },
+            { importClassName: 'TextGenerationAsyncServiceClient' },
+        ],
         stt_service: { importClassName: 'SttServiceClient' },
+        stt_service_v3: [
+            { importClassName: 'RecognizerClient' },
+            { importClassName: 'AsyncRecognizerClient' },
+        ],
         translate_translation_service: { importClassName: 'TranslationServiceClient' },
         tts_service: { importClassName: 'SynthesizerClient' },
         vision_service: { importClassName: 'VisionServiceClient' },
         vision_image_classifier_service: { importClassName: 'ImageClassifierServiceClient' },
-        ocr_service: { importClassName: 'TextRecognitionServiceClient' },
+        ocr_service: [
+            { importClassName: 'TextRecognitionServiceClient' },
+            { importClassName: 'TextRecognitionAsyncServiceClient' },
+        ],
     },
     apploadbalancer: {
         backend_group_service: { importClassName: 'BackendGroupServiceClient' },
         http_router_service: { importClassName: 'HttpRouterServiceClient' },
         load_balancer_service: { importClassName: 'LoadBalancerServiceClient' },
-        target_group_service: { importClassName: 'TargetGroupServiceClient', exportClassName: 'AlbTargetGroupServiceClient' },
+        target_group_service: {
+            importClassName: 'TargetGroupServiceClient',
+            exportClassName: 'AlbTargetGroupServiceClient',
+        },
         virtual_host_service: { importClassName: 'VirtualHostServiceClient' },
         resource_service: { importClassName: 'ResourceServiceClient' },
     },
@@ -33,7 +53,10 @@ export const servicesConfig: ServicesConfig = {
     },
     cdn: {
         cache_service: { importClassName: 'CacheServiceClient', exportClassName: 'CDNCacheServiceClient' },
-        origin_group_service: { importClassName: 'OriginGroupServiceClient', exportClassName: 'CDNOriginGroupServiceClient' },
+        origin_group_service: {
+            importClassName: 'OriginGroupServiceClient',
+            exportClassName: 'CDNOriginGroupServiceClient',
+        },
         origin_service: { importClassName: 'OriginServiceClient', exportClassName: 'CDNOriginServiceClient' },
         provider_service: { importClassName: 'ProviderServiceClient', exportClassName: 'CDNProviderServiceClient' },
         resource_service: { importClassName: 'ResourceServiceClient', exportClassName: 'CDNResourceServiceClient' },
@@ -81,6 +104,7 @@ export const servicesConfig: ServicesConfig = {
         node_service: { importClassName: 'NodeServiceClient' },
         project_data_service: { importClassName: 'ProjectDataServiceClient' },
         project_service: { importClassName: 'ProjectServiceClient' },
+        project_service_v2: { importClassName: 'ProjectServiceClient' },
         community_service: { importClassName: 'CommunityServiceClient' },
     },
     datatransfer: {
@@ -107,7 +131,10 @@ export const servicesConfig: ServicesConfig = {
         devices_device_data_service: { importClassName: 'DeviceDataServiceClient' },
         devices_device_service: { importClassName: 'DeviceServiceClient' },
         devices_registry_data_service: { importClassName: 'RegistryDataServiceClient' },
-        devices_registry_service: { importClassName: 'RegistryServiceClient', exportClassName: 'IotRegistryServiceClient' },
+        devices_registry_service: {
+            importClassName: 'RegistryServiceClient',
+            exportClassName: 'IotRegistryServiceClient',
+        },
     },
     k8s: {
         cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'K8sClusterServiceClient' },
@@ -124,13 +151,25 @@ export const servicesConfig: ServicesConfig = {
 
     },
     loadtesting: {
-        agent_agent_registration_service: { importClassName: 'AgentRegistrationServiceClient', exportClassName: 'LoadTestingAgentRegistrationServiceClient' },
+        agent_agent_registration_service: {
+            importClassName: 'AgentRegistrationServiceClient',
+            exportClassName: 'LoadTestingAgentRegistrationServiceClient',
+        },
         agent_service: { importClassName: 'AgentServiceClient', exportClassName: 'LoadTestingAgentServiceClient' },
         agent_job_service: { importClassName: 'JobServiceClient', exportClassName: 'LoadTestingJobServiceClient' },
-        agent_monitoring_service: { importClassName: 'MonitoringServiceClient', exportClassName: 'LoadTestingMonitoringServiceClient' },
+        agent_monitoring_service: {
+            importClassName: 'MonitoringServiceClient',
+            exportClassName: 'LoadTestingMonitoringServiceClient',
+        },
         agent_test_service: { importClassName: 'TestServiceClient', exportClassName: 'LoadTestingTestServiceClient' },
-        agent_trail_service: { importClassName: 'TrailServiceClient', exportClassName: 'LoadTestingTrailServiceClient' },
-        api_agent_service: { importClassName: 'AgentServiceClient', exportClassName: 'LoadTestingApiAgentServiceClient' },
+        agent_trail_service: {
+            importClassName: 'TrailServiceClient',
+            exportClassName: 'LoadTestingTrailServiceClient',
+        },
+        api_agent_service: {
+            importClassName: 'AgentServiceClient',
+            exportClassName: 'LoadTestingApiAgentServiceClient',
+        },
     },
     loadbalancer: {
         network_load_balancer_service: { importClassName: 'NetworkLoadBalancerServiceClient' },
@@ -148,60 +187,174 @@ export const servicesConfig: ServicesConfig = {
         sink_service: { importClassName: 'SinkServiceClient' },
     },
     marketplace: {
-        image_product_usage_service: { importClassName: 'ImageProductUsageServiceClient', exportClassName: 'MarketplaceImageProductUsageServiceClient' },
-        licensemanager_instance_service: { importClassName: 'InstanceServiceClient', exportClassName: 'MarketplaceInstanceServiceClient' },
-        licensemanager_lock_service: { importClassName: 'LockServiceClient', exportClassName: 'MarketplaceLockServiceClient' },
-        metering_image_product_usage_service: { importClassName: 'ImageProductUsageServiceClient', exportClassName: 'MarketplaceMeteringImageProductUsageServiceClient' },
+        image_product_usage_service: {
+            importClassName: 'ImageProductUsageServiceClient',
+            exportClassName: 'MarketplaceImageProductUsageServiceClient',
+        },
+        licensemanager_instance_service: {
+            importClassName: 'InstanceServiceClient',
+            exportClassName: 'MarketplaceInstanceServiceClient',
+        },
+        licensemanager_lock_service: {
+            importClassName: 'LockServiceClient',
+            exportClassName: 'MarketplaceLockServiceClient',
+        },
+        metering_image_product_usage_service: {
+            importClassName: 'ImageProductUsageServiceClient',
+            exportClassName: 'MarketplaceMeteringImageProductUsageServiceClient',
+        },
     },
     mdb: {
-        clickhouse_backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'ClickHouseBackupServiceClient' },
-        clickhouse_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'ClickHouseClusterServiceClient' },
+        clickhouse_backup_service: {
+            importClassName: 'BackupServiceClient',
+            exportClassName: 'ClickHouseBackupServiceClient',
+        },
+        clickhouse_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'ClickHouseClusterServiceClient',
+        },
         clickhouse_database_service: { importClassName: 'DatabaseServiceClient' },
         clickhouse_format_schema_service: { importClassName: 'FormatSchemaServiceClient' },
         clickhouse_ml_model_service: { importClassName: 'MlModelServiceClient' },
-        clickhouse_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'ClickHouseResourcePresetServiceClient' },
-        clickhouse_user_service: { importClassName: 'UserServiceClient', exportClassName: 'ClickHouseUserServiceClient' },
+        clickhouse_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'ClickHouseResourcePresetServiceClient',
+        },
+        clickhouse_user_service: {
+            importClassName: 'UserServiceClient',
+            exportClassName: 'ClickHouseUserServiceClient',
+        },
         clickhouse_versions_service: { importClassName: 'VersionsServiceClient' },
         elasticsearch_auth_service: { importClassName: 'AuthServiceClient' },
-        elasticsearch_backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'ElasticBackupServiceClient' },
-        elasticsearch_extension_service: { importClassName: 'ExtensionServiceClient', exportClassName: 'ElasticExtensionServiceClient' },
-        elasticsearch_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'ElasticClusterServiceClient' },
-        elasticsearch_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'ElasticResourcePresetServiceClient' },
-        elasticsearch_user_service: { importClassName: 'UserServiceClient', exportClassName: 'ElasticUserServiceClient' },
-        greenplum_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'GreenplumClusterServiceClient' },
-        greenplum_backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'GreenplumBackupServiceClient' },
-        greenplum_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'GreenplumResourcePresetServiceClient' },
-        kafka_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'KafkaClusterServiceClient' },
+        elasticsearch_backup_service: {
+            importClassName: 'BackupServiceClient',
+            exportClassName: 'ElasticBackupServiceClient',
+        },
+        elasticsearch_extension_service: {
+            importClassName: 'ExtensionServiceClient',
+            exportClassName: 'ElasticExtensionServiceClient',
+        },
+        elasticsearch_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'ElasticClusterServiceClient',
+        },
+        elasticsearch_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'ElasticResourcePresetServiceClient',
+        },
+        elasticsearch_user_service: {
+            importClassName: 'UserServiceClient',
+            exportClassName: 'ElasticUserServiceClient',
+        },
+        greenplum_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'GreenplumClusterServiceClient',
+        },
+        greenplum_backup_service: {
+            importClassName: 'BackupServiceClient',
+            exportClassName: 'GreenplumBackupServiceClient',
+        },
+        greenplum_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'GreenplumResourcePresetServiceClient',
+        },
+        kafka_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'KafkaClusterServiceClient',
+        },
         kafka_connector_service: { importClassName: 'ConnectorServiceClient' },
-        kafka_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'KafkaResourcePresetServiceClient' },
+        kafka_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'KafkaResourcePresetServiceClient',
+        },
         kafka_topic_service: { importClassName: 'TopicServiceClient' },
         kafka_user_service: { importClassName: 'UserServiceClient', exportClassName: 'KafkaUserServiceClient' },
         mongodb_backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'MongoBackupServiceClient' },
-        mongodb_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'MongoClusterServiceClient' },
-        mongodb_database_service: { importClassName: 'DatabaseServiceClient', exportClassName: 'MongoDatabaseServiceClient' },
-        mongodb_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'MongoResourcePresetServiceClient' },
+        mongodb_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'MongoClusterServiceClient',
+        },
+        mongodb_database_service: {
+            importClassName: 'DatabaseServiceClient',
+            exportClassName: 'MongoDatabaseServiceClient',
+        },
+        mongodb_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'MongoResourcePresetServiceClient',
+        },
         mongodb_user_service: { importClassName: 'UserServiceClient', exportClassName: 'MongoUserServiceClient' },
         mysql_backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'MysqlBackupServiceClient' },
-        mysql_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'MysqlClusterServiceClient' },
-        mysql_database_service: { importClassName: 'DatabaseServiceClient', exportClassName: 'MysqlDatabaseServiceClient' },
-        mysql_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'MysqlResourcePresetServiceClient' },
+        mysql_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'MysqlClusterServiceClient',
+        },
+        mysql_database_service: {
+            importClassName: 'DatabaseServiceClient',
+            exportClassName: 'MysqlDatabaseServiceClient',
+        },
+        mysql_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'MysqlResourcePresetServiceClient',
+        },
         mysql_user_service: { importClassName: 'UserServiceClient', exportClassName: 'MysqlUserServiceClient' },
-        opensearch_backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'OpenSearchBackupServiceClient' },
-        opensearch_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'OpenSearchClusterServiceClient' },
-        opensearch_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'OpenSearchResourcePresetServiceClient' },
-        postgresql_backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'PgsqlBackupServiceClient' },
-        postgresql_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'PgsqlClusterServiceClient' },
-        postgresql_database_service: { importClassName: 'DatabaseServiceClient', exportClassName: 'PgsqlDatabaseServiceClient' },
-        postgresql_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'PgsqlResourcePresetServiceClient' },
+        opensearch_backup_service: {
+            importClassName: 'BackupServiceClient',
+            exportClassName: 'OpenSearchBackupServiceClient',
+        },
+        opensearch_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'OpenSearchClusterServiceClient',
+        },
+        opensearch_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'OpenSearchResourcePresetServiceClient',
+        },
+        postgresql_backup_service: {
+            importClassName: 'BackupServiceClient',
+            exportClassName: 'PgsqlBackupServiceClient',
+        },
+        postgresql_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'PgsqlClusterServiceClient',
+        },
+        postgresql_database_service: {
+            importClassName: 'DatabaseServiceClient',
+            exportClassName: 'PgsqlDatabaseServiceClient',
+        },
+        postgresql_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'PgsqlResourcePresetServiceClient',
+        },
         postgresql_user_service: { importClassName: 'UserServiceClient', exportClassName: 'PgsqlUserServiceClient' },
-        postgresql_perf_diag_service: { importClassName: 'PerformanceDiagnosticsServiceClient', exportClassName: 'PgsqlPerformanceDiagnosticsServiceClient' },
+        postgresql_perf_diag_service: {
+            importClassName: 'PerformanceDiagnosticsServiceClient',
+            exportClassName: 'PgsqlPerformanceDiagnosticsServiceClient',
+        },
         redis_backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'RedisBackupServiceClient' },
-        redis_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'RedisClusterServiceClient' },
-        redis_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'RedisResourcePresetServiceClient' },
-        sqlserver_backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'SqlServerBackupServiceClient' },
-        sqlserver_cluster_service: { importClassName: 'ClusterServiceClient', exportClassName: 'SqlServerClusterServiceClient' },
-        sqlserver_database_service: { importClassName: 'DatabaseServiceClient', exportClassName: 'SqlServerDatabaseServiceClient' },
-        sqlserver_resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'SqlServerResourcePresetServiceClient' },
+        redis_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'RedisClusterServiceClient',
+        },
+        redis_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'RedisResourcePresetServiceClient',
+        },
+        sqlserver_backup_service: {
+            importClassName: 'BackupServiceClient',
+            exportClassName: 'SqlServerBackupServiceClient',
+        },
+        sqlserver_cluster_service: {
+            importClassName: 'ClusterServiceClient',
+            exportClassName: 'SqlServerClusterServiceClient',
+        },
+        sqlserver_database_service: {
+            importClassName: 'DatabaseServiceClient',
+            exportClassName: 'SqlServerDatabaseServiceClient',
+        },
+        sqlserver_resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'SqlServerResourcePresetServiceClient',
+        },
         sqlserver_user_service: { importClassName: 'UserServiceClient', exportClassName: 'SqlServerUserServiceClient' },
     },
     monitoring: {
@@ -214,7 +367,10 @@ export const servicesConfig: ServicesConfig = {
         group_service: { importClassName: 'GroupServiceClient' },
         organization_service: { importClassName: 'OrganizationServiceClient' },
         user_service: { importClassName: 'UserServiceClient' },
-        certificate_service: { importClassName: 'CertificateServiceClient', exportClassName: 'OmCertificateServiceClient' },
+        certificate_service: {
+            importClassName: 'CertificateServiceClient',
+            exportClassName: 'OmCertificateServiceClient',
+        },
         federation_service: { importClassName: 'FederationServiceClient' },
         group_mapping_service: { importClassName: 'GroupMappingServiceClient' },
         ssh_certificate_service: { importClassName: 'SshCertificateServiceClient' },
@@ -229,7 +385,10 @@ export const servicesConfig: ServicesConfig = {
         functions_function_service: { importClassName: 'FunctionServiceClient' },
         mdbproxy_proxy_service: { importClassName: 'ProxyServiceClient' },
         triggers_trigger_service: { importClassName: 'TriggerServiceClient' },
-        apigateway_connection_service: { importClassName: 'ConnectionServiceClient', exportClassName: 'WebSocketConnectionServiceClient' },
+        apigateway_connection_service: {
+            importClassName: 'ConnectionServiceClient',
+            exportClassName: 'WebSocketConnectionServiceClient',
+        },
     },
     storage: {
         bucket_service: { importClassName: 'BucketServiceClient' },
@@ -246,7 +405,10 @@ export const servicesConfig: ServicesConfig = {
         backup_service: { importClassName: 'BackupServiceClient', exportClassName: 'YdbBackupServiceClient' },
         database_service: { importClassName: 'DatabaseServiceClient', exportClassName: 'YdbDatabaseServiceClient' },
         location_service: { importClassName: 'LocationServiceClient' },
-        resource_preset_service: { importClassName: 'ResourcePresetServiceClient', exportClassName: 'YdbResourcePresetServiceClient' },
+        resource_preset_service: {
+            importClassName: 'ResourcePresetServiceClient',
+            exportClassName: 'YdbResourcePresetServiceClient',
+        },
         storage_type_service: { importClassName: 'StorageTypeServiceClient' },
     },
 };
