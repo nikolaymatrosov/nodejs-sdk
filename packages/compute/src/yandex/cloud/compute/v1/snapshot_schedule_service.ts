@@ -2994,6 +2994,7 @@ export const SnapshotScheduleServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): SnapshotScheduleServiceClient;
   service: typeof SnapshotScheduleServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

@@ -508,6 +508,7 @@ export const ConnectionServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ConnectionServiceClient;
   service: typeof ConnectionServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

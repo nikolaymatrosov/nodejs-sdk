@@ -1209,6 +1209,7 @@ export const ApiKeyServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ApiKeyServiceClient;
   service: typeof ApiKeyServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

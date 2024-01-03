@@ -1,2 +1,2 @@
-export * as loadtesting from './yandex/cloud/loadtesting'
-export * as loadtestingClients from './service_clients'
+export * as loadtesting from './yandex/cloud/loadtesting';
+export * as loadtestingClients from './service-clients';

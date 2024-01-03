@@ -1922,6 +1922,7 @@ export const DiskPlacementGroupServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): DiskPlacementGroupServiceClient;
   service: typeof DiskPlacementGroupServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

@@ -1,7 +1,0 @@
-import * as cloudApi from '.'
-export const SymmetricCryptoServiceClient = cloudApi.kms.symmetric_crypto_service.SymmetricCryptoServiceClient;
-export const SymmetricKeyServiceClient = cloudApi.kms.symmetric_key_service.SymmetricKeyServiceClient;
-export const AsymmetricEncryptionCryptoServiceClient = cloudApi.kms.asymmetric_encryption_crypto_service.AsymmetricEncryptionCryptoServiceClient;
-export const AsymmetricEncryptionKeyServiceClient = cloudApi.kms.asymmetric_encryption_key_service.AsymmetricEncryptionKeyServiceClient;
-export const AsymmetricSignatureCryptoServiceClient = cloudApi.kms.asymmetric_signature_crypto_service.AsymmetricSignatureCryptoServiceClient;
-export const AsymmetricSignatureKeyServiceClient = cloudApi.kms.asymmetric_signature_key_service.AsymmetricSignatureKeyServiceClient;

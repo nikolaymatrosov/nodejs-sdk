@@ -1,2 +1,2 @@
-export * as monitoring from './yandex/cloud/monitoring'
-export * as monitoringClients from './service_clients'
+export * as monitoring from './yandex/cloud/monitoring';
+export * as monitoringClients from './service-clients';

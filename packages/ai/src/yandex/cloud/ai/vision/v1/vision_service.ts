@@ -973,6 +973,7 @@ export const VisionServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): VisionServiceClient;
   service: typeof VisionServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

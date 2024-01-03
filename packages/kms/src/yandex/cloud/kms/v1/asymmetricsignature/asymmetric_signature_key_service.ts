@@ -1793,6 +1793,7 @@ export const AsymmetricSignatureKeyServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): AsymmetricSignatureKeyServiceClient;
   service: typeof AsymmetricSignatureKeyServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

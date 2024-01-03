@@ -1,2 +1,2 @@
-export * as vpc from './yandex/cloud/vpc'
-export * as vpcClients from './service_clients'
+export * as vpc from './yandex/cloud/vpc';
+export * as vpcClients from './service-clients';

@@ -1,2 +1,2 @@
-export * as billing from './yandex/cloud/billing'
-export * as billingClients from './service_clients'
+export * as billing from './yandex/cloud/billing';
+export * as billingClients from './service-clients';

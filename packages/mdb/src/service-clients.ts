@@ -1,13 +1,14 @@
-import * as cloudApi from '.'
+import * as cloudApi from '.';
+
 export const ClickHouseBackupServiceClient = cloudApi.mdb.clickhouse_backup_service.BackupServiceClient;
 export const ClickHouseClusterServiceClient = cloudApi.mdb.clickhouse_cluster_service.ClusterServiceClient;
-export const DatabaseServiceClient = cloudApi.mdb.clickhouse_database_service.DatabaseServiceClient;
-export const FormatSchemaServiceClient = cloudApi.mdb.clickhouse_format_schema_service.FormatSchemaServiceClient;
-export const MlModelServiceClient = cloudApi.mdb.clickhouse_ml_model_service.MlModelServiceClient;
+export const { DatabaseServiceClient } = cloudApi.mdb.clickhouse_database_service;
+export const { FormatSchemaServiceClient } = cloudApi.mdb.clickhouse_format_schema_service;
+export const { MlModelServiceClient } = cloudApi.mdb.clickhouse_ml_model_service;
 export const ClickHouseResourcePresetServiceClient = cloudApi.mdb.clickhouse_resource_preset_service.ResourcePresetServiceClient;
 export const ClickHouseUserServiceClient = cloudApi.mdb.clickhouse_user_service.UserServiceClient;
-export const VersionsServiceClient = cloudApi.mdb.clickhouse_versions_service.VersionsServiceClient;
-export const AuthServiceClient = cloudApi.mdb.elasticsearch_auth_service.AuthServiceClient;
+export const { VersionsServiceClient } = cloudApi.mdb.clickhouse_versions_service;
+export const { AuthServiceClient } = cloudApi.mdb.elasticsearch_auth_service;
 export const ElasticBackupServiceClient = cloudApi.mdb.elasticsearch_backup_service.BackupServiceClient;
 export const ElasticClusterServiceClient = cloudApi.mdb.elasticsearch_cluster_service.ClusterServiceClient;
 export const ElasticExtensionServiceClient = cloudApi.mdb.elasticsearch_extension_service.ExtensionServiceClient;
@@ -17,9 +18,9 @@ export const GreenplumBackupServiceClient = cloudApi.mdb.greenplum_backup_servic
 export const GreenplumClusterServiceClient = cloudApi.mdb.greenplum_cluster_service.ClusterServiceClient;
 export const GreenplumResourcePresetServiceClient = cloudApi.mdb.greenplum_resource_preset_service.ResourcePresetServiceClient;
 export const KafkaClusterServiceClient = cloudApi.mdb.kafka_cluster_service.ClusterServiceClient;
-export const ConnectorServiceClient = cloudApi.mdb.kafka_connector_service.ConnectorServiceClient;
+export const { ConnectorServiceClient } = cloudApi.mdb.kafka_connector_service;
 export const KafkaResourcePresetServiceClient = cloudApi.mdb.kafka_resource_preset_service.ResourcePresetServiceClient;
-export const TopicServiceClient = cloudApi.mdb.kafka_topic_service.TopicServiceClient;
+export const { TopicServiceClient } = cloudApi.mdb.kafka_topic_service;
 export const KafkaUserServiceClient = cloudApi.mdb.kafka_user_service.UserServiceClient;
 export const MongoBackupServiceClient = cloudApi.mdb.mongodb_backup_service.BackupServiceClient;
 export const MongoClusterServiceClient = cloudApi.mdb.mongodb_cluster_service.ClusterServiceClient;

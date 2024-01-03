@@ -1091,6 +1091,7 @@ export const OriginGroupServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): OriginGroupServiceClient;
   service: typeof OriginGroupServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

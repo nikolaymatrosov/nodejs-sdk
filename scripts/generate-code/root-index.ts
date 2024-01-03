@@ -18,26 +18,32 @@ const logger = log4js.getLogger();
  * `rootModuleContentParts` contains the lines of code for the root index module.
  * `serviceClientsModuleContentParts` contains the lines of code for the service clients module.
  */
-export const rootIndex = (registry: Record<string, ProjectMeta>, servicesConfig: ServicesConfig, rootPath: string,
-                          packageName: string) => {
+export const rootIndex = (
+    registry: Record<string, ProjectMeta>,
+    servicesConfig: ServicesConfig,
+    rootPath: string,
+    packageName: string,
+) => {
     const rootModuleContentParts: string[] = [];
     const serviceClientsModuleContentParts: string[] = [
-        'import * as cloudApi from \'.\'',
+        'import * as cloudApi from \'.\';\n',
     ];
 
-
     const pushExportStatment = (serviceConfig: ClassNameMappingRule, projectMeta: ProjectMeta, serviceMeta: ServiceMeta) => {
-        serviceClientsModuleContentParts.push(
+        let line = `export const { ${serviceConfig.importClassName} } = cloudApi.${projectMeta.name}.${serviceMeta.exportAlias};`;
+
+        if (serviceConfig.exportClassName) {
             // eslint-disable-next-line max-len
-            `export const ${serviceConfig.exportClassName || serviceConfig.importClassName} = cloudApi.${projectMeta.name}.${serviceMeta.exportAlias}.${serviceConfig.importClassName};`,
-        );
+            line = `export const ${serviceConfig.exportClassName} = cloudApi.${projectMeta.name}.${serviceMeta.exportAlias}.${serviceConfig.importClassName};`;
+        }
+        serviceClientsModuleContentParts.push(line);
     };
 
     for (const [indexModulePath, projectMeta] of Object.entries(registry)) {
         logger.debug(`Processing ${indexModulePath} module`);
         const relativePath = path.relative(rootPath, indexModulePath).replace('/index.ts', '');
 
-        rootModuleContentParts.push(`export * as ${projectMeta.name} from './${relativePath}'`);
+        rootModuleContentParts.push(`export * as ${projectMeta.name} from './${relativePath}';`);
 
         for (const serviceMeta of projectMeta.services) {
             const serviceConfig = servicesConfig[projectMeta.name]?.[serviceMeta.exportAlias];
@@ -57,8 +63,9 @@ export const rootIndex = (registry: Record<string, ProjectMeta>, servicesConfig:
     }
 
     rootModuleContentParts.push(
-        `export * as ${packageName}Clients from './service_clients'`,
-    )
+        `export * as ${packageName}Clients from './service-clients';\n`,
+    );
+    serviceClientsModuleContentParts.push('');
 
     return {
         rootModuleContentParts,

@@ -129,6 +129,7 @@ export const RecognizerClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): RecognizerClient;
   service: typeof RecognizerService;
+  serviceName: string;
 };
 
 /** A set of methods for async voice recognition. */
@@ -192,6 +193,7 @@ export const AsyncRecognizerClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): AsyncRecognizerClient;
   service: typeof AsyncRecognizerService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

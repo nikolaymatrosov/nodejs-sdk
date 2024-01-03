@@ -372,6 +372,7 @@ export const TextRecognitionServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): TextRecognitionServiceClient;
   service: typeof TextRecognitionServiceService;
+  serviceName: string;
 };
 
 /** A set of methods for managing operations for asynchronous API requests. */
@@ -445,6 +446,7 @@ export const TextRecognitionAsyncServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): TextRecognitionAsyncServiceClient;
   service: typeof TextRecognitionAsyncServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

@@ -213,7 +213,7 @@ const generateExportSourceCode = (packagePath: string, packageName: string) => {
     logger.debug('Generating root index module');
 
     const rootIndexModulePath = path.join(packagePath, 'index.ts');
-    const serviceClientsModulePath = path.join(packagePath, 'service_clients.ts');
+    const serviceClientsModulePath = path.join(packagePath, 'service-clients.ts');
 
     const {
         rootModuleContentParts,

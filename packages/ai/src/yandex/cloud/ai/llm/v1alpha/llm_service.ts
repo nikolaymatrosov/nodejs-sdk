@@ -974,6 +974,7 @@ export const TextGenerationServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): TextGenerationServiceClient;
   service: typeof TextGenerationServiceService;
+  serviceName: string;
 };
 
 /** Service for tokenizing input text. */
@@ -1021,6 +1022,7 @@ export const TokenizerServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): TokenizerServiceClient;
   service: typeof TokenizerServiceService;
+  serviceName: string;
 };
 
 /** Service for obtaining embeddings for text data. */
@@ -1068,6 +1070,7 @@ export const EmbeddingsServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): EmbeddingsServiceClient;
   service: typeof EmbeddingsServiceService;
+  serviceName: string;
 };
 
 /** Service for asynchronous text generation. */
@@ -1119,6 +1122,7 @@ export const TextGenerationAsyncServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): TextGenerationAsyncServiceClient;
   service: typeof TextGenerationAsyncServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

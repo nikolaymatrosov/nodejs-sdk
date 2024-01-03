@@ -271,6 +271,7 @@ export const ImageProductUsageServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): ImageProductUsageServiceClient;
   service: typeof ImageProductUsageServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

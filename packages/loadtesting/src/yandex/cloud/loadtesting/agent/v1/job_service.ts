@@ -1410,6 +1410,7 @@ export const JobServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): JobServiceClient;
   service: typeof JobServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

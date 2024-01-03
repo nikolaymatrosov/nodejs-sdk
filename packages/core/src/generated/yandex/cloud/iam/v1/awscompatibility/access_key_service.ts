@@ -1240,6 +1240,7 @@ export const AccessKeyServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): AccessKeyServiceClient;
   service: typeof AccessKeyServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

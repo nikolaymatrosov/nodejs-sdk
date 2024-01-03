@@ -2446,6 +2446,7 @@ export const BackendGroupServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): BackendGroupServiceClient;
   service: typeof BackendGroupServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

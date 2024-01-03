@@ -529,6 +529,7 @@ export const ProjectDataServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ProjectDataServiceClient;
   service: typeof ProjectDataServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

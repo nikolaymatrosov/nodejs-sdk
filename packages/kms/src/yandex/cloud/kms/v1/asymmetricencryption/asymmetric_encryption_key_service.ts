@@ -1796,6 +1796,7 @@ export const AsymmetricEncryptionKeyServiceClient = makeGenericClientConstructor
     options?: Partial<ClientOptions>,
   ): AsymmetricEncryptionKeyServiceClient;
   service: typeof AsymmetricEncryptionKeyServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

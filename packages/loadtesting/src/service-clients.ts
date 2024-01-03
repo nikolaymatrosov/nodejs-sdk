@@ -1,5 +1,5 @@
-import * as cloudApi from '.'
-export const LoadTestingAgentRegistrationServiceClient = cloudApi.loadtesting.agent_agent_registration_service.AgentRegistrationServiceClient;
+import * as cloudApi from '.';
+
 export const LoadTestingAgentServiceClient = cloudApi.loadtesting.agent_service.AgentServiceClient;
 export const LoadTestingJobServiceClient = cloudApi.loadtesting.agent_job_service.JobServiceClient;
 export const LoadTestingMonitoringServiceClient = cloudApi.loadtesting.agent_monitoring_service.MonitoringServiceClient;

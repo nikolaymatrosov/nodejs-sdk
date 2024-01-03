@@ -1,2 +1,2 @@
-export * as iot from './yandex/cloud/iot'
-export * as iotClients from './service_clients'
+export * as iot from './yandex/cloud/iot';
+export * as iotClients from './service-clients';

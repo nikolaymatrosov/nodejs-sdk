@@ -423,6 +423,7 @@ export const AgentRegistrationServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): AgentRegistrationServiceClient;
   service: typeof AgentRegistrationServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

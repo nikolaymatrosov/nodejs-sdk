@@ -23,7 +23,10 @@ export const buildExportStatements = (
     const relativePath = path.relative(projectDir, modulePath);
 
     // Split the relative path into segments
-    const relativePathSegments = relativePath.split(path.sep);
+    const relativePathSegments = relativePath.replace(/\.ts$/, '').split(path.sep);
+
+    const versionIndex = relativePathSegments.findIndex((segment) => /^v\d+$/.test(segment));
+    const pathAfterVersion = relativePathSegments.slice(versionIndex + 1);
 
     // Extract the first segment of the relative path
     const firstPathSegment = relativePathSegments[0];
@@ -37,12 +40,12 @@ export const buildExportStatements = (
     // Determine whether to use the first path segment as a prefix for the module alias
     const usePathSegmentAsPrefix = relativePathSegments.length > 1
         && firstPathSegment.length > 2
-        && firstPathSegment !== serviceName;
+        && !serviceName.includes(firstPathSegment);
 
     // Create a `moduleAlias` by joining the first path segment (if it's used as a prefix) and the `moduleName` with an underscore
     let moduleAlias = [
         usePathSegmentAsPrefix ? firstPathSegment : undefined,
-        moduleName,
+        ...pathAfterVersion,
     ].filter(Boolean).join('_');
 
     // If the `moduleAlias` already exists in the `moduleAliases` set, append a version number to the `moduleAlias`
@@ -68,5 +71,5 @@ export const buildExportStatements = (
     moduleAliases.add(moduleAlias);
 
     // Return an export statement for the module
-    return `export * as ${moduleAlias} from './${moduleWithoutExt}'`;
+    return `export * as ${moduleAlias} from './${moduleWithoutExt}';`;
 });

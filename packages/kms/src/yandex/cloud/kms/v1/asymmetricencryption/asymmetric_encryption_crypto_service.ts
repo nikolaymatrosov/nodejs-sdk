@@ -443,6 +443,7 @@ export const AsymmetricEncryptionCryptoServiceClient = makeGenericClientConstruc
     options?: Partial<ClientOptions>,
   ): AsymmetricEncryptionCryptoServiceClient;
   service: typeof AsymmetricEncryptionCryptoServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

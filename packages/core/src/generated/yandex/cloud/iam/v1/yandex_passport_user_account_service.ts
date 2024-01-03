@@ -134,6 +134,7 @@ export const YandexPassportUserAccountServiceClient = makeGenericClientConstruct
     options?: Partial<ClientOptions>,
   ): YandexPassportUserAccountServiceClient;
   service: typeof YandexPassportUserAccountServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

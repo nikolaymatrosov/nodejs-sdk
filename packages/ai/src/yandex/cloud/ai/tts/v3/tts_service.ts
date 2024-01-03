@@ -53,4 +53,5 @@ export const SynthesizerClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): SynthesizerClient;
   service: typeof SynthesizerService;
+  serviceName: string;
 };

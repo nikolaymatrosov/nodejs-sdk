@@ -665,6 +665,7 @@ export const AsymmetricSignatureCryptoServiceClient = makeGenericClientConstruct
     options?: Partial<ClientOptions>,
   ): AsymmetricSignatureCryptoServiceClient;
   service: typeof AsymmetricSignatureCryptoServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

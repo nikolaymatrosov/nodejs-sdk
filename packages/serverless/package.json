@@ -31,6 +31,6 @@
   },
   "dependencies": {
     "@yandex-cloud/core": "^3.0.0",
-    "@yandex-cloud/logging": "^3.0.0"
+    "@yandex-cloud/logging": "file:*"
   }
 }

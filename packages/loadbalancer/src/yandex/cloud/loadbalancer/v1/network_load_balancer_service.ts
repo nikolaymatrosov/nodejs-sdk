@@ -3563,6 +3563,7 @@ export const NetworkLoadBalancerServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): NetworkLoadBalancerServiceClient;
   service: typeof NetworkLoadBalancerServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

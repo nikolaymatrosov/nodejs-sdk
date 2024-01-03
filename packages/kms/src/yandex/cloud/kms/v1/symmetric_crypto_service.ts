@@ -1243,6 +1243,7 @@ export const SymmetricCryptoServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): SymmetricCryptoServiceClient;
   service: typeof SymmetricCryptoServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

@@ -65,9 +65,9 @@ describe('rootIndex', () => {
         ]);
         expect(result.serviceClientsModuleContentParts).toEqual([
             'import * as cloudApi from \'.\'',
-            'export const SttServiceClient = cloudApi.ai.stt_service.SttServiceClient;',
-            'export const RecognizerServiceClient = cloudApi.ai.stt_service_v3.RecognizerServiceClient;',
-            'export const AsyncRecognizerClient = cloudApi.ai.stt_service_v3.AsyncRecognizerClient;',
+            'export const { SttServiceClient } = cloudApi.ai.stt_service;',
+            'export const { RecognizerServiceClient } = cloudApi.ai.stt_service_v3;',
+            'export const { AsyncRecognizerClient } = cloudApi.ai.stt_service_v3;',
         ]);
     });
 

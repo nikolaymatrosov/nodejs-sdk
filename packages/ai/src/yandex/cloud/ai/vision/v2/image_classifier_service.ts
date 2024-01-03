@@ -57,4 +57,5 @@ export const ImageClassifierServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): ImageClassifierServiceClient;
   service: typeof ImageClassifierServiceService;
+  serviceName: string;
 };

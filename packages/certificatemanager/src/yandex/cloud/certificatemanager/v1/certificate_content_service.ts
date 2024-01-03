@@ -325,6 +325,7 @@ export const CertificateContentServiceClient = makeGenericClientConstructor(
     options?: Partial<ClientOptions>,
   ): CertificateContentServiceClient;
   service: typeof CertificateContentServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

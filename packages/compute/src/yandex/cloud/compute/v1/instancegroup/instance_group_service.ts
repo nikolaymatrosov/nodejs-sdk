@@ -4610,6 +4610,7 @@ export const InstanceGroupServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): InstanceGroupServiceClient;
   service: typeof InstanceGroupServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

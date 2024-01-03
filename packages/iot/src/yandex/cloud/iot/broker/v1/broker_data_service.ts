@@ -219,6 +219,7 @@ export const BrokerDataServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): BrokerDataServiceClient;
   service: typeof BrokerDataServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

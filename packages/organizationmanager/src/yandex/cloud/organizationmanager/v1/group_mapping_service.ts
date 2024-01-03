@@ -1523,6 +1523,7 @@ export const GroupMappingServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): GroupMappingServiceClient;
   service: typeof GroupMappingServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

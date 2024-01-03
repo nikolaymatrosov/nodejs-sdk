@@ -323,6 +323,7 @@ export const ApiEndpointServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ApiEndpointServiceClient;
   service: typeof ApiEndpointServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

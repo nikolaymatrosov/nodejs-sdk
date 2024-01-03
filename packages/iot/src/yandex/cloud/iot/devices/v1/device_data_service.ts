@@ -219,6 +219,7 @@ export const DeviceDataServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): DeviceDataServiceClient;
   service: typeof DeviceDataServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

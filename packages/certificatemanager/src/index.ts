@@ -1,2 +1,2 @@
-export * as certificatemanager from './yandex/cloud/certificatemanager'
-export * as certificatemanagerClients from './service_clients'
+export * as certificatemanager from './yandex/cloud/certificatemanager';
+export * as certificatemanagerClients from './service-clients';

@@ -1,2 +1,2 @@
-export * as resourcemanager from './yandex/cloud/resourcemanager'
-export * as resourcemanagerClients from './service_clients'
+export * as resourcemanager from './yandex/cloud/resourcemanager';
+export * as resourcemanagerClients from './service-clients';

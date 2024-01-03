@@ -220,6 +220,7 @@ export const RegistryDataServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): RegistryDataServiceClient;
   service: typeof RegistryDataServiceService;
+  serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {

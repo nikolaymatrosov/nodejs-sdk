@@ -1,11 +1,13 @@
-import path from "path";
-import fg from "fast-glob";
-import cp from "child_process";
-import { CORE_PROTO_PACKAGES, PACKAGES_ROOT_DIR, PROTO_DIR, YA_PROTO_DIR, PROTOBUF_FILES } from "./constants";
-import { logger } from "@yandex-cloud/core/dist/utils/logger";
-import * as fs from "fs";
+import path from 'path';
+import fg from 'fast-glob';
+import cp from 'child_process';
+import { logger } from '@yandex-cloud/core/dist/utils/logger';
+import * as fs from 'fs';
+import {
+    CORE_PROTO_PACKAGES, PACKAGES_ROOT_DIR, PROTO_DIR, YA_PROTO_DIR, PROTOBUF_FILES,
+} from './constants';
 
-const coreProtoGen =async (packageName: string): Promise<string> => {
+const coreProtoGen = async (packageName: string): Promise<string> => {
     const packagePath = path.join(PACKAGES_ROOT_DIR, 'core', 'src', 'generated');
     const packageProtoDir = path.join(YA_PROTO_DIR, 'cloud', packageName);
 
@@ -27,7 +29,7 @@ const coreProtoGen =async (packageName: string): Promise<string> => {
         `-I ${PROTO_DIR}`,
         `${YA_PROTO_DIR}/cloud/validation.proto`,
         ...protoFiles,
-        ...PROTOBUF_FILES
+        ...PROTOBUF_FILES,
     ];
 
     logger.debug(`Code generation command: \n ${commandArgs.join(' ')}`);
@@ -39,6 +41,7 @@ const coreProtoGen =async (packageName: string): Promise<string> => {
 export const generateCorePackage = async (): Promise<void> => {
     for (const packagePath of CORE_PROTO_PACKAGES) {
         const packageName = path.basename(packagePath);
+
         await coreProtoGen(packageName);
     }
 };

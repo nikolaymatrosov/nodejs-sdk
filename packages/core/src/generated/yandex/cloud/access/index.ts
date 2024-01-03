@@ -1,2 +1,2 @@
-export * as access from './access'
-export * as index from './index'
+export * as access from './access';
+export * as index from './index';

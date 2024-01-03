@@ -2531,6 +2531,7 @@ export const SecurityGroupServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): SecurityGroupServiceClient;
   service: typeof SecurityGroupServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

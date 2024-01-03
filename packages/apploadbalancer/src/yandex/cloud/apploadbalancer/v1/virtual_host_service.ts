@@ -1924,6 +1924,7 @@ export const VirtualHostServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): VirtualHostServiceClient;
   service: typeof VirtualHostServiceService;
+  serviceName: string;
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

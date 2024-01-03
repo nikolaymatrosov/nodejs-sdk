@@ -1,4 +1,4 @@
-export * as serviceClients from './generated/service_clients';
+export * as serviceClients from './generated/service-clients';
 export * as cloudApi from './generated';
 export * from './session';
 export * from './utils/operation';
