@@ -3,9 +3,7 @@ import fg from 'fast-glob';
 import cp from 'child_process';
 import { logger } from '@yandex-cloud/core/dist/utils/logger';
 import * as fs from 'fs';
-import {
-    CORE_PROTO_PACKAGES, PACKAGES_ROOT_DIR, PROTO_DIR, YA_PROTO_DIR, PROTOBUF_FILES,
-} from './constants';
+import { CORE_PROTO_PACKAGES, PACKAGES_ROOT_DIR, PROTO_DIR, PROTOBUF_FILES, YA_PROTO_DIR } from './constants';
 
 const coreProtoGen = async (packageName: string): Promise<string> => {
     const packagePath = path.join(PACKAGES_ROOT_DIR, 'core', 'src', 'generated');
@@ -39,9 +37,9 @@ const coreProtoGen = async (packageName: string): Promise<string> => {
 };
 
 export const generateCorePackage = async (): Promise<void> => {
-    for (const packagePath of CORE_PROTO_PACKAGES) {
+    await Promise.all(CORE_PROTO_PACKAGES.map((packagePath) => {
         const packageName = path.basename(packagePath);
 
-        await coreProtoGen(packageName);
-    }
+        return coreProtoGen(packageName);
+    }));
 };

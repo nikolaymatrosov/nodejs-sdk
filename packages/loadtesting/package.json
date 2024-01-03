@@ -30,7 +30,7 @@
     "url": "https://github.com/yandex-cloud/nodejs-sdk/issues"
   },
   "dependencies": {
-    "@yandex-cloud/compute": "file:*",
+    "@yandex-cloud/compute": "*",
     "@yandex-cloud/core": "^3.0.2"
   }
 }

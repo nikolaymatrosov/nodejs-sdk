@@ -76,13 +76,19 @@ const packageProtoGen = async ({ name, exact }: { name: string, exact: boolean }
 
     const { siblingImportsMappings, siblingServices } = await siblingImports('**/*.proto', packageProtoDir, name);
 
-    const packageJson = JSON.parse(fs.readFileSync(path.join(packagePath, 'package.json'), 'utf8'));
+    const packageJsonData = fs.readFileSync(path.join(packagePath, 'package.json'), 'utf8');
+    const packageJson = JSON.parse(packageJsonData);
 
     packageJson.dependencies = packageJson.dependencies ?? {};
     for (const service of siblingServices) {
-        packageJson.dependencies[`@yandex-cloud/${service}`] = 'file:*';
+        packageJson.dependencies[`@yandex-cloud/${service}`] = '*';
     }
-    fs.writeFileSync(path.join(packagePath, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf8');
+    const updatedPackageJson = `${JSON.stringify(packageJson, null, 2)}\n`;
+
+    if (updatedPackageJson !== packageJsonData) {
+        fs.writeFileSync(path.join(packagePath, 'package.json'), updatedPackageJson, 'utf8');
+    }
+
 
     const commandArgs = [
         'npx --no-install grpc_tools_node_protoc',
@@ -227,17 +233,14 @@ const generateExportSourceCode = (packagePath: string, packageName: string) => {
     fs.writeFileSync(serviceClientsModulePath, serviceClientsModuleContentParts.join('\n'), 'utf8');
 };
 
-(async () => {
-    await generateCorePackage();
-    generateExportSourceCode(path.join(PACKAGES_ROOT_DIR, 'core', 'src', 'generated'), 'core');
+await generateCorePackage();
+generateExportSourceCode(path.join(PACKAGES_ROOT_DIR, 'core', 'src', 'generated'), 'core');
+await Promise.all(PACKAGES.map(async (pkg) => {
+    logger.debug(`Creating package ${pkg.name}`);
+    initPackage(pkg.name);
 
-    for (const pkg of PACKAGES) {
-        logger.debug(`Creating package ${pkg.name}`);
-        initPackage(pkg.name);
+    logger.debug(`Generating code for package ${pkg.name}`);
+    const packagePath = await packageProtoGen(pkg);
 
-        logger.debug(`Generating code for package ${pkg.name}`);
-        const packagePath = await packageProtoGen(pkg);
-
-        generateExportSourceCode(packagePath, pkg.name);
-    }
-})();
+    generateExportSourceCode(packagePath, pkg.name);
+}));
