@@ -7,8 +7,8 @@ import * as wav from 'wav';
 import { getEnv } from '../utils/get-env';
 import { log } from '../utils/logger';
 
-// eslint-disable-next-line unicorn/prefer-module
-const file = fs.createReadStream(path.join(__dirname, 'test.wav'));
+const dirname = path.dirname(new URL(import.meta.url).pathname);
+const file = fs.createReadStream(path.join(dirname, 'test.wav'));
 const reader = new wav.Reader();
 const data = new stream.PassThrough();
 
