@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { Timestamp } from "@yandex-cloud/core/dist/generated/google/protobuf/timestamp";
+import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { messageTypeRegistry } from "../../../../../typeRegistry";
 
@@ -251,6 +252,114 @@ export interface HiveJob_ScriptVariablesEntry {
   $type: "yandex.cloud.dataproc.manager.v1.HiveJob.ScriptVariablesEntry";
   key: string;
   value: string;
+}
+
+/** Data Proc support job. */
+export interface SupportJob {
+  $type: "yandex.cloud.dataproc.manager.v1.SupportJob";
+  /**
+   * Required. Unique ID of the Data Proc job.
+   * This ID is assigned by MDB in the process of creating Data Proc job.
+   */
+  id: string;
+  /** Required. Unique ID of the Data Proc cluster. */
+  clusterId: string;
+  /** The time when the Data Proc job was created. */
+  createdAt?:
+    | Date
+    | undefined;
+  /** The time when the Data Proc job was started. */
+  startedAt?:
+    | Date
+    | undefined;
+  /** The time when the Data Proc job was finished. */
+  finishedAt?:
+    | Date
+    | undefined;
+  /** Status. */
+  status: SupportJob_Status;
+  /** Command. */
+  cmd: string;
+  /** Execution timeout in seconds. */
+  timeout: number;
+  /** The id of the user who created the job */
+  createdBy: string;
+}
+
+export enum SupportJob_Status {
+  STATUS_UNSPECIFIED = 0,
+  /** PROVISIONING - Job created in metadb and is waiting agent to acquire. */
+  PROVISIONING = 1,
+  /** PENDING - Job acquired by agent and is waiting for execution. */
+  PENDING = 2,
+  /** RUNNING - Job is running. */
+  RUNNING = 3,
+  /** ERROR - Job failed. */
+  ERROR = 4,
+  /** DONE - Job finished. */
+  DONE = 5,
+  /** CANCELLED - Job cancelled. */
+  CANCELLED = 6,
+  /** CANCELLING - Job is waiting for cancellation. */
+  CANCELLING = 7,
+  UNRECOGNIZED = -1,
+}
+
+export function supportJob_StatusFromJSON(object: any): SupportJob_Status {
+  switch (object) {
+    case 0:
+    case "STATUS_UNSPECIFIED":
+      return SupportJob_Status.STATUS_UNSPECIFIED;
+    case 1:
+    case "PROVISIONING":
+      return SupportJob_Status.PROVISIONING;
+    case 2:
+    case "PENDING":
+      return SupportJob_Status.PENDING;
+    case 3:
+    case "RUNNING":
+      return SupportJob_Status.RUNNING;
+    case 4:
+    case "ERROR":
+      return SupportJob_Status.ERROR;
+    case 5:
+    case "DONE":
+      return SupportJob_Status.DONE;
+    case 6:
+    case "CANCELLED":
+      return SupportJob_Status.CANCELLED;
+    case 7:
+    case "CANCELLING":
+      return SupportJob_Status.CANCELLING;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return SupportJob_Status.UNRECOGNIZED;
+  }
+}
+
+export function supportJob_StatusToJSON(object: SupportJob_Status): string {
+  switch (object) {
+    case SupportJob_Status.STATUS_UNSPECIFIED:
+      return "STATUS_UNSPECIFIED";
+    case SupportJob_Status.PROVISIONING:
+      return "PROVISIONING";
+    case SupportJob_Status.PENDING:
+      return "PENDING";
+    case SupportJob_Status.RUNNING:
+      return "RUNNING";
+    case SupportJob_Status.ERROR:
+      return "ERROR";
+    case SupportJob_Status.DONE:
+      return "DONE";
+    case SupportJob_Status.CANCELLED:
+      return "CANCELLED";
+    case SupportJob_Status.CANCELLING:
+      return "CANCELLING";
+    case SupportJob_Status.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
 }
 
 function createBaseJob(): Job {
@@ -2029,6 +2138,201 @@ export const HiveJob_ScriptVariablesEntry = {
 
 messageTypeRegistry.set(HiveJob_ScriptVariablesEntry.$type, HiveJob_ScriptVariablesEntry);
 
+function createBaseSupportJob(): SupportJob {
+  return {
+    $type: "yandex.cloud.dataproc.manager.v1.SupportJob",
+    id: "",
+    clusterId: "",
+    createdAt: undefined,
+    startedAt: undefined,
+    finishedAt: undefined,
+    status: 0,
+    cmd: "",
+    timeout: 0,
+    createdBy: "",
+  };
+}
+
+export const SupportJob = {
+  $type: "yandex.cloud.dataproc.manager.v1.SupportJob" as const,
+
+  encode(message: SupportJob, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.clusterId !== "") {
+      writer.uint32(18).string(message.clusterId);
+    }
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(26).fork()).ldelim();
+    }
+    if (message.startedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.startedAt), writer.uint32(34).fork()).ldelim();
+    }
+    if (message.finishedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.finishedAt), writer.uint32(42).fork()).ldelim();
+    }
+    if (message.status !== 0) {
+      writer.uint32(48).int32(message.status);
+    }
+    if (message.cmd !== "") {
+      writer.uint32(58).string(message.cmd);
+    }
+    if (message.timeout !== 0) {
+      writer.uint32(64).int64(message.timeout);
+    }
+    if (message.createdBy !== "") {
+      writer.uint32(74).string(message.createdBy);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SupportJob {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSupportJob();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.clusterId = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.startedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.finishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.status = reader.int32() as any;
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.cmd = reader.string();
+          continue;
+        case 8:
+          if (tag !== 64) {
+            break;
+          }
+
+          message.timeout = longToNumber(reader.int64() as Long);
+          continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.createdBy = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SupportJob {
+    return {
+      $type: SupportJob.$type,
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      clusterId: isSet(object.clusterId) ? globalThis.String(object.clusterId) : "",
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      startedAt: isSet(object.startedAt) ? fromJsonTimestamp(object.startedAt) : undefined,
+      finishedAt: isSet(object.finishedAt) ? fromJsonTimestamp(object.finishedAt) : undefined,
+      status: isSet(object.status) ? supportJob_StatusFromJSON(object.status) : 0,
+      cmd: isSet(object.cmd) ? globalThis.String(object.cmd) : "",
+      timeout: isSet(object.timeout) ? globalThis.Number(object.timeout) : 0,
+      createdBy: isSet(object.createdBy) ? globalThis.String(object.createdBy) : "",
+    };
+  },
+
+  toJSON(message: SupportJob): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.clusterId !== "") {
+      obj.clusterId = message.clusterId;
+    }
+    if (message.createdAt !== undefined) {
+      obj.createdAt = message.createdAt.toISOString();
+    }
+    if (message.startedAt !== undefined) {
+      obj.startedAt = message.startedAt.toISOString();
+    }
+    if (message.finishedAt !== undefined) {
+      obj.finishedAt = message.finishedAt.toISOString();
+    }
+    if (message.status !== 0) {
+      obj.status = supportJob_StatusToJSON(message.status);
+    }
+    if (message.cmd !== "") {
+      obj.cmd = message.cmd;
+    }
+    if (message.timeout !== 0) {
+      obj.timeout = Math.round(message.timeout);
+    }
+    if (message.createdBy !== "") {
+      obj.createdBy = message.createdBy;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SupportJob>, I>>(base?: I): SupportJob {
+    return SupportJob.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SupportJob>, I>>(object: I): SupportJob {
+    const message = createBaseSupportJob();
+    message.id = object.id ?? "";
+    message.clusterId = object.clusterId ?? "";
+    message.createdAt = object.createdAt ?? undefined;
+    message.startedAt = object.startedAt ?? undefined;
+    message.finishedAt = object.finishedAt ?? undefined;
+    message.status = object.status ?? 0;
+    message.cmd = object.cmd ?? "";
+    message.timeout = object.timeout ?? 0;
+    message.createdBy = object.createdBy ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(SupportJob.$type, SupportJob);
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -2061,6 +2365,18 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
+}
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
 }
 
 function isObject(value: any): boolean {

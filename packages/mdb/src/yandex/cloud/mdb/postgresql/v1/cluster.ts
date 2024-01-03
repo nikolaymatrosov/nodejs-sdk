@@ -843,11 +843,11 @@ export interface PerformanceDiagnostics {
 
 export interface DiskSizeAutoscaling {
   $type: "yandex.cloud.mdb.postgresql.v1.DiskSizeAutoscaling";
-  /** Amount of used storage for automatic disk scaling in the maintenance window, 0 means disabled, in percent. */
+  /** Threshold of storage usage (in percent) that triggers automatic scaling of the storage during the maintenance window. Zero value means disabled threshold. */
   plannedUsageThreshold: number;
-  /** Amount of used storage for immediately  automatic disk scaling, 0 means disabled, in percent. */
+  /** Threshold of storage usage (in percent) that triggers immediate automatic scaling of the storage. Zero value means disabled threshold. */
   emergencyUsageThreshold: number;
-  /** Limit on how large the storage for database instances can automatically grow, in bytes. */
+  /** New storage size (in bytes) that is set when one of the thresholds is achieved. */
   diskSizeLimit: number;
 }
 

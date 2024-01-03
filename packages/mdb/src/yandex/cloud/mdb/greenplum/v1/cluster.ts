@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { Timestamp } from "@yandex-cloud/core/dist/generated/google/protobuf/timestamp";
+import { Int64Value } from "@yandex-cloud/core/dist/generated/google/protobuf/wrappers";
 import { TimeOfDay } from "@yandex-cloud/core/dist/generated/google/type/timeofday";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
@@ -308,6 +309,10 @@ export interface GreenplumConfig {
   /** Time to start the daily backup, in the UTC timezone. */
   backupWindowStart?:
     | TimeOfDay
+    | undefined;
+  /** Retention policy of automated backups. */
+  backupRetainPeriodDays?:
+    | number
     | undefined;
   /** Access policy for external services. */
   access?:
@@ -1274,6 +1279,7 @@ function createBaseGreenplumConfig(): GreenplumConfig {
     $type: "yandex.cloud.mdb.greenplum.v1.GreenplumConfig",
     version: "",
     backupWindowStart: undefined,
+    backupRetainPeriodDays: undefined,
     access: undefined,
     zoneId: "",
     subnetId: "",
@@ -1290,6 +1296,12 @@ export const GreenplumConfig = {
     }
     if (message.backupWindowStart !== undefined) {
       TimeOfDay.encode(message.backupWindowStart, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.backupRetainPeriodDays !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.backupRetainPeriodDays! },
+        writer.uint32(74).fork(),
+      ).ldelim();
     }
     if (message.access !== undefined) {
       Access.encode(message.access, writer.uint32(26).fork()).ldelim();
@@ -1326,6 +1338,13 @@ export const GreenplumConfig = {
           }
 
           message.backupWindowStart = TimeOfDay.decode(reader, reader.uint32());
+          continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.backupRetainPeriodDays = Int64Value.decode(reader, reader.uint32()).value;
           continue;
         case 3:
           if (tag !== 26) {
@@ -1369,6 +1388,7 @@ export const GreenplumConfig = {
       $type: GreenplumConfig.$type,
       version: isSet(object.version) ? globalThis.String(object.version) : "",
       backupWindowStart: isSet(object.backupWindowStart) ? TimeOfDay.fromJSON(object.backupWindowStart) : undefined,
+      backupRetainPeriodDays: isSet(object.backupRetainPeriodDays) ? Number(object.backupRetainPeriodDays) : undefined,
       access: isSet(object.access) ? Access.fromJSON(object.access) : undefined,
       zoneId: isSet(object.zoneId) ? globalThis.String(object.zoneId) : "",
       subnetId: isSet(object.subnetId) ? globalThis.String(object.subnetId) : "",
@@ -1383,6 +1403,9 @@ export const GreenplumConfig = {
     }
     if (message.backupWindowStart !== undefined) {
       obj.backupWindowStart = TimeOfDay.toJSON(message.backupWindowStart);
+    }
+    if (message.backupRetainPeriodDays !== undefined) {
+      obj.backupRetainPeriodDays = message.backupRetainPeriodDays;
     }
     if (message.access !== undefined) {
       obj.access = Access.toJSON(message.access);
@@ -1408,6 +1431,7 @@ export const GreenplumConfig = {
     message.backupWindowStart = (object.backupWindowStart !== undefined && object.backupWindowStart !== null)
       ? TimeOfDay.fromPartial(object.backupWindowStart)
       : undefined;
+    message.backupRetainPeriodDays = object.backupRetainPeriodDays ?? undefined;
     message.access = (object.access !== undefined && object.access !== null)
       ? Access.fromPartial(object.access)
       : undefined;

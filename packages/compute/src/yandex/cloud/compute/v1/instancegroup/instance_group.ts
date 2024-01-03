@@ -134,7 +134,11 @@ export interface InstanceGroup {
    *
    * Returned if there is a working load balancer that the target group is connected to.
    */
-  applicationLoadBalancerState?: ApplicationLoadBalancerState | undefined;
+  applicationLoadBalancerState?:
+    | ApplicationLoadBalancerState
+    | undefined;
+  /** AutoHealingPolicy policy of the instance group. */
+  autoHealingPolicy?: AutoHealingPolicy | undefined;
 }
 
 export enum InstanceGroup_Status {
@@ -582,6 +586,11 @@ export interface DeployPolicy {
     | undefined;
   /** Affects the lifecycle of the instance during deployment. */
   strategy: DeployPolicy_Strategy;
+  /**
+   * If instance update requires a less disruptive action than [minimal_action],
+   * Instance Groups performs [minimal_action] to execute the update
+   */
+  minimalAction: DeployPolicy_MinimalAction;
 }
 
 export enum DeployPolicy_Strategy {
@@ -623,6 +632,54 @@ export function deployPolicy_StrategyToJSON(object: DeployPolicy_Strategy): stri
     case DeployPolicy_Strategy.OPPORTUNISTIC:
       return "OPPORTUNISTIC";
     case DeployPolicy_Strategy.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+export enum DeployPolicy_MinimalAction {
+  MINIMAL_ACTION_UNSPECIFIED = 0,
+  /** LIVE_UPDATE - Updating an instance without stopping. This is the default. */
+  LIVE_UPDATE = 1,
+  /** RESTART - Updating an instance with restart: stopping and then starting the instance. */
+  RESTART = 2,
+  /** RECREATE - Re-creating an instance: deleting an instance and creating a new one. */
+  RECREATE = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function deployPolicy_MinimalActionFromJSON(object: any): DeployPolicy_MinimalAction {
+  switch (object) {
+    case 0:
+    case "MINIMAL_ACTION_UNSPECIFIED":
+      return DeployPolicy_MinimalAction.MINIMAL_ACTION_UNSPECIFIED;
+    case 1:
+    case "LIVE_UPDATE":
+      return DeployPolicy_MinimalAction.LIVE_UPDATE;
+    case 2:
+    case "RESTART":
+      return DeployPolicy_MinimalAction.RESTART;
+    case 3:
+    case "RECREATE":
+      return DeployPolicy_MinimalAction.RECREATE;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return DeployPolicy_MinimalAction.UNRECOGNIZED;
+  }
+}
+
+export function deployPolicy_MinimalActionToJSON(object: DeployPolicy_MinimalAction): string {
+  switch (object) {
+    case DeployPolicy_MinimalAction.MINIMAL_ACTION_UNSPECIFIED:
+      return "MINIMAL_ACTION_UNSPECIFIED";
+    case DeployPolicy_MinimalAction.LIVE_UPDATE:
+      return "LIVE_UPDATE";
+    case DeployPolicy_MinimalAction.RESTART:
+      return "RESTART";
+    case DeployPolicy_MinimalAction.RECREATE:
+      return "RECREATE";
+    case DeployPolicy_MinimalAction.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
   }
@@ -1439,6 +1496,60 @@ export interface LogRecord {
   message: string;
 }
 
+export interface AutoHealingPolicy {
+  $type: "yandex.cloud.compute.v1.instancegroup.AutoHealingPolicy";
+  /** Instance Groups performs [auto_healing_action] when instance becomes unhealthy. */
+  autoHealingAction: AutoHealingPolicy_AutoHealingAction;
+}
+
+export enum AutoHealingPolicy_AutoHealingAction {
+  AUTO_HEALING_ACTION_UNSPECIFIED = 0,
+  /** RESTART - Re-starting an instance with restart: stopping and then starting the instance. */
+  RESTART = 1,
+  /** RECREATE - Re-creating an instance: deleting an instance and creating a new one. */
+  RECREATE = 2,
+  /** NONE - No action */
+  NONE = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function autoHealingPolicy_AutoHealingActionFromJSON(object: any): AutoHealingPolicy_AutoHealingAction {
+  switch (object) {
+    case 0:
+    case "AUTO_HEALING_ACTION_UNSPECIFIED":
+      return AutoHealingPolicy_AutoHealingAction.AUTO_HEALING_ACTION_UNSPECIFIED;
+    case 1:
+    case "RESTART":
+      return AutoHealingPolicy_AutoHealingAction.RESTART;
+    case 2:
+    case "RECREATE":
+      return AutoHealingPolicy_AutoHealingAction.RECREATE;
+    case 3:
+    case "NONE":
+      return AutoHealingPolicy_AutoHealingAction.NONE;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return AutoHealingPolicy_AutoHealingAction.UNRECOGNIZED;
+  }
+}
+
+export function autoHealingPolicy_AutoHealingActionToJSON(object: AutoHealingPolicy_AutoHealingAction): string {
+  switch (object) {
+    case AutoHealingPolicy_AutoHealingAction.AUTO_HEALING_ACTION_UNSPECIFIED:
+      return "AUTO_HEALING_ACTION_UNSPECIFIED";
+    case AutoHealingPolicy_AutoHealingAction.RESTART:
+      return "RESTART";
+    case AutoHealingPolicy_AutoHealingAction.RECREATE:
+      return "RECREATE";
+    case AutoHealingPolicy_AutoHealingAction.NONE:
+      return "NONE";
+    case AutoHealingPolicy_AutoHealingAction.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 function createBaseInstanceGroup(): InstanceGroup {
   return {
     $type: "yandex.cloud.compute.v1.instancegroup.InstanceGroup",
@@ -1462,6 +1573,7 @@ function createBaseInstanceGroup(): InstanceGroup {
     deletionProtection: false,
     applicationLoadBalancerSpec: undefined,
     applicationLoadBalancerState: undefined,
+    autoHealingPolicy: undefined,
   };
 }
 
@@ -1532,6 +1644,9 @@ export const InstanceGroup = {
     }
     if (message.applicationLoadBalancerState !== undefined) {
       ApplicationLoadBalancerState.encode(message.applicationLoadBalancerState, writer.uint32(170).fork()).ldelim();
+    }
+    if (message.autoHealingPolicy !== undefined) {
+      AutoHealingPolicy.encode(message.autoHealingPolicy, writer.uint32(178).fork()).ldelim();
     }
     return writer;
   },
@@ -1686,6 +1801,13 @@ export const InstanceGroup = {
 
           message.applicationLoadBalancerState = ApplicationLoadBalancerState.decode(reader, reader.uint32());
           continue;
+        case 22:
+          if (tag !== 178) {
+            break;
+          }
+
+          message.autoHealingPolicy = AutoHealingPolicy.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1732,6 +1854,9 @@ export const InstanceGroup = {
         : undefined,
       applicationLoadBalancerState: isSet(object.applicationLoadBalancerState)
         ? ApplicationLoadBalancerState.fromJSON(object.applicationLoadBalancerState)
+        : undefined,
+      autoHealingPolicy: isSet(object.autoHealingPolicy)
+        ? AutoHealingPolicy.fromJSON(object.autoHealingPolicy)
         : undefined,
     };
   },
@@ -1804,6 +1929,9 @@ export const InstanceGroup = {
     if (message.applicationLoadBalancerState !== undefined) {
       obj.applicationLoadBalancerState = ApplicationLoadBalancerState.toJSON(message.applicationLoadBalancerState);
     }
+    if (message.autoHealingPolicy !== undefined) {
+      obj.autoHealingPolicy = AutoHealingPolicy.toJSON(message.autoHealingPolicy);
+    }
     return obj;
   },
 
@@ -1860,6 +1988,9 @@ export const InstanceGroup = {
       (object.applicationLoadBalancerState !== undefined && object.applicationLoadBalancerState !== null)
         ? ApplicationLoadBalancerState.fromPartial(object.applicationLoadBalancerState)
         : undefined;
+    message.autoHealingPolicy = (object.autoHealingPolicy !== undefined && object.autoHealingPolicy !== null)
+      ? AutoHealingPolicy.fromPartial(object.autoHealingPolicy)
+      : undefined;
     return message;
   },
 };
@@ -3238,6 +3369,7 @@ function createBaseDeployPolicy(): DeployPolicy {
     maxExpansion: 0,
     startupDuration: undefined,
     strategy: 0,
+    minimalAction: 0,
   };
 }
 
@@ -3262,6 +3394,9 @@ export const DeployPolicy = {
     }
     if (message.strategy !== 0) {
       writer.uint32(64).int32(message.strategy);
+    }
+    if (message.minimalAction !== 0) {
+      writer.uint32(112).int32(message.minimalAction);
     }
     return writer;
   },
@@ -3315,6 +3450,13 @@ export const DeployPolicy = {
 
           message.strategy = reader.int32() as any;
           continue;
+        case 14:
+          if (tag !== 112) {
+            break;
+          }
+
+          message.minimalAction = reader.int32() as any;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -3333,6 +3475,7 @@ export const DeployPolicy = {
       maxExpansion: isSet(object.maxExpansion) ? globalThis.Number(object.maxExpansion) : 0,
       startupDuration: isSet(object.startupDuration) ? Duration.fromJSON(object.startupDuration) : undefined,
       strategy: isSet(object.strategy) ? deployPolicy_StrategyFromJSON(object.strategy) : 0,
+      minimalAction: isSet(object.minimalAction) ? deployPolicy_MinimalActionFromJSON(object.minimalAction) : 0,
     };
   },
 
@@ -3356,6 +3499,9 @@ export const DeployPolicy = {
     if (message.strategy !== 0) {
       obj.strategy = deployPolicy_StrategyToJSON(message.strategy);
     }
+    if (message.minimalAction !== 0) {
+      obj.minimalAction = deployPolicy_MinimalActionToJSON(message.minimalAction);
+    }
     return obj;
   },
 
@@ -3372,6 +3518,7 @@ export const DeployPolicy = {
       ? Duration.fromPartial(object.startupDuration)
       : undefined;
     message.strategy = object.strategy ?? 0;
+    message.minimalAction = object.minimalAction ?? 0;
     return message;
   },
 };
@@ -7038,6 +7185,72 @@ export const LogRecord = {
 };
 
 messageTypeRegistry.set(LogRecord.$type, LogRecord);
+
+function createBaseAutoHealingPolicy(): AutoHealingPolicy {
+  return { $type: "yandex.cloud.compute.v1.instancegroup.AutoHealingPolicy", autoHealingAction: 0 };
+}
+
+export const AutoHealingPolicy = {
+  $type: "yandex.cloud.compute.v1.instancegroup.AutoHealingPolicy" as const,
+
+  encode(message: AutoHealingPolicy, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.autoHealingAction !== 0) {
+      writer.uint32(8).int32(message.autoHealingAction);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AutoHealingPolicy {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAutoHealingPolicy();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.autoHealingAction = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AutoHealingPolicy {
+    return {
+      $type: AutoHealingPolicy.$type,
+      autoHealingAction: isSet(object.autoHealingAction)
+        ? autoHealingPolicy_AutoHealingActionFromJSON(object.autoHealingAction)
+        : 0,
+    };
+  },
+
+  toJSON(message: AutoHealingPolicy): unknown {
+    const obj: any = {};
+    if (message.autoHealingAction !== 0) {
+      obj.autoHealingAction = autoHealingPolicy_AutoHealingActionToJSON(message.autoHealingAction);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AutoHealingPolicy>, I>>(base?: I): AutoHealingPolicy {
+    return AutoHealingPolicy.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AutoHealingPolicy>, I>>(object: I): AutoHealingPolicy {
+    const message = createBaseAutoHealingPolicy();
+    message.autoHealingAction = object.autoHealingAction ?? 0;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(AutoHealingPolicy.$type, AutoHealingPolicy);
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 

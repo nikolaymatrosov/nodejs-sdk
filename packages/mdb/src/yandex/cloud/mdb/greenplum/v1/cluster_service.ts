@@ -663,6 +663,22 @@ export interface ListClusterBackupsResponse {
   nextPageToken: string;
 }
 
+export interface BackupClusterRequest {
+  $type: "yandex.cloud.mdb.greenplum.v1.BackupClusterRequest";
+  /**
+   * ID of the Greenplum cluster to back up.
+   * To get the Greenplum cluster ID, use a [ClusterService.List] request.
+   */
+  clusterId: string;
+}
+
+export interface BackupClusterMetadata {
+  $type: "yandex.cloud.mdb.greenplum.v1.BackupClusterMetadata";
+  /** ID of the Greenplum cluster to back up. */
+  clusterId: string;
+  backupId: string;
+}
+
 export interface RestoreClusterRequest {
   $type: "yandex.cloud.mdb.greenplum.v1.RestoreClusterRequest";
   /**
@@ -4146,6 +4162,149 @@ export const ListClusterBackupsResponse = {
 
 messageTypeRegistry.set(ListClusterBackupsResponse.$type, ListClusterBackupsResponse);
 
+function createBaseBackupClusterRequest(): BackupClusterRequest {
+  return { $type: "yandex.cloud.mdb.greenplum.v1.BackupClusterRequest", clusterId: "" };
+}
+
+export const BackupClusterRequest = {
+  $type: "yandex.cloud.mdb.greenplum.v1.BackupClusterRequest" as const,
+
+  encode(message: BackupClusterRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.clusterId !== "") {
+      writer.uint32(10).string(message.clusterId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): BackupClusterRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBackupClusterRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.clusterId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BackupClusterRequest {
+    return {
+      $type: BackupClusterRequest.$type,
+      clusterId: isSet(object.clusterId) ? globalThis.String(object.clusterId) : "",
+    };
+  },
+
+  toJSON(message: BackupClusterRequest): unknown {
+    const obj: any = {};
+    if (message.clusterId !== "") {
+      obj.clusterId = message.clusterId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<BackupClusterRequest>): BackupClusterRequest {
+    return BackupClusterRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<BackupClusterRequest>): BackupClusterRequest {
+    const message = createBaseBackupClusterRequest();
+    message.clusterId = object.clusterId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(BackupClusterRequest.$type, BackupClusterRequest);
+
+function createBaseBackupClusterMetadata(): BackupClusterMetadata {
+  return { $type: "yandex.cloud.mdb.greenplum.v1.BackupClusterMetadata", clusterId: "", backupId: "" };
+}
+
+export const BackupClusterMetadata = {
+  $type: "yandex.cloud.mdb.greenplum.v1.BackupClusterMetadata" as const,
+
+  encode(message: BackupClusterMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.clusterId !== "") {
+      writer.uint32(10).string(message.clusterId);
+    }
+    if (message.backupId !== "") {
+      writer.uint32(18).string(message.backupId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): BackupClusterMetadata {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBackupClusterMetadata();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.clusterId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.backupId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BackupClusterMetadata {
+    return {
+      $type: BackupClusterMetadata.$type,
+      clusterId: isSet(object.clusterId) ? globalThis.String(object.clusterId) : "",
+      backupId: isSet(object.backupId) ? globalThis.String(object.backupId) : "",
+    };
+  },
+
+  toJSON(message: BackupClusterMetadata): unknown {
+    const obj: any = {};
+    if (message.clusterId !== "") {
+      obj.clusterId = message.clusterId;
+    }
+    if (message.backupId !== "") {
+      obj.backupId = message.backupId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<BackupClusterMetadata>): BackupClusterMetadata {
+    return BackupClusterMetadata.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<BackupClusterMetadata>): BackupClusterMetadata {
+    const message = createBaseBackupClusterMetadata();
+    message.clusterId = object.clusterId ?? "";
+    message.backupId = object.backupId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(BackupClusterMetadata.$type, BackupClusterMetadata);
+
 function createBaseRestoreClusterRequest(): RestoreClusterRequest {
   return {
     $type: "yandex.cloud.mdb.greenplum.v1.RestoreClusterRequest",
@@ -4833,6 +4992,16 @@ export const ClusterServiceService = {
       Buffer.from(ListClusterBackupsResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => ListClusterBackupsResponse.decode(value),
   },
+  /** Creates a backup for the specified Greenplum cluster. */
+  backup: {
+    path: "/yandex.cloud.mdb.greenplum.v1.ClusterService/Backup",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: BackupClusterRequest) => Buffer.from(BackupClusterRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => BackupClusterRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
   /** Creates a new Greenplum® cluster using the specified backup. */
   restore: {
     path: "/yandex.cloud.mdb.greenplum.v1.ClusterService/Restore",
@@ -4878,6 +5047,8 @@ export interface ClusterServiceServer extends UntypedServiceImplementation {
   streamLogs: handleServerStreamingCall<StreamClusterLogsRequest, StreamLogRecord>;
   /** Retrieves a list of available backups for the specified Greenplum® cluster. */
   listBackups: handleUnaryCall<ListClusterBackupsRequest, ListClusterBackupsResponse>;
+  /** Creates a backup for the specified Greenplum cluster. */
+  backup: handleUnaryCall<BackupClusterRequest, Operation>;
   /** Creates a new Greenplum® cluster using the specified backup. */
   restore: handleUnaryCall<RestoreClusterRequest, Operation>;
 }
@@ -5095,6 +5266,22 @@ export interface ClusterServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: ListClusterBackupsResponse) => void,
+  ): ClientUnaryCall;
+  /** Creates a backup for the specified Greenplum cluster. */
+  backup(
+    request: BackupClusterRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  backup(
+    request: BackupClusterRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  backup(
+    request: BackupClusterRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
   ): ClientUnaryCall;
   /** Creates a new Greenplum® cluster using the specified backup. */
   restore(

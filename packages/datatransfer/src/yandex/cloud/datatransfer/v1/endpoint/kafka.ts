@@ -102,14 +102,23 @@ export interface KafkaSource {
     | undefined;
   /** Security groups */
   securityGroups: string[];
-  /** Full source topic name */
+  /**
+   * Full source topic name
+   * Deprecated in favor of topic names
+   *
+   * @deprecated
+   */
   topicName: string;
   /** Data transformation rules */
   transformer?:
     | DataTransformationOptions
     | undefined;
   /** Data parsing rules */
-  parser?: Parser | undefined;
+  parser?:
+    | Parser
+    | undefined;
+  /** List of topic names to read */
+  topicNames: string[];
 }
 
 export interface KafkaTarget {
@@ -539,6 +548,7 @@ function createBaseKafkaSource(): KafkaSource {
     topicName: "",
     transformer: undefined,
     parser: undefined,
+    topicNames: [],
   };
 }
 
@@ -563,6 +573,9 @@ export const KafkaSource = {
     }
     if (message.parser !== undefined) {
       Parser.encode(message.parser, writer.uint32(58).fork()).ldelim();
+    }
+    for (const v of message.topicNames) {
+      writer.uint32(66).string(v!);
     }
     return writer;
   },
@@ -616,6 +629,13 @@ export const KafkaSource = {
 
           message.parser = Parser.decode(reader, reader.uint32());
           continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.topicNames.push(reader.string());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -636,6 +656,9 @@ export const KafkaSource = {
       topicName: isSet(object.topicName) ? globalThis.String(object.topicName) : "",
       transformer: isSet(object.transformer) ? DataTransformationOptions.fromJSON(object.transformer) : undefined,
       parser: isSet(object.parser) ? Parser.fromJSON(object.parser) : undefined,
+      topicNames: globalThis.Array.isArray(object?.topicNames)
+        ? object.topicNames.map((e: any) => globalThis.String(e))
+        : [],
     };
   },
 
@@ -659,6 +682,9 @@ export const KafkaSource = {
     if (message.parser !== undefined) {
       obj.parser = Parser.toJSON(message.parser);
     }
+    if (message.topicNames?.length) {
+      obj.topicNames = message.topicNames;
+    }
     return obj;
   },
 
@@ -679,6 +705,7 @@ export const KafkaSource = {
     message.parser = (object.parser !== undefined && object.parser !== null)
       ? Parser.fromPartial(object.parser)
       : undefined;
+    message.topicNames = object.topicNames?.map((e) => e) || [];
     return message;
   },
 };

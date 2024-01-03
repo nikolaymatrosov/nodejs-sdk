@@ -280,7 +280,12 @@ export interface ConfigSpec {
    * If the value is `true`, then Apache Kafka® cluster is available on the Internet via it's public IP address.
    */
   assignPublicIp: boolean;
-  /** Allows to manage topics via AdminAPI */
+  /**
+   * Allows to manage topics via AdminAPI
+   * Deprecated. Feature enabled permanently.
+   *
+   * @deprecated
+   */
   unmanagedTopics: boolean;
   /** Enables managed schema registry on cluster */
   schemaRegistry: boolean;

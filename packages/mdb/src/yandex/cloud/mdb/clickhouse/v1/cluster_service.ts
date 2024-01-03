@@ -772,6 +772,22 @@ export interface DeleteClusterHostsMetadata {
   hostNames: string[];
 }
 
+export interface RestartClusterHostsRequest {
+  $type: "yandex.cloud.mdb.clickhouse.v1.RestartClusterHostsRequest";
+  /** Required. ID of the Clickhouse cluster. */
+  clusterId: string;
+  /** Required. Name of the hosts to restart. */
+  hostNames: string[];
+}
+
+export interface RestartClusterHostsMetadata {
+  $type: "yandex.cloud.mdb.clickhouse.v1.RestartClusterHostsMetadata";
+  /** Required. ID of the ClickHouse cluster. */
+  clusterId: string;
+  /** Required. The name of restarting host. */
+  hostNames: string[];
+}
+
 export interface GetClusterShardRequest {
   $type: "yandex.cloud.mdb.clickhouse.v1.GetClusterShardRequest";
   /**
@@ -5625,6 +5641,168 @@ export const DeleteClusterHostsMetadata = {
 
 messageTypeRegistry.set(DeleteClusterHostsMetadata.$type, DeleteClusterHostsMetadata);
 
+function createBaseRestartClusterHostsRequest(): RestartClusterHostsRequest {
+  return { $type: "yandex.cloud.mdb.clickhouse.v1.RestartClusterHostsRequest", clusterId: "", hostNames: [] };
+}
+
+export const RestartClusterHostsRequest = {
+  $type: "yandex.cloud.mdb.clickhouse.v1.RestartClusterHostsRequest" as const,
+
+  encode(message: RestartClusterHostsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.clusterId !== "") {
+      writer.uint32(10).string(message.clusterId);
+    }
+    for (const v of message.hostNames) {
+      writer.uint32(18).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RestartClusterHostsRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRestartClusterHostsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.clusterId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.hostNames.push(reader.string());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RestartClusterHostsRequest {
+    return {
+      $type: RestartClusterHostsRequest.$type,
+      clusterId: isSet(object.clusterId) ? globalThis.String(object.clusterId) : "",
+      hostNames: globalThis.Array.isArray(object?.hostNames)
+        ? object.hostNames.map((e: any) => globalThis.String(e))
+        : [],
+    };
+  },
+
+  toJSON(message: RestartClusterHostsRequest): unknown {
+    const obj: any = {};
+    if (message.clusterId !== "") {
+      obj.clusterId = message.clusterId;
+    }
+    if (message.hostNames?.length) {
+      obj.hostNames = message.hostNames;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<RestartClusterHostsRequest>): RestartClusterHostsRequest {
+    return RestartClusterHostsRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<RestartClusterHostsRequest>): RestartClusterHostsRequest {
+    const message = createBaseRestartClusterHostsRequest();
+    message.clusterId = object.clusterId ?? "";
+    message.hostNames = object.hostNames?.map((e) => e) || [];
+    return message;
+  },
+};
+
+messageTypeRegistry.set(RestartClusterHostsRequest.$type, RestartClusterHostsRequest);
+
+function createBaseRestartClusterHostsMetadata(): RestartClusterHostsMetadata {
+  return { $type: "yandex.cloud.mdb.clickhouse.v1.RestartClusterHostsMetadata", clusterId: "", hostNames: [] };
+}
+
+export const RestartClusterHostsMetadata = {
+  $type: "yandex.cloud.mdb.clickhouse.v1.RestartClusterHostsMetadata" as const,
+
+  encode(message: RestartClusterHostsMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.clusterId !== "") {
+      writer.uint32(10).string(message.clusterId);
+    }
+    for (const v of message.hostNames) {
+      writer.uint32(18).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RestartClusterHostsMetadata {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRestartClusterHostsMetadata();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.clusterId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.hostNames.push(reader.string());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RestartClusterHostsMetadata {
+    return {
+      $type: RestartClusterHostsMetadata.$type,
+      clusterId: isSet(object.clusterId) ? globalThis.String(object.clusterId) : "",
+      hostNames: globalThis.Array.isArray(object?.hostNames)
+        ? object.hostNames.map((e: any) => globalThis.String(e))
+        : [],
+    };
+  },
+
+  toJSON(message: RestartClusterHostsMetadata): unknown {
+    const obj: any = {};
+    if (message.clusterId !== "") {
+      obj.clusterId = message.clusterId;
+    }
+    if (message.hostNames?.length) {
+      obj.hostNames = message.hostNames;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<RestartClusterHostsMetadata>): RestartClusterHostsMetadata {
+    return RestartClusterHostsMetadata.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<RestartClusterHostsMetadata>): RestartClusterHostsMetadata {
+    const message = createBaseRestartClusterHostsMetadata();
+    message.clusterId = object.clusterId ?? "";
+    message.hostNames = object.hostNames?.map((e) => e) || [];
+    return message;
+  },
+};
+
+messageTypeRegistry.set(RestartClusterHostsMetadata.$type, RestartClusterHostsMetadata);
+
 function createBaseGetClusterShardRequest(): GetClusterShardRequest {
   return { $type: "yandex.cloud.mdb.clickhouse.v1.GetClusterShardRequest", clusterId: "", shardName: "" };
 }
@@ -8846,6 +9024,16 @@ export const ClusterServiceService = {
     responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Operation.decode(value),
   },
+  restartHosts: {
+    path: "/yandex.cloud.mdb.clickhouse.v1.ClusterService/RestartHosts",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: RestartClusterHostsRequest) =>
+      Buffer.from(RestartClusterHostsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => RestartClusterHostsRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
   /** Returns the specified shard. */
   getShard: {
     path: "/yandex.cloud.mdb.clickhouse.v1.ClusterService/GetShard",
@@ -9050,6 +9238,7 @@ export interface ClusterServiceServer extends UntypedServiceImplementation {
   updateHosts: handleUnaryCall<UpdateClusterHostsRequest, Operation>;
   /** Deletes the specified hosts for a cluster. */
   deleteHosts: handleUnaryCall<DeleteClusterHostsRequest, Operation>;
+  restartHosts: handleUnaryCall<RestartClusterHostsRequest, Operation>;
   /** Returns the specified shard. */
   getShard: handleUnaryCall<GetClusterShardRequest, Shard>;
   /** Retrieves a list of shards that belong to the specified cluster. */
@@ -9395,6 +9584,21 @@ export interface ClusterServiceClient extends Client {
   ): ClientUnaryCall;
   deleteHosts(
     request: DeleteClusterHostsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  restartHosts(
+    request: RestartClusterHostsRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  restartHosts(
+    request: RestartClusterHostsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  restartHosts(
+    request: RestartClusterHostsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Operation) => void,

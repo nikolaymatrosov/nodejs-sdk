@@ -76,6 +76,11 @@ export interface YdbTarget {
   saKeyContent: string;
   /** Cleanup policy */
   cleanupPolicy: YdbCleanupPolicy;
+  /**
+   * Should create column-oriented table (OLAP). By default it creates row-oriented
+   * (OLTP)
+   */
+  isTableColumnOriented: boolean;
 }
 
 function createBaseYdbSource(): YdbSource {
@@ -254,6 +259,7 @@ function createBaseYdbTarget(): YdbTarget {
     securityGroups: [],
     saKeyContent: "",
     cleanupPolicy: 0,
+    isTableColumnOriented: false,
   };
 }
 
@@ -284,6 +290,9 @@ export const YdbTarget = {
     }
     if (message.cleanupPolicy !== 0) {
       writer.uint32(168).int32(message.cleanupPolicy);
+    }
+    if (message.isTableColumnOriented === true) {
+      writer.uint32(272).bool(message.isTableColumnOriented);
     }
     return writer;
   },
@@ -351,6 +360,13 @@ export const YdbTarget = {
 
           message.cleanupPolicy = reader.int32() as any;
           continue;
+        case 34:
+          if (tag !== 272) {
+            break;
+          }
+
+          message.isTableColumnOriented = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -373,6 +389,9 @@ export const YdbTarget = {
         : [],
       saKeyContent: isSet(object.saKeyContent) ? globalThis.String(object.saKeyContent) : "",
       cleanupPolicy: isSet(object.cleanupPolicy) ? ydbCleanupPolicyFromJSON(object.cleanupPolicy) : 0,
+      isTableColumnOriented: isSet(object.isTableColumnOriented)
+        ? globalThis.Boolean(object.isTableColumnOriented)
+        : false,
     };
   },
 
@@ -402,6 +421,9 @@ export const YdbTarget = {
     if (message.cleanupPolicy !== 0) {
       obj.cleanupPolicy = ydbCleanupPolicyToJSON(message.cleanupPolicy);
     }
+    if (message.isTableColumnOriented === true) {
+      obj.isTableColumnOriented = message.isTableColumnOriented;
+    }
     return obj;
   },
 
@@ -418,6 +440,7 @@ export const YdbTarget = {
     message.securityGroups = object.securityGroups?.map((e) => e) || [];
     message.saKeyContent = object.saKeyContent ?? "";
     message.cleanupPolicy = object.cleanupPolicy ?? 0;
+    message.isTableColumnOriented = object.isTableColumnOriented ?? false;
     return message;
   },
 };

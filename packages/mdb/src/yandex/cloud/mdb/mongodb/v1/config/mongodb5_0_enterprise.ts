@@ -53,7 +53,11 @@ export interface MongodConfig50Enterprise_Storage_WiredTiger {
     | MongodConfig50Enterprise_Storage_WiredTiger_EngineConfig
     | undefined;
   /** Collection configuration for WiredTiger. */
-  collectionConfig?: MongodConfig50Enterprise_Storage_WiredTiger_CollectionConfig | undefined;
+  collectionConfig?:
+    | MongodConfig50Enterprise_Storage_WiredTiger_CollectionConfig
+    | undefined;
+  /** Index configuration for WiredTiger */
+  indexConfig?: MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig | undefined;
 }
 
 export interface MongodConfig50Enterprise_Storage_WiredTiger_EngineConfig {
@@ -127,6 +131,12 @@ export function mongodConfig50Enterprise_Storage_WiredTiger_CollectionConfig_Com
   }
 }
 
+export interface MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig {
+  $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Storage.WiredTiger.IndexConfig";
+  /** Enables or disables [prefix compression](https://www.mongodb.com/docs/manual/reference/glossary/#std-term-prefix-compression) */
+  prefixCompression?: boolean | undefined;
+}
+
 export interface MongodConfig50Enterprise_Storage_Journal {
   $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Storage.Journal";
   /**
@@ -145,7 +155,14 @@ export interface MongodConfig50Enterprise_OperationProfiling {
    * for longer than this threshold are considered slow, and are processed by the profiler
    * running in the SLOW_OP mode.
    */
-  slowOpThreshold?: number | undefined;
+  slowOpThreshold?:
+    | number
+    | undefined;
+  /**
+   * The fraction of slow operations that should be profiled or logged.
+   * operationProfiling.slowOpSampleRate accepts values between 0 and 1, inclusive.
+   */
+  slowOpSampleRate?: number | undefined;
 }
 
 export enum MongodConfig50Enterprise_OperationProfiling_Mode {
@@ -203,7 +220,75 @@ export function mongodConfig50Enterprise_OperationProfiling_ModeToJSON(
 export interface MongodConfig50Enterprise_Network {
   $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Network";
   /** The maximum number of simultaneous connections that mongod will accept. */
-  maxIncomingConnections?: number | undefined;
+  maxIncomingConnections?:
+    | number
+    | undefined;
+  /** Compression settings */
+  compression?: MongodConfig50Enterprise_Network_Compression | undefined;
+}
+
+export interface MongodConfig50Enterprise_Network_Compression {
+  $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Network.Compression";
+  /**
+   * Specifies the default compressor(s) to use for communication between this mongod or mongos instance and:
+   * - other members of the deployment if the instance is part of a replica set or a sharded cluster
+   * - mongosh
+   * - drivers that support the OP_COMPRESSED message format.
+   * MongoDB supports the following compressors:
+   */
+  compressors: MongodConfig50Enterprise_Network_Compression_Compressor[];
+}
+
+export enum MongodConfig50Enterprise_Network_Compression_Compressor {
+  COMPRESSOR_UNSPECIFIED = 0,
+  /** SNAPPY - The [Snappy](https://docs.mongodb.com/v4.2/reference/glossary/#term-snappy) compression. */
+  SNAPPY = 1,
+  /** ZLIB - The [zlib](https://docs.mongodb.com/v4.2/reference/glossary/#term-zlib) compression. */
+  ZLIB = 2,
+  /** ZSTD - The [zstd](https://docs.mongodb.com/v4.2/reference/glossary/#term-zstd) compression. */
+  ZSTD = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function mongodConfig50Enterprise_Network_Compression_CompressorFromJSON(
+  object: any,
+): MongodConfig50Enterprise_Network_Compression_Compressor {
+  switch (object) {
+    case 0:
+    case "COMPRESSOR_UNSPECIFIED":
+      return MongodConfig50Enterprise_Network_Compression_Compressor.COMPRESSOR_UNSPECIFIED;
+    case 1:
+    case "SNAPPY":
+      return MongodConfig50Enterprise_Network_Compression_Compressor.SNAPPY;
+    case 2:
+    case "ZLIB":
+      return MongodConfig50Enterprise_Network_Compression_Compressor.ZLIB;
+    case 3:
+    case "ZSTD":
+      return MongodConfig50Enterprise_Network_Compression_Compressor.ZSTD;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return MongodConfig50Enterprise_Network_Compression_Compressor.UNRECOGNIZED;
+  }
+}
+
+export function mongodConfig50Enterprise_Network_Compression_CompressorToJSON(
+  object: MongodConfig50Enterprise_Network_Compression_Compressor,
+): string {
+  switch (object) {
+    case MongodConfig50Enterprise_Network_Compression_Compressor.COMPRESSOR_UNSPECIFIED:
+      return "COMPRESSOR_UNSPECIFIED";
+    case MongodConfig50Enterprise_Network_Compression_Compressor.SNAPPY:
+      return "SNAPPY";
+    case MongodConfig50Enterprise_Network_Compression_Compressor.ZLIB:
+      return "ZLIB";
+    case MongodConfig50Enterprise_Network_Compression_Compressor.ZSTD:
+      return "ZSTD";
+    case MongodConfig50Enterprise_Network_Compression_Compressor.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
 }
 
 export interface MongodConfig50Enterprise_Security {
@@ -243,7 +328,15 @@ export interface MongodConfig50Enterprise_AuditLog {
 export interface MongodConfig50Enterprise_SetParameter {
   $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.SetParameter";
   /** Enables the auditing of authorization successes */
-  auditAuthorizationSuccess?: boolean | undefined;
+  auditAuthorizationSuccess?:
+    | boolean
+    | undefined;
+  /**
+   * Enables or disables the mechanism that controls the rate at which the primary applies its writes with the
+   * goal of keeping the secondary members [majority committed](https://www.mongodb.com/docs/v4.2/reference/command/replSetGetStatus/#replSetGetStatus.optimes.lastCommittedOpTime)
+   * lag under a configurable maximum value.
+   */
+  enableFlowControl?: boolean | undefined;
 }
 
 export interface MongoCfgConfig50Enterprise {
@@ -358,7 +451,75 @@ export interface MongosConfig50Enterprise {
 export interface MongosConfig50Enterprise_Network {
   $type: "yandex.cloud.mdb.mongodb.v1.config.MongosConfig5_0_enterprise.Network";
   /** The maximum number of simultaneous connections that mongos will accept. */
-  maxIncomingConnections?: number | undefined;
+  maxIncomingConnections?:
+    | number
+    | undefined;
+  /** Compression settings */
+  compression?: MongosConfig50Enterprise_Network_Compression | undefined;
+}
+
+export interface MongosConfig50Enterprise_Network_Compression {
+  $type: "yandex.cloud.mdb.mongodb.v1.config.MongosConfig5_0_enterprise.Network.Compression";
+  /**
+   * Specifies the default compressor(s) to use for communication between this mongod or mongos instance and:
+   * - other members of the deployment if the instance is part of a replica set or a sharded cluster
+   * - mongosh
+   * - drivers that support the OP_COMPRESSED message format.
+   * MongoDB supports the following compressors:
+   */
+  compressors: MongosConfig50Enterprise_Network_Compression_Compressor[];
+}
+
+export enum MongosConfig50Enterprise_Network_Compression_Compressor {
+  COMPRESSOR_UNSPECIFIED = 0,
+  /** SNAPPY - The [Snappy](https://docs.mongodb.com/v4.2/reference/glossary/#term-snappy) compression. */
+  SNAPPY = 1,
+  /** ZLIB - The [zlib](https://docs.mongodb.com/v4.2/reference/glossary/#term-zlib) compression. */
+  ZLIB = 2,
+  /** ZSTD - The [zstd](https://docs.mongodb.com/v4.2/reference/glossary/#term-zstd) compression. */
+  ZSTD = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function mongosConfig50Enterprise_Network_Compression_CompressorFromJSON(
+  object: any,
+): MongosConfig50Enterprise_Network_Compression_Compressor {
+  switch (object) {
+    case 0:
+    case "COMPRESSOR_UNSPECIFIED":
+      return MongosConfig50Enterprise_Network_Compression_Compressor.COMPRESSOR_UNSPECIFIED;
+    case 1:
+    case "SNAPPY":
+      return MongosConfig50Enterprise_Network_Compression_Compressor.SNAPPY;
+    case 2:
+    case "ZLIB":
+      return MongosConfig50Enterprise_Network_Compression_Compressor.ZLIB;
+    case 3:
+    case "ZSTD":
+      return MongosConfig50Enterprise_Network_Compression_Compressor.ZSTD;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return MongosConfig50Enterprise_Network_Compression_Compressor.UNRECOGNIZED;
+  }
+}
+
+export function mongosConfig50Enterprise_Network_Compression_CompressorToJSON(
+  object: MongosConfig50Enterprise_Network_Compression_Compressor,
+): string {
+  switch (object) {
+    case MongosConfig50Enterprise_Network_Compression_Compressor.COMPRESSOR_UNSPECIFIED:
+      return "COMPRESSOR_UNSPECIFIED";
+    case MongosConfig50Enterprise_Network_Compression_Compressor.SNAPPY:
+      return "SNAPPY";
+    case MongosConfig50Enterprise_Network_Compression_Compressor.ZLIB:
+      return "ZLIB";
+    case MongosConfig50Enterprise_Network_Compression_Compressor.ZSTD:
+      return "ZSTD";
+    case MongosConfig50Enterprise_Network_Compression_Compressor.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
 }
 
 export interface MongodConfigSet50Enterprise {
@@ -669,6 +830,7 @@ function createBaseMongodConfig50Enterprise_Storage_WiredTiger(): MongodConfig50
     $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Storage.WiredTiger",
     engineConfig: undefined,
     collectionConfig: undefined,
+    indexConfig: undefined,
   };
 }
 
@@ -685,6 +847,10 @@ export const MongodConfig50Enterprise_Storage_WiredTiger = {
         message.collectionConfig,
         writer.uint32(18).fork(),
       ).ldelim();
+    }
+    if (message.indexConfig !== undefined) {
+      MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig.encode(message.indexConfig, writer.uint32(26).fork())
+        .ldelim();
     }
     return writer;
   },
@@ -716,6 +882,13 @@ export const MongodConfig50Enterprise_Storage_WiredTiger = {
             reader.uint32(),
           );
           continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.indexConfig = MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -734,6 +907,9 @@ export const MongodConfig50Enterprise_Storage_WiredTiger = {
       collectionConfig: isSet(object.collectionConfig)
         ? MongodConfig50Enterprise_Storage_WiredTiger_CollectionConfig.fromJSON(object.collectionConfig)
         : undefined,
+      indexConfig: isSet(object.indexConfig)
+        ? MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig.fromJSON(object.indexConfig)
+        : undefined,
     };
   },
 
@@ -746,6 +922,9 @@ export const MongodConfig50Enterprise_Storage_WiredTiger = {
       obj.collectionConfig = MongodConfig50Enterprise_Storage_WiredTiger_CollectionConfig.toJSON(
         message.collectionConfig,
       );
+    }
+    if (message.indexConfig !== undefined) {
+      obj.indexConfig = MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig.toJSON(message.indexConfig);
     }
     return obj;
   },
@@ -762,6 +941,9 @@ export const MongodConfig50Enterprise_Storage_WiredTiger = {
       : undefined;
     message.collectionConfig = (object.collectionConfig !== undefined && object.collectionConfig !== null)
       ? MongodConfig50Enterprise_Storage_WiredTiger_CollectionConfig.fromPartial(object.collectionConfig)
+      : undefined;
+    message.indexConfig = (object.indexConfig !== undefined && object.indexConfig !== null)
+      ? MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig.fromPartial(object.indexConfig)
       : undefined;
     return message;
   },
@@ -933,6 +1115,86 @@ messageTypeRegistry.set(
   MongodConfig50Enterprise_Storage_WiredTiger_CollectionConfig,
 );
 
+function createBaseMongodConfig50Enterprise_Storage_WiredTiger_IndexConfig(): MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig {
+  return {
+    $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Storage.WiredTiger.IndexConfig",
+    prefixCompression: undefined,
+  };
+}
+
+export const MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig = {
+  $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Storage.WiredTiger.IndexConfig" as const,
+
+  encode(
+    message: MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.prefixCompression !== undefined) {
+      BoolValue.encode(
+        { $type: "google.protobuf.BoolValue", value: message.prefixCompression! },
+        writer.uint32(10).fork(),
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMongodConfig50Enterprise_Storage_WiredTiger_IndexConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.prefixCompression = BoolValue.decode(reader, reader.uint32()).value;
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig {
+    return {
+      $type: MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig.$type,
+      prefixCompression: isSet(object.prefixCompression) ? Boolean(object.prefixCompression) : undefined,
+    };
+  },
+
+  toJSON(message: MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig): unknown {
+    const obj: any = {};
+    if (message.prefixCompression !== undefined) {
+      obj.prefixCompression = message.prefixCompression;
+    }
+    return obj;
+  },
+
+  create(
+    base?: DeepPartial<MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig>,
+  ): MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig {
+    return MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig>,
+  ): MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig {
+    const message = createBaseMongodConfig50Enterprise_Storage_WiredTiger_IndexConfig();
+    message.prefixCompression = object.prefixCompression ?? undefined;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(
+  MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig.$type,
+  MongodConfig50Enterprise_Storage_WiredTiger_IndexConfig,
+);
+
 function createBaseMongodConfig50Enterprise_Storage_Journal(): MongodConfig50Enterprise_Storage_Journal {
   return {
     $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Storage.Journal",
@@ -1008,6 +1270,7 @@ function createBaseMongodConfig50Enterprise_OperationProfiling(): MongodConfig50
     $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.OperationProfiling",
     mode: 0,
     slowOpThreshold: undefined,
+    slowOpSampleRate: undefined,
   };
 }
 
@@ -1022,6 +1285,12 @@ export const MongodConfig50Enterprise_OperationProfiling = {
       Int64Value.encode(
         { $type: "google.protobuf.Int64Value", value: message.slowOpThreshold! },
         writer.uint32(18).fork(),
+      ).ldelim();
+    }
+    if (message.slowOpSampleRate !== undefined) {
+      DoubleValue.encode(
+        { $type: "google.protobuf.DoubleValue", value: message.slowOpSampleRate! },
+        writer.uint32(26).fork(),
       ).ldelim();
     }
     return writer;
@@ -1048,6 +1317,13 @@ export const MongodConfig50Enterprise_OperationProfiling = {
 
           message.slowOpThreshold = Int64Value.decode(reader, reader.uint32()).value;
           continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.slowOpSampleRate = DoubleValue.decode(reader, reader.uint32()).value;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1062,6 +1338,7 @@ export const MongodConfig50Enterprise_OperationProfiling = {
       $type: MongodConfig50Enterprise_OperationProfiling.$type,
       mode: isSet(object.mode) ? mongodConfig50Enterprise_OperationProfiling_ModeFromJSON(object.mode) : 0,
       slowOpThreshold: isSet(object.slowOpThreshold) ? Number(object.slowOpThreshold) : undefined,
+      slowOpSampleRate: isSet(object.slowOpSampleRate) ? Number(object.slowOpSampleRate) : undefined,
     };
   },
 
@@ -1072,6 +1349,9 @@ export const MongodConfig50Enterprise_OperationProfiling = {
     }
     if (message.slowOpThreshold !== undefined) {
       obj.slowOpThreshold = message.slowOpThreshold;
+    }
+    if (message.slowOpSampleRate !== undefined) {
+      obj.slowOpSampleRate = message.slowOpSampleRate;
     }
     return obj;
   },
@@ -1085,6 +1365,7 @@ export const MongodConfig50Enterprise_OperationProfiling = {
     const message = createBaseMongodConfig50Enterprise_OperationProfiling();
     message.mode = object.mode ?? 0;
     message.slowOpThreshold = object.slowOpThreshold ?? undefined;
+    message.slowOpSampleRate = object.slowOpSampleRate ?? undefined;
     return message;
   },
 };
@@ -1095,6 +1376,7 @@ function createBaseMongodConfig50Enterprise_Network(): MongodConfig50Enterprise_
   return {
     $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Network",
     maxIncomingConnections: undefined,
+    compression: undefined,
   };
 }
 
@@ -1107,6 +1389,9 @@ export const MongodConfig50Enterprise_Network = {
         { $type: "google.protobuf.Int64Value", value: message.maxIncomingConnections! },
         writer.uint32(10).fork(),
       ).ldelim();
+    }
+    if (message.compression !== undefined) {
+      MongodConfig50Enterprise_Network_Compression.encode(message.compression, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -1125,6 +1410,13 @@ export const MongodConfig50Enterprise_Network = {
 
           message.maxIncomingConnections = Int64Value.decode(reader, reader.uint32()).value;
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.compression = MongodConfig50Enterprise_Network_Compression.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1138,6 +1430,9 @@ export const MongodConfig50Enterprise_Network = {
     return {
       $type: MongodConfig50Enterprise_Network.$type,
       maxIncomingConnections: isSet(object.maxIncomingConnections) ? Number(object.maxIncomingConnections) : undefined,
+      compression: isSet(object.compression)
+        ? MongodConfig50Enterprise_Network_Compression.fromJSON(object.compression)
+        : undefined,
     };
   },
 
@@ -1145,6 +1440,9 @@ export const MongodConfig50Enterprise_Network = {
     const obj: any = {};
     if (message.maxIncomingConnections !== undefined) {
       obj.maxIncomingConnections = message.maxIncomingConnections;
+    }
+    if (message.compression !== undefined) {
+      obj.compression = MongodConfig50Enterprise_Network_Compression.toJSON(message.compression);
     }
     return obj;
   },
@@ -1155,11 +1453,104 @@ export const MongodConfig50Enterprise_Network = {
   fromPartial(object: DeepPartial<MongodConfig50Enterprise_Network>): MongodConfig50Enterprise_Network {
     const message = createBaseMongodConfig50Enterprise_Network();
     message.maxIncomingConnections = object.maxIncomingConnections ?? undefined;
+    message.compression = (object.compression !== undefined && object.compression !== null)
+      ? MongodConfig50Enterprise_Network_Compression.fromPartial(object.compression)
+      : undefined;
     return message;
   },
 };
 
 messageTypeRegistry.set(MongodConfig50Enterprise_Network.$type, MongodConfig50Enterprise_Network);
+
+function createBaseMongodConfig50Enterprise_Network_Compression(): MongodConfig50Enterprise_Network_Compression {
+  return {
+    $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Network.Compression",
+    compressors: [],
+  };
+}
+
+export const MongodConfig50Enterprise_Network_Compression = {
+  $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.Network.Compression" as const,
+
+  encode(message: MongodConfig50Enterprise_Network_Compression, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    writer.uint32(10).fork();
+    for (const v of message.compressors) {
+      writer.int32(v);
+    }
+    writer.ldelim();
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MongodConfig50Enterprise_Network_Compression {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMongodConfig50Enterprise_Network_Compression();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag === 8) {
+            message.compressors.push(reader.int32() as any);
+
+            continue;
+          }
+
+          if (tag === 10) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.compressors.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MongodConfig50Enterprise_Network_Compression {
+    return {
+      $type: MongodConfig50Enterprise_Network_Compression.$type,
+      compressors: globalThis.Array.isArray(object?.compressors)
+        ? object.compressors.map((e: any) => mongodConfig50Enterprise_Network_Compression_CompressorFromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: MongodConfig50Enterprise_Network_Compression): unknown {
+    const obj: any = {};
+    if (message.compressors?.length) {
+      obj.compressors = message.compressors.map((e) =>
+        mongodConfig50Enterprise_Network_Compression_CompressorToJSON(e)
+      );
+    }
+    return obj;
+  },
+
+  create(
+    base?: DeepPartial<MongodConfig50Enterprise_Network_Compression>,
+  ): MongodConfig50Enterprise_Network_Compression {
+    return MongodConfig50Enterprise_Network_Compression.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<MongodConfig50Enterprise_Network_Compression>,
+  ): MongodConfig50Enterprise_Network_Compression {
+    const message = createBaseMongodConfig50Enterprise_Network_Compression();
+    message.compressors = object.compressors?.map((e) => e) || [];
+    return message;
+  },
+};
+
+messageTypeRegistry.set(
+  MongodConfig50Enterprise_Network_Compression.$type,
+  MongodConfig50Enterprise_Network_Compression,
+);
 
 function createBaseMongodConfig50Enterprise_Security(): MongodConfig50Enterprise_Security {
   return {
@@ -1471,6 +1862,7 @@ function createBaseMongodConfig50Enterprise_SetParameter(): MongodConfig50Enterp
   return {
     $type: "yandex.cloud.mdb.mongodb.v1.config.MongodConfig5_0_enterprise.SetParameter",
     auditAuthorizationSuccess: undefined,
+    enableFlowControl: undefined,
   };
 }
 
@@ -1482,6 +1874,12 @@ export const MongodConfig50Enterprise_SetParameter = {
       BoolValue.encode(
         { $type: "google.protobuf.BoolValue", value: message.auditAuthorizationSuccess! },
         writer.uint32(10).fork(),
+      ).ldelim();
+    }
+    if (message.enableFlowControl !== undefined) {
+      BoolValue.encode(
+        { $type: "google.protobuf.BoolValue", value: message.enableFlowControl! },
+        writer.uint32(18).fork(),
       ).ldelim();
     }
     return writer;
@@ -1501,6 +1899,13 @@ export const MongodConfig50Enterprise_SetParameter = {
 
           message.auditAuthorizationSuccess = BoolValue.decode(reader, reader.uint32()).value;
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.enableFlowControl = BoolValue.decode(reader, reader.uint32()).value;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1516,6 +1921,7 @@ export const MongodConfig50Enterprise_SetParameter = {
       auditAuthorizationSuccess: isSet(object.auditAuthorizationSuccess)
         ? Boolean(object.auditAuthorizationSuccess)
         : undefined,
+      enableFlowControl: isSet(object.enableFlowControl) ? Boolean(object.enableFlowControl) : undefined,
     };
   },
 
@@ -1523,6 +1929,9 @@ export const MongodConfig50Enterprise_SetParameter = {
     const obj: any = {};
     if (message.auditAuthorizationSuccess !== undefined) {
       obj.auditAuthorizationSuccess = message.auditAuthorizationSuccess;
+    }
+    if (message.enableFlowControl !== undefined) {
+      obj.enableFlowControl = message.enableFlowControl;
     }
     return obj;
   },
@@ -1533,6 +1942,7 @@ export const MongodConfig50Enterprise_SetParameter = {
   fromPartial(object: DeepPartial<MongodConfig50Enterprise_SetParameter>): MongodConfig50Enterprise_SetParameter {
     const message = createBaseMongodConfig50Enterprise_SetParameter();
     message.auditAuthorizationSuccess = object.auditAuthorizationSuccess ?? undefined;
+    message.enableFlowControl = object.enableFlowControl ?? undefined;
     return message;
   },
 };
@@ -2110,6 +2520,7 @@ function createBaseMongosConfig50Enterprise_Network(): MongosConfig50Enterprise_
   return {
     $type: "yandex.cloud.mdb.mongodb.v1.config.MongosConfig5_0_enterprise.Network",
     maxIncomingConnections: undefined,
+    compression: undefined,
   };
 }
 
@@ -2122,6 +2533,9 @@ export const MongosConfig50Enterprise_Network = {
         { $type: "google.protobuf.Int64Value", value: message.maxIncomingConnections! },
         writer.uint32(10).fork(),
       ).ldelim();
+    }
+    if (message.compression !== undefined) {
+      MongosConfig50Enterprise_Network_Compression.encode(message.compression, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -2140,6 +2554,13 @@ export const MongosConfig50Enterprise_Network = {
 
           message.maxIncomingConnections = Int64Value.decode(reader, reader.uint32()).value;
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.compression = MongosConfig50Enterprise_Network_Compression.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2153,6 +2574,9 @@ export const MongosConfig50Enterprise_Network = {
     return {
       $type: MongosConfig50Enterprise_Network.$type,
       maxIncomingConnections: isSet(object.maxIncomingConnections) ? Number(object.maxIncomingConnections) : undefined,
+      compression: isSet(object.compression)
+        ? MongosConfig50Enterprise_Network_Compression.fromJSON(object.compression)
+        : undefined,
     };
   },
 
@@ -2160,6 +2584,9 @@ export const MongosConfig50Enterprise_Network = {
     const obj: any = {};
     if (message.maxIncomingConnections !== undefined) {
       obj.maxIncomingConnections = message.maxIncomingConnections;
+    }
+    if (message.compression !== undefined) {
+      obj.compression = MongosConfig50Enterprise_Network_Compression.toJSON(message.compression);
     }
     return obj;
   },
@@ -2170,11 +2597,104 @@ export const MongosConfig50Enterprise_Network = {
   fromPartial(object: DeepPartial<MongosConfig50Enterprise_Network>): MongosConfig50Enterprise_Network {
     const message = createBaseMongosConfig50Enterprise_Network();
     message.maxIncomingConnections = object.maxIncomingConnections ?? undefined;
+    message.compression = (object.compression !== undefined && object.compression !== null)
+      ? MongosConfig50Enterprise_Network_Compression.fromPartial(object.compression)
+      : undefined;
     return message;
   },
 };
 
 messageTypeRegistry.set(MongosConfig50Enterprise_Network.$type, MongosConfig50Enterprise_Network);
+
+function createBaseMongosConfig50Enterprise_Network_Compression(): MongosConfig50Enterprise_Network_Compression {
+  return {
+    $type: "yandex.cloud.mdb.mongodb.v1.config.MongosConfig5_0_enterprise.Network.Compression",
+    compressors: [],
+  };
+}
+
+export const MongosConfig50Enterprise_Network_Compression = {
+  $type: "yandex.cloud.mdb.mongodb.v1.config.MongosConfig5_0_enterprise.Network.Compression" as const,
+
+  encode(message: MongosConfig50Enterprise_Network_Compression, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    writer.uint32(10).fork();
+    for (const v of message.compressors) {
+      writer.int32(v);
+    }
+    writer.ldelim();
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MongosConfig50Enterprise_Network_Compression {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMongosConfig50Enterprise_Network_Compression();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag === 8) {
+            message.compressors.push(reader.int32() as any);
+
+            continue;
+          }
+
+          if (tag === 10) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.compressors.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MongosConfig50Enterprise_Network_Compression {
+    return {
+      $type: MongosConfig50Enterprise_Network_Compression.$type,
+      compressors: globalThis.Array.isArray(object?.compressors)
+        ? object.compressors.map((e: any) => mongosConfig50Enterprise_Network_Compression_CompressorFromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: MongosConfig50Enterprise_Network_Compression): unknown {
+    const obj: any = {};
+    if (message.compressors?.length) {
+      obj.compressors = message.compressors.map((e) =>
+        mongosConfig50Enterprise_Network_Compression_CompressorToJSON(e)
+      );
+    }
+    return obj;
+  },
+
+  create(
+    base?: DeepPartial<MongosConfig50Enterprise_Network_Compression>,
+  ): MongosConfig50Enterprise_Network_Compression {
+    return MongosConfig50Enterprise_Network_Compression.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<MongosConfig50Enterprise_Network_Compression>,
+  ): MongosConfig50Enterprise_Network_Compression {
+    const message = createBaseMongosConfig50Enterprise_Network_Compression();
+    message.compressors = object.compressors?.map((e) => e) || [];
+    return message;
+  },
+};
+
+messageTypeRegistry.set(
+  MongosConfig50Enterprise_Network_Compression.$type,
+  MongosConfig50Enterprise_Network_Compression,
+);
 
 function createBaseMongodConfigSet50Enterprise(): MongodConfigSet50Enterprise {
   return {

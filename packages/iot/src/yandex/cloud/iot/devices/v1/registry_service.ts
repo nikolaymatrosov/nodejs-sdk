@@ -13,7 +13,7 @@ import { Operation } from "@yandex-cloud/core/dist/generated/yandex/cloud/operat
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { messageTypeRegistry } from "../../../../../typeRegistry";
-import { DataStreamExport, DeviceAlias, Registry, RegistryCertificate, RegistryPassword } from "./registry";
+import { DataStreamExport, DeviceAlias, LogOptions, Registry, RegistryCertificate, RegistryPassword } from "./registry";
 
 export const protobufPackage = "yandex.cloud.iot.devices.v1";
 
@@ -101,6 +101,8 @@ export interface CreateRegistryRequest {
    * The password must contain at least three character categories among the following: upper case latin, lower case latin, numbers and special symbols.
    */
   password: string;
+  /** Options for logging registry events */
+  logOptions?: LogOptions | undefined;
 }
 
 export interface CreateRegistryRequest_LabelsEntry {
@@ -144,6 +146,8 @@ export interface UpdateRegistryRequest {
    * Existing set of `labels` is completely replaced by the provided set.
    */
   labels: { [key: string]: string };
+  /** Options for logging registry events */
+  logOptions?: LogOptions | undefined;
 }
 
 export interface UpdateRegistryRequest_LabelsEntry {
@@ -754,6 +758,7 @@ function createBaseCreateRegistryRequest(): CreateRegistryRequest {
     labels: {},
     certificates: [],
     password: "",
+    logOptions: undefined,
   };
 }
 
@@ -782,6 +787,9 @@ export const CreateRegistryRequest = {
     }
     if (message.password !== "") {
       writer.uint32(50).string(message.password);
+    }
+    if (message.logOptions !== undefined) {
+      LogOptions.encode(message.logOptions, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -838,6 +846,13 @@ export const CreateRegistryRequest = {
 
           message.password = reader.string();
           continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.logOptions = LogOptions.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -863,6 +878,7 @@ export const CreateRegistryRequest = {
         ? object.certificates.map((e: any) => CreateRegistryRequest_Certificate.fromJSON(e))
         : [],
       password: isSet(object.password) ? globalThis.String(object.password) : "",
+      logOptions: isSet(object.logOptions) ? LogOptions.fromJSON(object.logOptions) : undefined,
     };
   },
 
@@ -892,6 +908,9 @@ export const CreateRegistryRequest = {
     if (message.password !== "") {
       obj.password = message.password;
     }
+    if (message.logOptions !== undefined) {
+      obj.logOptions = LogOptions.toJSON(message.logOptions);
+    }
     return obj;
   },
 
@@ -911,6 +930,9 @@ export const CreateRegistryRequest = {
     }, {});
     message.certificates = object.certificates?.map((e) => CreateRegistryRequest_Certificate.fromPartial(e)) || [];
     message.password = object.password ?? "";
+    message.logOptions = (object.logOptions !== undefined && object.logOptions !== null)
+      ? LogOptions.fromPartial(object.logOptions)
+      : undefined;
     return message;
   },
 };
@@ -1140,6 +1162,7 @@ function createBaseUpdateRegistryRequest(): UpdateRegistryRequest {
     name: "",
     description: "",
     labels: {},
+    logOptions: undefined,
   };
 }
 
@@ -1166,6 +1189,9 @@ export const UpdateRegistryRequest = {
         value,
       }, writer.uint32(42).fork()).ldelim();
     });
+    if (message.logOptions !== undefined) {
+      LogOptions.encode(message.logOptions, writer.uint32(50).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -1214,6 +1240,13 @@ export const UpdateRegistryRequest = {
             message.labels[entry5.key] = entry5.value;
           }
           continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.logOptions = LogOptions.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1236,6 +1269,7 @@ export const UpdateRegistryRequest = {
           return acc;
         }, {})
         : {},
+      logOptions: isSet(object.logOptions) ? LogOptions.fromJSON(object.logOptions) : undefined,
     };
   },
 
@@ -1262,6 +1296,9 @@ export const UpdateRegistryRequest = {
         });
       }
     }
+    if (message.logOptions !== undefined) {
+      obj.logOptions = LogOptions.toJSON(message.logOptions);
+    }
     return obj;
   },
 
@@ -1280,6 +1317,9 @@ export const UpdateRegistryRequest = {
       }
       return acc;
     }, {});
+    message.logOptions = (object.logOptions !== undefined && object.logOptions !== null)
+      ? LogOptions.fromPartial(object.logOptions)
+      : undefined;
     return message;
   },
 };

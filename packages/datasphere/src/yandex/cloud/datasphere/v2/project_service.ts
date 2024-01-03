@@ -23,6 +23,7 @@ import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { messageTypeRegistry } from "../../../../typeRegistry";
 import { Project, Project_Limits, Project_Settings } from "./project";
+import { ResourceType, resourceTypeFromJSON, resourceTypeToJSON } from "./resource_types";
 
 export const protobufPackage = "yandex.cloud.datasphere.v2";
 
@@ -430,6 +431,20 @@ export interface UpdateProjectAccessBindingsMetadata {
   $type: "yandex.cloud.datasphere.v2.UpdateProjectAccessBindingsMetadata";
   /** ID of the project which access bindings are updated. */
   projectId: string;
+}
+
+export interface AddResourceToProjectRequest {
+  $type: "yandex.cloud.datasphere.v2.AddResourceToProjectRequest";
+  projectId: string;
+  resourceType: ResourceType;
+  resourceId: string;
+}
+
+export interface RemoveResourceFromProjectRequest {
+  $type: "yandex.cloud.datasphere.v2.RemoveResourceFromProjectRequest";
+  projectId: string;
+  resourceType: ResourceType;
+  resourceId: string;
 }
 
 function createBaseCreateProjectRequest(): CreateProjectRequest {
@@ -2814,6 +2829,208 @@ export const UpdateProjectAccessBindingsMetadata = {
 
 messageTypeRegistry.set(UpdateProjectAccessBindingsMetadata.$type, UpdateProjectAccessBindingsMetadata);
 
+function createBaseAddResourceToProjectRequest(): AddResourceToProjectRequest {
+  return {
+    $type: "yandex.cloud.datasphere.v2.AddResourceToProjectRequest",
+    projectId: "",
+    resourceType: 0,
+    resourceId: "",
+  };
+}
+
+export const AddResourceToProjectRequest = {
+  $type: "yandex.cloud.datasphere.v2.AddResourceToProjectRequest" as const,
+
+  encode(message: AddResourceToProjectRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.projectId !== "") {
+      writer.uint32(10).string(message.projectId);
+    }
+    if (message.resourceType !== 0) {
+      writer.uint32(16).int32(message.resourceType);
+    }
+    if (message.resourceId !== "") {
+      writer.uint32(26).string(message.resourceId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AddResourceToProjectRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAddResourceToProjectRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.projectId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.resourceType = reader.int32() as any;
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.resourceId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AddResourceToProjectRequest {
+    return {
+      $type: AddResourceToProjectRequest.$type,
+      projectId: isSet(object.projectId) ? globalThis.String(object.projectId) : "",
+      resourceType: isSet(object.resourceType) ? resourceTypeFromJSON(object.resourceType) : 0,
+      resourceId: isSet(object.resourceId) ? globalThis.String(object.resourceId) : "",
+    };
+  },
+
+  toJSON(message: AddResourceToProjectRequest): unknown {
+    const obj: any = {};
+    if (message.projectId !== "") {
+      obj.projectId = message.projectId;
+    }
+    if (message.resourceType !== 0) {
+      obj.resourceType = resourceTypeToJSON(message.resourceType);
+    }
+    if (message.resourceId !== "") {
+      obj.resourceId = message.resourceId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AddResourceToProjectRequest>, I>>(base?: I): AddResourceToProjectRequest {
+    return AddResourceToProjectRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AddResourceToProjectRequest>, I>>(object: I): AddResourceToProjectRequest {
+    const message = createBaseAddResourceToProjectRequest();
+    message.projectId = object.projectId ?? "";
+    message.resourceType = object.resourceType ?? 0;
+    message.resourceId = object.resourceId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(AddResourceToProjectRequest.$type, AddResourceToProjectRequest);
+
+function createBaseRemoveResourceFromProjectRequest(): RemoveResourceFromProjectRequest {
+  return {
+    $type: "yandex.cloud.datasphere.v2.RemoveResourceFromProjectRequest",
+    projectId: "",
+    resourceType: 0,
+    resourceId: "",
+  };
+}
+
+export const RemoveResourceFromProjectRequest = {
+  $type: "yandex.cloud.datasphere.v2.RemoveResourceFromProjectRequest" as const,
+
+  encode(message: RemoveResourceFromProjectRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.projectId !== "") {
+      writer.uint32(10).string(message.projectId);
+    }
+    if (message.resourceType !== 0) {
+      writer.uint32(16).int32(message.resourceType);
+    }
+    if (message.resourceId !== "") {
+      writer.uint32(26).string(message.resourceId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RemoveResourceFromProjectRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRemoveResourceFromProjectRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.projectId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.resourceType = reader.int32() as any;
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.resourceId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RemoveResourceFromProjectRequest {
+    return {
+      $type: RemoveResourceFromProjectRequest.$type,
+      projectId: isSet(object.projectId) ? globalThis.String(object.projectId) : "",
+      resourceType: isSet(object.resourceType) ? resourceTypeFromJSON(object.resourceType) : 0,
+      resourceId: isSet(object.resourceId) ? globalThis.String(object.resourceId) : "",
+    };
+  },
+
+  toJSON(message: RemoveResourceFromProjectRequest): unknown {
+    const obj: any = {};
+    if (message.projectId !== "") {
+      obj.projectId = message.projectId;
+    }
+    if (message.resourceType !== 0) {
+      obj.resourceType = resourceTypeToJSON(message.resourceType);
+    }
+    if (message.resourceId !== "") {
+      obj.resourceId = message.resourceId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RemoveResourceFromProjectRequest>, I>>(
+    base?: I,
+  ): RemoveResourceFromProjectRequest {
+    return RemoveResourceFromProjectRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RemoveResourceFromProjectRequest>, I>>(
+    object: I,
+  ): RemoveResourceFromProjectRequest {
+    const message = createBaseRemoveResourceFromProjectRequest();
+    message.projectId = object.projectId ?? "";
+    message.resourceType = object.resourceType ?? 0;
+    message.resourceId = object.resourceId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(RemoveResourceFromProjectRequest.$type, RemoveResourceFromProjectRequest);
+
 /** A set of methods for managing Project resources. */
 export type ProjectServiceService = typeof ProjectServiceService;
 export const ProjectServiceService = {
@@ -2961,6 +3178,28 @@ export const ProjectServiceService = {
     responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Operation.decode(value),
   },
+  /** Adds shared resource to project */
+  addResource: {
+    path: "/yandex.cloud.datasphere.v2.ProjectService/AddResource",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: AddResourceToProjectRequest) =>
+      Buffer.from(AddResourceToProjectRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AddResourceToProjectRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
+  /** Removes shared resource from project */
+  removeResource: {
+    path: "/yandex.cloud.datasphere.v2.ProjectService/RemoveResource",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: RemoveResourceFromProjectRequest) =>
+      Buffer.from(RemoveResourceFromProjectRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => RemoveResourceFromProjectRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
 } as const;
 
 export interface ProjectServiceServer extends UntypedServiceImplementation {
@@ -2992,6 +3231,10 @@ export interface ProjectServiceServer extends UntypedServiceImplementation {
   setAccessBindings: handleUnaryCall<SetAccessBindingsRequest, Operation>;
   /** Updates access bindings for the project. */
   updateAccessBindings: handleUnaryCall<UpdateAccessBindingsRequest, Operation>;
+  /** Adds shared resource to project */
+  addResource: handleUnaryCall<AddResourceToProjectRequest, Operation>;
+  /** Removes shared resource from project */
+  removeResource: handleUnaryCall<RemoveResourceFromProjectRequest, Operation>;
 }
 
 export interface ProjectServiceClient extends Client {
@@ -3212,6 +3455,38 @@ export interface ProjectServiceClient extends Client {
   ): ClientUnaryCall;
   updateAccessBindings(
     request: UpdateAccessBindingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  /** Adds shared resource to project */
+  addResource(
+    request: AddResourceToProjectRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  addResource(
+    request: AddResourceToProjectRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  addResource(
+    request: AddResourceToProjectRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  /** Removes shared resource from project */
+  removeResource(
+    request: RemoveResourceFromProjectRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  removeResource(
+    request: RemoveResourceFromProjectRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  removeResource(
+    request: RemoveResourceFromProjectRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Operation) => void,

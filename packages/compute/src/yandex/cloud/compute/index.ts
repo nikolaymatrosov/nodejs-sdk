@@ -16,6 +16,7 @@ export * as image from './v1/image';
 export * as image_service from './v1/image_service';
 export * as instance from './v1/instance';
 export * as instance_service from './v1/instance_service';
+export * as maintenance from './v1/maintenance';
 export * as placement_group from './v1/placement_group';
 export * as placement_group_service from './v1/placement_group_service';
 export * as snapshot from './v1/snapshot';

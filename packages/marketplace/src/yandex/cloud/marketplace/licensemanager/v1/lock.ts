@@ -7,20 +7,41 @@ export const protobufPackage = "yandex.cloud.marketplace.licensemanager.v1";
 
 export interface Lock {
   $type: "yandex.cloud.marketplace.licensemanager.v1.Lock";
+  /** ID of the subscription lock. */
   id: string;
+  /** ID of the subscription instance. */
   instanceId: string;
+  /** ID of the resource. */
   resourceId: string;
-  startTime?: Date | undefined;
-  endTime?: Date | undefined;
-  createdAt?: Date | undefined;
-  updatedAt?: Date | undefined;
+  /** Timestamp of the start of the subscription lock. */
+  startTime?:
+    | Date
+    | undefined;
+  /** Timestamp of the end of the subscription lock. */
+  endTime?:
+    | Date
+    | undefined;
+  /** Creation timestamp. */
+  createdAt?:
+    | Date
+    | undefined;
+  /** Update timestamp. */
+  updatedAt?:
+    | Date
+    | undefined;
+  /** Subscription lock state. */
   state: Lock_State;
+  /** ID of the subscription template. */
+  templateId: string;
 }
 
 export enum Lock_State {
   STATE_UNSPECIFIED = 0,
+  /** UNLOCKED - Subscription unlocked. */
   UNLOCKED = 1,
+  /** LOCKED - Subscription locked to the resource. */
   LOCKED = 2,
+  /** DELETED - Subscription lock deleted. */
   DELETED = 3,
   UNRECOGNIZED = -1,
 }
@@ -73,6 +94,7 @@ function createBaseLock(): Lock {
     createdAt: undefined,
     updatedAt: undefined,
     state: 0,
+    templateId: "",
   };
 }
 
@@ -103,6 +125,9 @@ export const Lock = {
     }
     if (message.state !== 0) {
       writer.uint32(64).int32(message.state);
+    }
+    if (message.templateId !== "") {
+      writer.uint32(74).string(message.templateId);
     }
     return writer;
   },
@@ -170,6 +195,13 @@ export const Lock = {
 
           message.state = reader.int32() as any;
           continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.templateId = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -190,6 +222,7 @@ export const Lock = {
       createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
       state: isSet(object.state) ? lock_StateFromJSON(object.state) : 0,
+      templateId: isSet(object.templateId) ? globalThis.String(object.templateId) : "",
     };
   },
 
@@ -219,6 +252,9 @@ export const Lock = {
     if (message.state !== 0) {
       obj.state = lock_StateToJSON(message.state);
     }
+    if (message.templateId !== "") {
+      obj.templateId = message.templateId;
+    }
     return obj;
   },
 
@@ -235,6 +271,7 @@ export const Lock = {
     message.createdAt = object.createdAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
     message.state = object.state ?? 0;
+    message.templateId = object.templateId ?? "";
     return message;
   },
 };

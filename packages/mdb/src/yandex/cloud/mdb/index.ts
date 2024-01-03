@@ -36,6 +36,7 @@ export * as greenplum_config from './greenplum/v1/config';
 export * as greenplum_host from './greenplum/v1/host';
 export * as greenplum_maintenance from './greenplum/v1/maintenance';
 export * as greenplum_pxf from './greenplum/v1/pxf';
+export * as greenplum_pxf_service from './greenplum/v1/pxf_service';
 export * as greenplum_resource_preset from './greenplum/v1/resource_preset';
 export * as greenplum_resource_preset_service from './greenplum/v1/resource_preset_service';
 export * as kafka_cluster from './kafka/v1/cluster';

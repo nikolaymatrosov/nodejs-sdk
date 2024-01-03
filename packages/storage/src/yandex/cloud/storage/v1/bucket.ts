@@ -801,7 +801,23 @@ export interface LifecycleRule_RuleFilter {
     | number
     | undefined;
   /** Size that the object must be less t. */
+  objectSizeLessThan?:
+    | number
+    | undefined;
+  /** Tags that the object's tag set must have for the rule to apply. */
+  tag?:
+    | Tag
+    | undefined;
+  /** Apply a logical AND to all of the predicates configured inside the And operator. */
+  andOperator?: LifecycleRule_RuleFilter_And | undefined;
+}
+
+export interface LifecycleRule_RuleFilter_And {
+  $type: "yandex.cloud.storage.v1.LifecycleRule.RuleFilter.And";
+  prefix: string;
+  objectSizeGreaterThan?: number | undefined;
   objectSizeLessThan?: number | undefined;
+  tag: Tag[];
 }
 
 export interface Counters {
@@ -3054,6 +3070,8 @@ function createBaseLifecycleRule_RuleFilter(): LifecycleRule_RuleFilter {
     prefix: "",
     objectSizeGreaterThan: undefined,
     objectSizeLessThan: undefined,
+    tag: undefined,
+    andOperator: undefined,
   };
 }
 
@@ -3075,6 +3093,12 @@ export const LifecycleRule_RuleFilter = {
         { $type: "google.protobuf.Int64Value", value: message.objectSizeLessThan! },
         writer.uint32(26).fork(),
       ).ldelim();
+    }
+    if (message.tag !== undefined) {
+      Tag.encode(message.tag, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.andOperator !== undefined) {
+      LifecycleRule_RuleFilter_And.encode(message.andOperator, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -3107,6 +3131,20 @@ export const LifecycleRule_RuleFilter = {
 
           message.objectSizeLessThan = Int64Value.decode(reader, reader.uint32()).value;
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.tag = Tag.decode(reader, reader.uint32());
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.andOperator = LifecycleRule_RuleFilter_And.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -3122,6 +3160,8 @@ export const LifecycleRule_RuleFilter = {
       prefix: isSet(object.prefix) ? globalThis.String(object.prefix) : "",
       objectSizeGreaterThan: isSet(object.objectSizeGreaterThan) ? Number(object.objectSizeGreaterThan) : undefined,
       objectSizeLessThan: isSet(object.objectSizeLessThan) ? Number(object.objectSizeLessThan) : undefined,
+      tag: isSet(object.tag) ? Tag.fromJSON(object.tag) : undefined,
+      andOperator: isSet(object.andOperator) ? LifecycleRule_RuleFilter_And.fromJSON(object.andOperator) : undefined,
     };
   },
 
@@ -3136,6 +3176,12 @@ export const LifecycleRule_RuleFilter = {
     if (message.objectSizeLessThan !== undefined) {
       obj.objectSizeLessThan = message.objectSizeLessThan;
     }
+    if (message.tag !== undefined) {
+      obj.tag = Tag.toJSON(message.tag);
+    }
+    if (message.andOperator !== undefined) {
+      obj.andOperator = LifecycleRule_RuleFilter_And.toJSON(message.andOperator);
+    }
     return obj;
   },
 
@@ -3147,11 +3193,136 @@ export const LifecycleRule_RuleFilter = {
     message.prefix = object.prefix ?? "";
     message.objectSizeGreaterThan = object.objectSizeGreaterThan ?? undefined;
     message.objectSizeLessThan = object.objectSizeLessThan ?? undefined;
+    message.tag = (object.tag !== undefined && object.tag !== null) ? Tag.fromPartial(object.tag) : undefined;
+    message.andOperator = (object.andOperator !== undefined && object.andOperator !== null)
+      ? LifecycleRule_RuleFilter_And.fromPartial(object.andOperator)
+      : undefined;
     return message;
   },
 };
 
 messageTypeRegistry.set(LifecycleRule_RuleFilter.$type, LifecycleRule_RuleFilter);
+
+function createBaseLifecycleRule_RuleFilter_And(): LifecycleRule_RuleFilter_And {
+  return {
+    $type: "yandex.cloud.storage.v1.LifecycleRule.RuleFilter.And",
+    prefix: "",
+    objectSizeGreaterThan: undefined,
+    objectSizeLessThan: undefined,
+    tag: [],
+  };
+}
+
+export const LifecycleRule_RuleFilter_And = {
+  $type: "yandex.cloud.storage.v1.LifecycleRule.RuleFilter.And" as const,
+
+  encode(message: LifecycleRule_RuleFilter_And, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.prefix !== "") {
+      writer.uint32(10).string(message.prefix);
+    }
+    if (message.objectSizeGreaterThan !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.objectSizeGreaterThan! },
+        writer.uint32(18).fork(),
+      ).ldelim();
+    }
+    if (message.objectSizeLessThan !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.objectSizeLessThan! },
+        writer.uint32(26).fork(),
+      ).ldelim();
+    }
+    for (const v of message.tag) {
+      Tag.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): LifecycleRule_RuleFilter_And {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLifecycleRule_RuleFilter_And();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.prefix = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.objectSizeGreaterThan = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.objectSizeLessThan = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.tag.push(Tag.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LifecycleRule_RuleFilter_And {
+    return {
+      $type: LifecycleRule_RuleFilter_And.$type,
+      prefix: isSet(object.prefix) ? globalThis.String(object.prefix) : "",
+      objectSizeGreaterThan: isSet(object.objectSizeGreaterThan) ? Number(object.objectSizeGreaterThan) : undefined,
+      objectSizeLessThan: isSet(object.objectSizeLessThan) ? Number(object.objectSizeLessThan) : undefined,
+      tag: globalThis.Array.isArray(object?.tag) ? object.tag.map((e: any) => Tag.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: LifecycleRule_RuleFilter_And): unknown {
+    const obj: any = {};
+    if (message.prefix !== "") {
+      obj.prefix = message.prefix;
+    }
+    if (message.objectSizeGreaterThan !== undefined) {
+      obj.objectSizeGreaterThan = message.objectSizeGreaterThan;
+    }
+    if (message.objectSizeLessThan !== undefined) {
+      obj.objectSizeLessThan = message.objectSizeLessThan;
+    }
+    if (message.tag?.length) {
+      obj.tag = message.tag.map((e) => Tag.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<LifecycleRule_RuleFilter_And>, I>>(base?: I): LifecycleRule_RuleFilter_And {
+    return LifecycleRule_RuleFilter_And.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LifecycleRule_RuleFilter_And>, I>>(object: I): LifecycleRule_RuleFilter_And {
+    const message = createBaseLifecycleRule_RuleFilter_And();
+    message.prefix = object.prefix ?? "";
+    message.objectSizeGreaterThan = object.objectSizeGreaterThan ?? undefined;
+    message.objectSizeLessThan = object.objectSizeLessThan ?? undefined;
+    message.tag = object.tag?.map((e) => Tag.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+messageTypeRegistry.set(LifecycleRule_RuleFilter_And.$type, LifecycleRule_RuleFilter_And);
 
 function createBaseCounters(): Counters {
   return {

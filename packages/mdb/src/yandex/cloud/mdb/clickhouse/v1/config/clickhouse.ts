@@ -86,6 +86,10 @@ export interface ClickhouseConfig {
     | undefined;
   /** The server's time zone to be used in DateTime fields conversions. Specified as an IANA identifier. */
   timezone: string;
+  /** Enable or disable geobase. */
+  geobaseEnabled?:
+    | boolean
+    | undefined;
   /** Address of the archive with the user geobase in Object Storage. */
   geobaseUri: string;
   /**
@@ -190,8 +194,124 @@ export interface ClickhouseConfig {
     | undefined;
   /** Logging level for text_log system table. Possible values: TRACE, DEBUG, INFORMATION, WARNING, ERROR. */
   textLogLevel: ClickhouseConfig_LogLevel;
-  opentelemetrySpanLogEnabled?: boolean | undefined;
-  backgroundPoolSize?: number | undefined;
+  /** Enable or disable opentelemetry_span_log system table. Default value: false. */
+  opentelemetrySpanLogEnabled?:
+    | boolean
+    | undefined;
+  /**
+   * The maximum size that opentelemetry_span_log can grow to before old data will be removed. If set to 0 (default),
+   * automatic removal of opentelemetry_span_log data based on size is disabled.
+   */
+  opentelemetrySpanLogRetentionSize?:
+    | number
+    | undefined;
+  /**
+   * The maximum time that opentelemetry_span_log records will be retained before removal. If set to 0,
+   * automatic removal of opentelemetry_span_log data based on time is disabled.
+   */
+  opentelemetrySpanLogRetentionTime?:
+    | number
+    | undefined;
+  /** Enable or disable query_views_log system table. Default value: false. */
+  queryViewsLogEnabled?:
+    | boolean
+    | undefined;
+  /**
+   * The maximum size that query_views_log can grow to before old data will be removed. If set to 0 (default),
+   * automatic removal of query_views_log data based on size is disabled.
+   */
+  queryViewsLogRetentionSize?:
+    | number
+    | undefined;
+  /**
+   * The maximum time that query_views_log records will be retained before removal. If set to 0,
+   * automatic removal of query_views_log data based on time is disabled.
+   */
+  queryViewsLogRetentionTime?:
+    | number
+    | undefined;
+  /** Enable or disable asynchronous_metric_log system table. Default value: false. */
+  asynchronousMetricLogEnabled?:
+    | boolean
+    | undefined;
+  /**
+   * The maximum size that asynchronous_metric_log can grow to before old data will be removed. If set to 0 (default),
+   * automatic removal of asynchronous_metric_log data based on size is disabled.
+   */
+  asynchronousMetricLogRetentionSize?:
+    | number
+    | undefined;
+  /**
+   * The maximum time that asynchronous_metric_log records will be retained before removal. If set to 0,
+   * automatic removal of asynchronous_metric_log data based on time is disabled.
+   */
+  asynchronousMetricLogRetentionTime?:
+    | number
+    | undefined;
+  /** Enable or disable session_log system table. Default value: false. */
+  sessionLogEnabled?:
+    | boolean
+    | undefined;
+  /**
+   * The maximum size that session_log can grow to before old data will be removed. If set to 0 (default),
+   * automatic removal of session_log data based on size is disabled.
+   */
+  sessionLogRetentionSize?:
+    | number
+    | undefined;
+  /**
+   * The maximum time that session_log records will be retained before removal. If set to 0,
+   * automatic removal of session_log data based on time is disabled.
+   */
+  sessionLogRetentionTime?:
+    | number
+    | undefined;
+  /** Enable or disable zookeeper_log system table. Default value: false. */
+  zookeeperLogEnabled?:
+    | boolean
+    | undefined;
+  /**
+   * The maximum size that zookeeper_log can grow to before old data will be removed. If set to 0 (default),
+   * automatic removal of zookeeper_log data based on size is disabled.
+   */
+  zookeeperLogRetentionSize?:
+    | number
+    | undefined;
+  /**
+   * The maximum time that zookeeper_log records will be retained before removal. If set to 0,
+   * automatic removal of zookeeper_log data based on time is disabled.
+   */
+  zookeeperLogRetentionTime?:
+    | number
+    | undefined;
+  /**
+   * Enable or disable asynchronous_insert_log system table. Default value: false.
+   * Minimal required ClickHouse version: 22.10.
+   */
+  asynchronousInsertLogEnabled?:
+    | boolean
+    | undefined;
+  /**
+   * The maximum size that asynchronous_insert_log can grow to before old data will be removed. If set to 0 (default),
+   * automatic removal of asynchronous_insert_log data based on size is disabled.
+   */
+  asynchronousInsertLogRetentionSize?:
+    | number
+    | undefined;
+  /**
+   * The maximum time that asynchronous_insert_log records will be retained before removal. If set to 0,
+   * automatic removal of asynchronous_insert_log data based on time is disabled.
+   */
+  asynchronousInsertLogRetentionTime?: number | undefined;
+  backgroundPoolSize?:
+    | number
+    | undefined;
+  /**
+   * Sets a ratio between the number of threads and the number of background merges and mutations that can be executed concurrently. For example, if the ratio equals to 2 and background_pool_size is set to 16 then ClickHouse can execute 32 background merges concurrently. This is possible, because background operations could be suspended and postponed. This is needed to give small merges more execution priority. You can only increase this ratio at runtime. To lower it you have to restart the server. The same as for background_pool_size setting background_merges_mutations_concurrency_ratio could be applied from the default profile for backward compatibility.
+   * Default: 2
+   * See in-depth description in [ClickHouse documentation](https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings#background_merges_mutations_concurrency_ratio)
+   */
+  backgroundMergesMutationsConcurrencyRatio?: number | undefined;
   backgroundSchedulePoolSize?:
     | number
     | undefined;
@@ -208,6 +328,14 @@ export interface ClickhouseConfig {
     | number
     | undefined;
   /**
+   * The maximum number of threads that will be used for performing a variety of operations (mostly garbage collection) for *MergeTree-engine tables in a background.
+   * Default: 8
+   * See in-depth description in [ClickHouse documentation](https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings#background_common_pool_size)
+   */
+  backgroundCommonPoolSize?:
+    | number
+    | undefined;
+  /**
    * The default database.
    *
    * To get a list of cluster databases, see [Yandex Managed ClickHouse documentation](https://cloud.yandex.com/en/docs/managed-clickhouse/operations/databases#list-db).
@@ -221,94 +349,7 @@ export interface ClickhouseConfig {
    * More info see in [ClickHouse documentation](https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings/#total-memory-profiler-step).
    */
   totalMemoryProfilerStep?: number | undefined;
-  totalMemoryTrackerSampleProbability?:
-    | number
-    | undefined;
-  /**
-   * The maximum number of threads that will be used for performing a variety of operations (mostly garbage collection) for *MergeTree-engine tables in a background.
-   * Default: 8
-   * Min version: 21.11
-   * See in-depth description in [ClickHouse documentation](https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings#background_common_pool_size)
-   */
-  backgroundCommonPoolSize?:
-    | number
-    | undefined;
-  /**
-   * Sets a ratio between the number of threads and the number of background merges and mutations that can be executed concurrently. For example, if the ratio equals to 2 and background_pool_size is set to 16 then ClickHouse can execute 32 background merges concurrently. This is possible, because background operations could be suspended and postponed. This is needed to give small merges more execution priority. You can only increase this ratio at runtime. To lower it you have to restart the server. The same as for background_pool_size setting background_merges_mutations_concurrency_ratio could be applied from the default profile for backward compatibility.
-   * Default: 2
-   * Min_version: 21.11
-   * See in-depth description in [ClickHouse documentation](https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings#background_merges_mutations_concurrency_ratio)
-   */
-  backgroundMergesMutationsConcurrencyRatio?:
-    | number
-    | undefined;
-  /**
-   * Default: false
-   * Min version: 21.9
-   */
-  queryViewsLogEnabled?:
-    | boolean
-    | undefined;
-  /** Default: 0 */
-  queryViewsLogRetentionSize?: number | undefined;
-  queryViewsLogRetentionTime?:
-    | number
-    | undefined;
-  /**
-   * Default: false
-   * Min version: 20.11
-   */
-  asynchronousMetricLogEnabled?:
-    | boolean
-    | undefined;
-  /** Default: 0 */
-  asynchronousMetricLogRetentionSize?: number | undefined;
-  asynchronousMetricLogRetentionTime?:
-    | number
-    | undefined;
-  /**
-   * Default: 0
-   * Min version: 20.11
-   */
-  opentelemetrySpanLogRetentionSize?: number | undefined;
-  opentelemetrySpanLogRetentionTime?:
-    | number
-    | undefined;
-  /**
-   * Default: false
-   * Min version: 21.11
-   */
-  sessionLogEnabled?:
-    | boolean
-    | undefined;
-  /** Default: 0 */
-  sessionLogRetentionSize?: number | undefined;
-  sessionLogRetentionTime?:
-    | number
-    | undefined;
-  /**
-   * Default: false
-   * Min version: 21.9
-   */
-  zookeeperLogEnabled?:
-    | boolean
-    | undefined;
-  /** Default: 0 */
-  zookeeperLogRetentionSize?: number | undefined;
-  zookeeperLogRetentionTime?:
-    | number
-    | undefined;
-  /**
-   * Default: false
-   * Min version: 22.10
-   */
-  asynchronousInsertLogEnabled?:
-    | boolean
-    | undefined;
-  /** Default: 0 */
-  asynchronousInsertLogRetentionSize?: number | undefined;
-  asynchronousInsertLogRetentionTime?: number | undefined;
-  geobaseEnabled?: boolean | undefined;
+  totalMemoryTrackerSampleProbability?: number | undefined;
 }
 
 export enum ClickhouseConfig_LogLevel {
@@ -1126,6 +1167,7 @@ function createBaseClickhouseConfig(): ClickhouseConfig {
     maxPartitionSizeToDrop: undefined,
     builtinDictionariesReloadInterval: undefined,
     timezone: "",
+    geobaseEnabled: undefined,
     geobaseUri: "",
     queryLogRetentionSize: undefined,
     queryLogRetentionTime: undefined,
@@ -1145,26 +1187,14 @@ function createBaseClickhouseConfig(): ClickhouseConfig {
     textLogRetentionTime: undefined,
     textLogLevel: 0,
     opentelemetrySpanLogEnabled: undefined,
-    backgroundPoolSize: undefined,
-    backgroundSchedulePoolSize: undefined,
-    backgroundFetchesPoolSize: undefined,
-    backgroundMovePoolSize: undefined,
-    backgroundDistributedSchedulePoolSize: undefined,
-    backgroundBufferFlushSchedulePoolSize: undefined,
-    backgroundMessageBrokerSchedulePoolSize: undefined,
-    defaultDatabase: undefined,
-    totalMemoryProfilerStep: undefined,
-    totalMemoryTrackerSampleProbability: undefined,
-    backgroundCommonPoolSize: undefined,
-    backgroundMergesMutationsConcurrencyRatio: undefined,
+    opentelemetrySpanLogRetentionSize: undefined,
+    opentelemetrySpanLogRetentionTime: undefined,
     queryViewsLogEnabled: undefined,
     queryViewsLogRetentionSize: undefined,
     queryViewsLogRetentionTime: undefined,
     asynchronousMetricLogEnabled: undefined,
     asynchronousMetricLogRetentionSize: undefined,
     asynchronousMetricLogRetentionTime: undefined,
-    opentelemetrySpanLogRetentionSize: undefined,
-    opentelemetrySpanLogRetentionTime: undefined,
     sessionLogEnabled: undefined,
     sessionLogRetentionSize: undefined,
     sessionLogRetentionTime: undefined,
@@ -1174,7 +1204,18 @@ function createBaseClickhouseConfig(): ClickhouseConfig {
     asynchronousInsertLogEnabled: undefined,
     asynchronousInsertLogRetentionSize: undefined,
     asynchronousInsertLogRetentionTime: undefined,
-    geobaseEnabled: undefined,
+    backgroundPoolSize: undefined,
+    backgroundMergesMutationsConcurrencyRatio: undefined,
+    backgroundSchedulePoolSize: undefined,
+    backgroundFetchesPoolSize: undefined,
+    backgroundMovePoolSize: undefined,
+    backgroundDistributedSchedulePoolSize: undefined,
+    backgroundBufferFlushSchedulePoolSize: undefined,
+    backgroundMessageBrokerSchedulePoolSize: undefined,
+    backgroundCommonPoolSize: undefined,
+    defaultDatabase: undefined,
+    totalMemoryProfilerStep: undefined,
+    totalMemoryTrackerSampleProbability: undefined,
   };
 }
 
@@ -1256,6 +1297,12 @@ export const ClickhouseConfig = {
     }
     if (message.timezone !== "") {
       writer.uint32(114).string(message.timezone);
+    }
+    if (message.geobaseEnabled !== undefined) {
+      BoolValue.encode(
+        { $type: "google.protobuf.BoolValue", value: message.geobaseEnabled! },
+        writer.uint32(530).fork(),
+      ).ldelim();
     }
     if (message.geobaseUri !== "") {
       writer.uint32(122).string(message.geobaseUri);
@@ -1365,77 +1412,17 @@ export const ClickhouseConfig = {
         writer.uint32(338).fork(),
       ).ldelim();
     }
-    if (message.backgroundPoolSize !== undefined) {
+    if (message.opentelemetrySpanLogRetentionSize !== undefined) {
       Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.backgroundPoolSize! },
-        writer.uint32(266).fork(),
+        { $type: "google.protobuf.Int64Value", value: message.opentelemetrySpanLogRetentionSize! },
+        writer.uint32(442).fork(),
       ).ldelim();
     }
-    if (message.backgroundSchedulePoolSize !== undefined) {
+    if (message.opentelemetrySpanLogRetentionTime !== undefined) {
       Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.backgroundSchedulePoolSize! },
-        writer.uint32(274).fork(),
+        { $type: "google.protobuf.Int64Value", value: message.opentelemetrySpanLogRetentionTime! },
+        writer.uint32(450).fork(),
       ).ldelim();
-    }
-    if (message.backgroundFetchesPoolSize !== undefined) {
-      Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.backgroundFetchesPoolSize! },
-        writer.uint32(306).fork(),
-      ).ldelim();
-    }
-    if (message.backgroundMovePoolSize !== undefined) {
-      Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.backgroundMovePoolSize! },
-        writer.uint32(314).fork(),
-      ).ldelim();
-    }
-    if (message.backgroundDistributedSchedulePoolSize !== undefined) {
-      Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.backgroundDistributedSchedulePoolSize! },
-        writer.uint32(322).fork(),
-      ).ldelim();
-    }
-    if (message.backgroundBufferFlushSchedulePoolSize !== undefined) {
-      Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.backgroundBufferFlushSchedulePoolSize! },
-        writer.uint32(330).fork(),
-      ).ldelim();
-    }
-    if (message.backgroundMessageBrokerSchedulePoolSize !== undefined) {
-      Int64Value.encode({
-        $type: "google.protobuf.Int64Value",
-        value: message.backgroundMessageBrokerSchedulePoolSize!,
-      }, writer.uint32(370).fork()).ldelim();
-    }
-    if (message.defaultDatabase !== undefined) {
-      StringValue.encode(
-        { $type: "google.protobuf.StringValue", value: message.defaultDatabase! },
-        writer.uint32(346).fork(),
-      ).ldelim();
-    }
-    if (message.totalMemoryProfilerStep !== undefined) {
-      Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.totalMemoryProfilerStep! },
-        writer.uint32(354).fork(),
-      ).ldelim();
-    }
-    if (message.totalMemoryTrackerSampleProbability !== undefined) {
-      DoubleValue.encode(
-        { $type: "google.protobuf.DoubleValue", value: message.totalMemoryTrackerSampleProbability! },
-        writer.uint32(362).fork(),
-      ).ldelim();
-    }
-    if (message.backgroundCommonPoolSize !== undefined) {
-      Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.backgroundCommonPoolSize! },
-        writer.uint32(378).fork(),
-      ).ldelim();
-    }
-    if (message.backgroundMergesMutationsConcurrencyRatio !== undefined) {
-      Int64Value.encode({
-        $type: "google.protobuf.Int64Value",
-        value: message.backgroundMergesMutationsConcurrencyRatio!,
-      }, writer.uint32(386).fork()).ldelim();
     }
     if (message.queryViewsLogEnabled !== undefined) {
       BoolValue.encode(
@@ -1471,18 +1458,6 @@ export const ClickhouseConfig = {
       Int64Value.encode(
         { $type: "google.protobuf.Int64Value", value: message.asynchronousMetricLogRetentionTime! },
         writer.uint32(434).fork(),
-      ).ldelim();
-    }
-    if (message.opentelemetrySpanLogRetentionSize !== undefined) {
-      Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.opentelemetrySpanLogRetentionSize! },
-        writer.uint32(442).fork(),
-      ).ldelim();
-    }
-    if (message.opentelemetrySpanLogRetentionTime !== undefined) {
-      Int64Value.encode(
-        { $type: "google.protobuf.Int64Value", value: message.opentelemetrySpanLogRetentionTime! },
-        writer.uint32(450).fork(),
       ).ldelim();
     }
     if (message.sessionLogEnabled !== undefined) {
@@ -1539,10 +1514,76 @@ export const ClickhouseConfig = {
         writer.uint32(522).fork(),
       ).ldelim();
     }
-    if (message.geobaseEnabled !== undefined) {
-      BoolValue.encode(
-        { $type: "google.protobuf.BoolValue", value: message.geobaseEnabled! },
-        writer.uint32(530).fork(),
+    if (message.backgroundPoolSize !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.backgroundPoolSize! },
+        writer.uint32(266).fork(),
+      ).ldelim();
+    }
+    if (message.backgroundMergesMutationsConcurrencyRatio !== undefined) {
+      Int64Value.encode({
+        $type: "google.protobuf.Int64Value",
+        value: message.backgroundMergesMutationsConcurrencyRatio!,
+      }, writer.uint32(386).fork()).ldelim();
+    }
+    if (message.backgroundSchedulePoolSize !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.backgroundSchedulePoolSize! },
+        writer.uint32(274).fork(),
+      ).ldelim();
+    }
+    if (message.backgroundFetchesPoolSize !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.backgroundFetchesPoolSize! },
+        writer.uint32(306).fork(),
+      ).ldelim();
+    }
+    if (message.backgroundMovePoolSize !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.backgroundMovePoolSize! },
+        writer.uint32(314).fork(),
+      ).ldelim();
+    }
+    if (message.backgroundDistributedSchedulePoolSize !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.backgroundDistributedSchedulePoolSize! },
+        writer.uint32(322).fork(),
+      ).ldelim();
+    }
+    if (message.backgroundBufferFlushSchedulePoolSize !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.backgroundBufferFlushSchedulePoolSize! },
+        writer.uint32(330).fork(),
+      ).ldelim();
+    }
+    if (message.backgroundMessageBrokerSchedulePoolSize !== undefined) {
+      Int64Value.encode({
+        $type: "google.protobuf.Int64Value",
+        value: message.backgroundMessageBrokerSchedulePoolSize!,
+      }, writer.uint32(370).fork()).ldelim();
+    }
+    if (message.backgroundCommonPoolSize !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.backgroundCommonPoolSize! },
+        writer.uint32(378).fork(),
+      ).ldelim();
+    }
+    if (message.defaultDatabase !== undefined) {
+      StringValue.encode(
+        { $type: "google.protobuf.StringValue", value: message.defaultDatabase! },
+        writer.uint32(346).fork(),
+      ).ldelim();
+    }
+    if (message.totalMemoryProfilerStep !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.totalMemoryProfilerStep! },
+        writer.uint32(354).fork(),
+      ).ldelim();
+    }
+    if (message.totalMemoryTrackerSampleProbability !== undefined) {
+      DoubleValue.encode(
+        { $type: "google.protobuf.DoubleValue", value: message.totalMemoryTrackerSampleProbability! },
+        writer.uint32(362).fork(),
       ).ldelim();
     }
     return writer;
@@ -1673,6 +1714,13 @@ export const ClickhouseConfig = {
           }
 
           message.timezone = reader.string();
+          continue;
+        case 66:
+          if (tag !== 530) {
+            break;
+          }
+
+          message.geobaseEnabled = BoolValue.decode(reader, reader.uint32()).value;
           continue;
         case 15:
           if (tag !== 122) {
@@ -1807,89 +1855,19 @@ export const ClickhouseConfig = {
 
           message.opentelemetrySpanLogEnabled = BoolValue.decode(reader, reader.uint32()).value;
           continue;
-        case 33:
-          if (tag !== 266) {
+        case 55:
+          if (tag !== 442) {
             break;
           }
 
-          message.backgroundPoolSize = Int64Value.decode(reader, reader.uint32()).value;
+          message.opentelemetrySpanLogRetentionSize = Int64Value.decode(reader, reader.uint32()).value;
           continue;
-        case 34:
-          if (tag !== 274) {
+        case 56:
+          if (tag !== 450) {
             break;
           }
 
-          message.backgroundSchedulePoolSize = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 38:
-          if (tag !== 306) {
-            break;
-          }
-
-          message.backgroundFetchesPoolSize = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 39:
-          if (tag !== 314) {
-            break;
-          }
-
-          message.backgroundMovePoolSize = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 40:
-          if (tag !== 322) {
-            break;
-          }
-
-          message.backgroundDistributedSchedulePoolSize = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 41:
-          if (tag !== 330) {
-            break;
-          }
-
-          message.backgroundBufferFlushSchedulePoolSize = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 46:
-          if (tag !== 370) {
-            break;
-          }
-
-          message.backgroundMessageBrokerSchedulePoolSize = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 43:
-          if (tag !== 346) {
-            break;
-          }
-
-          message.defaultDatabase = StringValue.decode(reader, reader.uint32()).value;
-          continue;
-        case 44:
-          if (tag !== 354) {
-            break;
-          }
-
-          message.totalMemoryProfilerStep = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 45:
-          if (tag !== 362) {
-            break;
-          }
-
-          message.totalMemoryTrackerSampleProbability = DoubleValue.decode(reader, reader.uint32()).value;
-          continue;
-        case 47:
-          if (tag !== 378) {
-            break;
-          }
-
-          message.backgroundCommonPoolSize = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 48:
-          if (tag !== 386) {
-            break;
-          }
-
-          message.backgroundMergesMutationsConcurrencyRatio = Int64Value.decode(reader, reader.uint32()).value;
+          message.opentelemetrySpanLogRetentionTime = Int64Value.decode(reader, reader.uint32()).value;
           continue;
         case 49:
           if (tag !== 394) {
@@ -1932,20 +1910,6 @@ export const ClickhouseConfig = {
           }
 
           message.asynchronousMetricLogRetentionTime = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 55:
-          if (tag !== 442) {
-            break;
-          }
-
-          message.opentelemetrySpanLogRetentionSize = Int64Value.decode(reader, reader.uint32()).value;
-          continue;
-        case 56:
-          if (tag !== 450) {
-            break;
-          }
-
-          message.opentelemetrySpanLogRetentionTime = Int64Value.decode(reader, reader.uint32()).value;
           continue;
         case 57:
           if (tag !== 458) {
@@ -2010,12 +1974,89 @@ export const ClickhouseConfig = {
 
           message.asynchronousInsertLogRetentionTime = Int64Value.decode(reader, reader.uint32()).value;
           continue;
-        case 66:
-          if (tag !== 530) {
+        case 33:
+          if (tag !== 266) {
             break;
           }
 
-          message.geobaseEnabled = BoolValue.decode(reader, reader.uint32()).value;
+          message.backgroundPoolSize = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 48:
+          if (tag !== 386) {
+            break;
+          }
+
+          message.backgroundMergesMutationsConcurrencyRatio = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 34:
+          if (tag !== 274) {
+            break;
+          }
+
+          message.backgroundSchedulePoolSize = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 38:
+          if (tag !== 306) {
+            break;
+          }
+
+          message.backgroundFetchesPoolSize = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 39:
+          if (tag !== 314) {
+            break;
+          }
+
+          message.backgroundMovePoolSize = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 40:
+          if (tag !== 322) {
+            break;
+          }
+
+          message.backgroundDistributedSchedulePoolSize = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 41:
+          if (tag !== 330) {
+            break;
+          }
+
+          message.backgroundBufferFlushSchedulePoolSize = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 46:
+          if (tag !== 370) {
+            break;
+          }
+
+          message.backgroundMessageBrokerSchedulePoolSize = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 47:
+          if (tag !== 378) {
+            break;
+          }
+
+          message.backgroundCommonPoolSize = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 43:
+          if (tag !== 346) {
+            break;
+          }
+
+          message.defaultDatabase = StringValue.decode(reader, reader.uint32()).value;
+          continue;
+        case 44:
+          if (tag !== 354) {
+            break;
+          }
+
+          message.totalMemoryProfilerStep = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
+        case 45:
+          if (tag !== 362) {
+            break;
+          }
+
+          message.totalMemoryTrackerSampleProbability = DoubleValue.decode(reader, reader.uint32()).value;
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2056,6 +2097,7 @@ export const ClickhouseConfig = {
         ? Number(object.builtinDictionariesReloadInterval)
         : undefined,
       timezone: isSet(object.timezone) ? globalThis.String(object.timezone) : "",
+      geobaseEnabled: isSet(object.geobaseEnabled) ? Boolean(object.geobaseEnabled) : undefined,
       geobaseUri: isSet(object.geobaseUri) ? globalThis.String(object.geobaseUri) : "",
       queryLogRetentionSize: isSet(object.queryLogRetentionSize) ? Number(object.queryLogRetentionSize) : undefined,
       queryLogRetentionTime: isSet(object.queryLogRetentionTime) ? Number(object.queryLogRetentionTime) : undefined,
@@ -2081,35 +2123,11 @@ export const ClickhouseConfig = {
       opentelemetrySpanLogEnabled: isSet(object.opentelemetrySpanLogEnabled)
         ? Boolean(object.opentelemetrySpanLogEnabled)
         : undefined,
-      backgroundPoolSize: isSet(object.backgroundPoolSize) ? Number(object.backgroundPoolSize) : undefined,
-      backgroundSchedulePoolSize: isSet(object.backgroundSchedulePoolSize)
-        ? Number(object.backgroundSchedulePoolSize)
+      opentelemetrySpanLogRetentionSize: isSet(object.opentelemetrySpanLogRetentionSize)
+        ? Number(object.opentelemetrySpanLogRetentionSize)
         : undefined,
-      backgroundFetchesPoolSize: isSet(object.backgroundFetchesPoolSize)
-        ? Number(object.backgroundFetchesPoolSize)
-        : undefined,
-      backgroundMovePoolSize: isSet(object.backgroundMovePoolSize) ? Number(object.backgroundMovePoolSize) : undefined,
-      backgroundDistributedSchedulePoolSize: isSet(object.backgroundDistributedSchedulePoolSize)
-        ? Number(object.backgroundDistributedSchedulePoolSize)
-        : undefined,
-      backgroundBufferFlushSchedulePoolSize: isSet(object.backgroundBufferFlushSchedulePoolSize)
-        ? Number(object.backgroundBufferFlushSchedulePoolSize)
-        : undefined,
-      backgroundMessageBrokerSchedulePoolSize: isSet(object.backgroundMessageBrokerSchedulePoolSize)
-        ? Number(object.backgroundMessageBrokerSchedulePoolSize)
-        : undefined,
-      defaultDatabase: isSet(object.defaultDatabase) ? String(object.defaultDatabase) : undefined,
-      totalMemoryProfilerStep: isSet(object.totalMemoryProfilerStep)
-        ? Number(object.totalMemoryProfilerStep)
-        : undefined,
-      totalMemoryTrackerSampleProbability: isSet(object.totalMemoryTrackerSampleProbability)
-        ? Number(object.totalMemoryTrackerSampleProbability)
-        : undefined,
-      backgroundCommonPoolSize: isSet(object.backgroundCommonPoolSize)
-        ? Number(object.backgroundCommonPoolSize)
-        : undefined,
-      backgroundMergesMutationsConcurrencyRatio: isSet(object.backgroundMergesMutationsConcurrencyRatio)
-        ? Number(object.backgroundMergesMutationsConcurrencyRatio)
+      opentelemetrySpanLogRetentionTime: isSet(object.opentelemetrySpanLogRetentionTime)
+        ? Number(object.opentelemetrySpanLogRetentionTime)
         : undefined,
       queryViewsLogEnabled: isSet(object.queryViewsLogEnabled) ? Boolean(object.queryViewsLogEnabled) : undefined,
       queryViewsLogRetentionSize: isSet(object.queryViewsLogRetentionSize)
@@ -2126,12 +2144,6 @@ export const ClickhouseConfig = {
         : undefined,
       asynchronousMetricLogRetentionTime: isSet(object.asynchronousMetricLogRetentionTime)
         ? Number(object.asynchronousMetricLogRetentionTime)
-        : undefined,
-      opentelemetrySpanLogRetentionSize: isSet(object.opentelemetrySpanLogRetentionSize)
-        ? Number(object.opentelemetrySpanLogRetentionSize)
-        : undefined,
-      opentelemetrySpanLogRetentionTime: isSet(object.opentelemetrySpanLogRetentionTime)
-        ? Number(object.opentelemetrySpanLogRetentionTime)
         : undefined,
       sessionLogEnabled: isSet(object.sessionLogEnabled) ? Boolean(object.sessionLogEnabled) : undefined,
       sessionLogRetentionSize: isSet(object.sessionLogRetentionSize)
@@ -2156,7 +2168,36 @@ export const ClickhouseConfig = {
       asynchronousInsertLogRetentionTime: isSet(object.asynchronousInsertLogRetentionTime)
         ? Number(object.asynchronousInsertLogRetentionTime)
         : undefined,
-      geobaseEnabled: isSet(object.geobaseEnabled) ? Boolean(object.geobaseEnabled) : undefined,
+      backgroundPoolSize: isSet(object.backgroundPoolSize) ? Number(object.backgroundPoolSize) : undefined,
+      backgroundMergesMutationsConcurrencyRatio: isSet(object.backgroundMergesMutationsConcurrencyRatio)
+        ? Number(object.backgroundMergesMutationsConcurrencyRatio)
+        : undefined,
+      backgroundSchedulePoolSize: isSet(object.backgroundSchedulePoolSize)
+        ? Number(object.backgroundSchedulePoolSize)
+        : undefined,
+      backgroundFetchesPoolSize: isSet(object.backgroundFetchesPoolSize)
+        ? Number(object.backgroundFetchesPoolSize)
+        : undefined,
+      backgroundMovePoolSize: isSet(object.backgroundMovePoolSize) ? Number(object.backgroundMovePoolSize) : undefined,
+      backgroundDistributedSchedulePoolSize: isSet(object.backgroundDistributedSchedulePoolSize)
+        ? Number(object.backgroundDistributedSchedulePoolSize)
+        : undefined,
+      backgroundBufferFlushSchedulePoolSize: isSet(object.backgroundBufferFlushSchedulePoolSize)
+        ? Number(object.backgroundBufferFlushSchedulePoolSize)
+        : undefined,
+      backgroundMessageBrokerSchedulePoolSize: isSet(object.backgroundMessageBrokerSchedulePoolSize)
+        ? Number(object.backgroundMessageBrokerSchedulePoolSize)
+        : undefined,
+      backgroundCommonPoolSize: isSet(object.backgroundCommonPoolSize)
+        ? Number(object.backgroundCommonPoolSize)
+        : undefined,
+      defaultDatabase: isSet(object.defaultDatabase) ? String(object.defaultDatabase) : undefined,
+      totalMemoryProfilerStep: isSet(object.totalMemoryProfilerStep)
+        ? Number(object.totalMemoryProfilerStep)
+        : undefined,
+      totalMemoryTrackerSampleProbability: isSet(object.totalMemoryTrackerSampleProbability)
+        ? Number(object.totalMemoryTrackerSampleProbability)
+        : undefined,
     };
   },
 
@@ -2212,6 +2253,9 @@ export const ClickhouseConfig = {
     }
     if (message.timezone !== "") {
       obj.timezone = message.timezone;
+    }
+    if (message.geobaseEnabled !== undefined) {
+      obj.geobaseEnabled = message.geobaseEnabled;
     }
     if (message.geobaseUri !== "") {
       obj.geobaseUri = message.geobaseUri;
@@ -2270,41 +2314,11 @@ export const ClickhouseConfig = {
     if (message.opentelemetrySpanLogEnabled !== undefined) {
       obj.opentelemetrySpanLogEnabled = message.opentelemetrySpanLogEnabled;
     }
-    if (message.backgroundPoolSize !== undefined) {
-      obj.backgroundPoolSize = message.backgroundPoolSize;
+    if (message.opentelemetrySpanLogRetentionSize !== undefined) {
+      obj.opentelemetrySpanLogRetentionSize = message.opentelemetrySpanLogRetentionSize;
     }
-    if (message.backgroundSchedulePoolSize !== undefined) {
-      obj.backgroundSchedulePoolSize = message.backgroundSchedulePoolSize;
-    }
-    if (message.backgroundFetchesPoolSize !== undefined) {
-      obj.backgroundFetchesPoolSize = message.backgroundFetchesPoolSize;
-    }
-    if (message.backgroundMovePoolSize !== undefined) {
-      obj.backgroundMovePoolSize = message.backgroundMovePoolSize;
-    }
-    if (message.backgroundDistributedSchedulePoolSize !== undefined) {
-      obj.backgroundDistributedSchedulePoolSize = message.backgroundDistributedSchedulePoolSize;
-    }
-    if (message.backgroundBufferFlushSchedulePoolSize !== undefined) {
-      obj.backgroundBufferFlushSchedulePoolSize = message.backgroundBufferFlushSchedulePoolSize;
-    }
-    if (message.backgroundMessageBrokerSchedulePoolSize !== undefined) {
-      obj.backgroundMessageBrokerSchedulePoolSize = message.backgroundMessageBrokerSchedulePoolSize;
-    }
-    if (message.defaultDatabase !== undefined) {
-      obj.defaultDatabase = message.defaultDatabase;
-    }
-    if (message.totalMemoryProfilerStep !== undefined) {
-      obj.totalMemoryProfilerStep = message.totalMemoryProfilerStep;
-    }
-    if (message.totalMemoryTrackerSampleProbability !== undefined) {
-      obj.totalMemoryTrackerSampleProbability = message.totalMemoryTrackerSampleProbability;
-    }
-    if (message.backgroundCommonPoolSize !== undefined) {
-      obj.backgroundCommonPoolSize = message.backgroundCommonPoolSize;
-    }
-    if (message.backgroundMergesMutationsConcurrencyRatio !== undefined) {
-      obj.backgroundMergesMutationsConcurrencyRatio = message.backgroundMergesMutationsConcurrencyRatio;
+    if (message.opentelemetrySpanLogRetentionTime !== undefined) {
+      obj.opentelemetrySpanLogRetentionTime = message.opentelemetrySpanLogRetentionTime;
     }
     if (message.queryViewsLogEnabled !== undefined) {
       obj.queryViewsLogEnabled = message.queryViewsLogEnabled;
@@ -2323,12 +2337,6 @@ export const ClickhouseConfig = {
     }
     if (message.asynchronousMetricLogRetentionTime !== undefined) {
       obj.asynchronousMetricLogRetentionTime = message.asynchronousMetricLogRetentionTime;
-    }
-    if (message.opentelemetrySpanLogRetentionSize !== undefined) {
-      obj.opentelemetrySpanLogRetentionSize = message.opentelemetrySpanLogRetentionSize;
-    }
-    if (message.opentelemetrySpanLogRetentionTime !== undefined) {
-      obj.opentelemetrySpanLogRetentionTime = message.opentelemetrySpanLogRetentionTime;
     }
     if (message.sessionLogEnabled !== undefined) {
       obj.sessionLogEnabled = message.sessionLogEnabled;
@@ -2357,8 +2365,41 @@ export const ClickhouseConfig = {
     if (message.asynchronousInsertLogRetentionTime !== undefined) {
       obj.asynchronousInsertLogRetentionTime = message.asynchronousInsertLogRetentionTime;
     }
-    if (message.geobaseEnabled !== undefined) {
-      obj.geobaseEnabled = message.geobaseEnabled;
+    if (message.backgroundPoolSize !== undefined) {
+      obj.backgroundPoolSize = message.backgroundPoolSize;
+    }
+    if (message.backgroundMergesMutationsConcurrencyRatio !== undefined) {
+      obj.backgroundMergesMutationsConcurrencyRatio = message.backgroundMergesMutationsConcurrencyRatio;
+    }
+    if (message.backgroundSchedulePoolSize !== undefined) {
+      obj.backgroundSchedulePoolSize = message.backgroundSchedulePoolSize;
+    }
+    if (message.backgroundFetchesPoolSize !== undefined) {
+      obj.backgroundFetchesPoolSize = message.backgroundFetchesPoolSize;
+    }
+    if (message.backgroundMovePoolSize !== undefined) {
+      obj.backgroundMovePoolSize = message.backgroundMovePoolSize;
+    }
+    if (message.backgroundDistributedSchedulePoolSize !== undefined) {
+      obj.backgroundDistributedSchedulePoolSize = message.backgroundDistributedSchedulePoolSize;
+    }
+    if (message.backgroundBufferFlushSchedulePoolSize !== undefined) {
+      obj.backgroundBufferFlushSchedulePoolSize = message.backgroundBufferFlushSchedulePoolSize;
+    }
+    if (message.backgroundMessageBrokerSchedulePoolSize !== undefined) {
+      obj.backgroundMessageBrokerSchedulePoolSize = message.backgroundMessageBrokerSchedulePoolSize;
+    }
+    if (message.backgroundCommonPoolSize !== undefined) {
+      obj.backgroundCommonPoolSize = message.backgroundCommonPoolSize;
+    }
+    if (message.defaultDatabase !== undefined) {
+      obj.defaultDatabase = message.defaultDatabase;
+    }
+    if (message.totalMemoryProfilerStep !== undefined) {
+      obj.totalMemoryProfilerStep = message.totalMemoryProfilerStep;
+    }
+    if (message.totalMemoryTrackerSampleProbability !== undefined) {
+      obj.totalMemoryTrackerSampleProbability = message.totalMemoryTrackerSampleProbability;
     }
     return obj;
   },
@@ -2391,6 +2432,7 @@ export const ClickhouseConfig = {
     message.maxPartitionSizeToDrop = object.maxPartitionSizeToDrop ?? undefined;
     message.builtinDictionariesReloadInterval = object.builtinDictionariesReloadInterval ?? undefined;
     message.timezone = object.timezone ?? "";
+    message.geobaseEnabled = object.geobaseEnabled ?? undefined;
     message.geobaseUri = object.geobaseUri ?? "";
     message.queryLogRetentionSize = object.queryLogRetentionSize ?? undefined;
     message.queryLogRetentionTime = object.queryLogRetentionTime ?? undefined;
@@ -2410,26 +2452,14 @@ export const ClickhouseConfig = {
     message.textLogRetentionTime = object.textLogRetentionTime ?? undefined;
     message.textLogLevel = object.textLogLevel ?? 0;
     message.opentelemetrySpanLogEnabled = object.opentelemetrySpanLogEnabled ?? undefined;
-    message.backgroundPoolSize = object.backgroundPoolSize ?? undefined;
-    message.backgroundSchedulePoolSize = object.backgroundSchedulePoolSize ?? undefined;
-    message.backgroundFetchesPoolSize = object.backgroundFetchesPoolSize ?? undefined;
-    message.backgroundMovePoolSize = object.backgroundMovePoolSize ?? undefined;
-    message.backgroundDistributedSchedulePoolSize = object.backgroundDistributedSchedulePoolSize ?? undefined;
-    message.backgroundBufferFlushSchedulePoolSize = object.backgroundBufferFlushSchedulePoolSize ?? undefined;
-    message.backgroundMessageBrokerSchedulePoolSize = object.backgroundMessageBrokerSchedulePoolSize ?? undefined;
-    message.defaultDatabase = object.defaultDatabase ?? undefined;
-    message.totalMemoryProfilerStep = object.totalMemoryProfilerStep ?? undefined;
-    message.totalMemoryTrackerSampleProbability = object.totalMemoryTrackerSampleProbability ?? undefined;
-    message.backgroundCommonPoolSize = object.backgroundCommonPoolSize ?? undefined;
-    message.backgroundMergesMutationsConcurrencyRatio = object.backgroundMergesMutationsConcurrencyRatio ?? undefined;
+    message.opentelemetrySpanLogRetentionSize = object.opentelemetrySpanLogRetentionSize ?? undefined;
+    message.opentelemetrySpanLogRetentionTime = object.opentelemetrySpanLogRetentionTime ?? undefined;
     message.queryViewsLogEnabled = object.queryViewsLogEnabled ?? undefined;
     message.queryViewsLogRetentionSize = object.queryViewsLogRetentionSize ?? undefined;
     message.queryViewsLogRetentionTime = object.queryViewsLogRetentionTime ?? undefined;
     message.asynchronousMetricLogEnabled = object.asynchronousMetricLogEnabled ?? undefined;
     message.asynchronousMetricLogRetentionSize = object.asynchronousMetricLogRetentionSize ?? undefined;
     message.asynchronousMetricLogRetentionTime = object.asynchronousMetricLogRetentionTime ?? undefined;
-    message.opentelemetrySpanLogRetentionSize = object.opentelemetrySpanLogRetentionSize ?? undefined;
-    message.opentelemetrySpanLogRetentionTime = object.opentelemetrySpanLogRetentionTime ?? undefined;
     message.sessionLogEnabled = object.sessionLogEnabled ?? undefined;
     message.sessionLogRetentionSize = object.sessionLogRetentionSize ?? undefined;
     message.sessionLogRetentionTime = object.sessionLogRetentionTime ?? undefined;
@@ -2439,7 +2469,18 @@ export const ClickhouseConfig = {
     message.asynchronousInsertLogEnabled = object.asynchronousInsertLogEnabled ?? undefined;
     message.asynchronousInsertLogRetentionSize = object.asynchronousInsertLogRetentionSize ?? undefined;
     message.asynchronousInsertLogRetentionTime = object.asynchronousInsertLogRetentionTime ?? undefined;
-    message.geobaseEnabled = object.geobaseEnabled ?? undefined;
+    message.backgroundPoolSize = object.backgroundPoolSize ?? undefined;
+    message.backgroundMergesMutationsConcurrencyRatio = object.backgroundMergesMutationsConcurrencyRatio ?? undefined;
+    message.backgroundSchedulePoolSize = object.backgroundSchedulePoolSize ?? undefined;
+    message.backgroundFetchesPoolSize = object.backgroundFetchesPoolSize ?? undefined;
+    message.backgroundMovePoolSize = object.backgroundMovePoolSize ?? undefined;
+    message.backgroundDistributedSchedulePoolSize = object.backgroundDistributedSchedulePoolSize ?? undefined;
+    message.backgroundBufferFlushSchedulePoolSize = object.backgroundBufferFlushSchedulePoolSize ?? undefined;
+    message.backgroundMessageBrokerSchedulePoolSize = object.backgroundMessageBrokerSchedulePoolSize ?? undefined;
+    message.backgroundCommonPoolSize = object.backgroundCommonPoolSize ?? undefined;
+    message.defaultDatabase = object.defaultDatabase ?? undefined;
+    message.totalMemoryProfilerStep = object.totalMemoryProfilerStep ?? undefined;
+    message.totalMemoryTrackerSampleProbability = object.totalMemoryTrackerSampleProbability ?? undefined;
     return message;
   },
 };

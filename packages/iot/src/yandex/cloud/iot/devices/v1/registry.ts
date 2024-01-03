@@ -1,5 +1,10 @@
 /* eslint-disable */
 import { Timestamp } from "@yandex-cloud/core/dist/generated/google/protobuf/timestamp";
+import {
+  LogLevel_Level,
+  logLevel_LevelFromJSON,
+  logLevel_LevelToJSON,
+} from "@yandex-cloud/logging/dist/yandex/cloud/logging/v1/log_entry";
 import _m0 from "protobufjs/minimal";
 import { messageTypeRegistry } from "../../../../../typeRegistry";
 
@@ -26,6 +31,8 @@ export interface Registry {
   status: Registry_Status;
   /** ID of the logs group for the specified registry. */
   logGroupId: string;
+  /** Options for logging registry events */
+  logOptions?: LogOptions | undefined;
 }
 
 export enum Registry_Status {
@@ -142,6 +149,26 @@ export interface DataStreamExport {
   createdAt?: Date | undefined;
 }
 
+export interface LogOptions {
+  $type: "yandex.cloud.iot.devices.v1.LogOptions";
+  /** Is logging from registry disabled. */
+  disabled: boolean;
+  /** Entry should be written to log group resolved by ID. */
+  logGroupId?:
+    | string
+    | undefined;
+  /** Entry should be written to default log group for specified folder. */
+  folderId?:
+    | string
+    | undefined;
+  /**
+   * Minimum log entry level.
+   *
+   * See [LogLevel.Level] for details.
+   */
+  minLevel: LogLevel_Level;
+}
+
 function createBaseRegistry(): Registry {
   return {
     $type: "yandex.cloud.iot.devices.v1.Registry",
@@ -153,6 +180,7 @@ function createBaseRegistry(): Registry {
     labels: {},
     status: 0,
     logGroupId: "",
+    logOptions: undefined,
   };
 }
 
@@ -186,6 +214,9 @@ export const Registry = {
     }
     if (message.logGroupId !== "") {
       writer.uint32(66).string(message.logGroupId);
+    }
+    if (message.logOptions !== undefined) {
+      LogOptions.encode(message.logOptions, writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -256,6 +287,13 @@ export const Registry = {
 
           message.logGroupId = reader.string();
           continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.logOptions = LogOptions.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -281,6 +319,7 @@ export const Registry = {
         : {},
       status: isSet(object.status) ? registry_StatusFromJSON(object.status) : 0,
       logGroupId: isSet(object.logGroupId) ? globalThis.String(object.logGroupId) : "",
+      logOptions: isSet(object.logOptions) ? LogOptions.fromJSON(object.logOptions) : undefined,
     };
   },
 
@@ -316,6 +355,9 @@ export const Registry = {
     if (message.logGroupId !== "") {
       obj.logGroupId = message.logGroupId;
     }
+    if (message.logOptions !== undefined) {
+      obj.logOptions = LogOptions.toJSON(message.logOptions);
+    }
     return obj;
   },
 
@@ -337,6 +379,9 @@ export const Registry = {
     }, {});
     message.status = object.status ?? 0;
     message.logGroupId = object.logGroupId ?? "";
+    message.logOptions = (object.logOptions !== undefined && object.logOptions !== null)
+      ? LogOptions.fromPartial(object.logOptions)
+      : undefined;
     return message;
   },
 };
@@ -903,6 +948,121 @@ export const DataStreamExport = {
 };
 
 messageTypeRegistry.set(DataStreamExport.$type, DataStreamExport);
+
+function createBaseLogOptions(): LogOptions {
+  return {
+    $type: "yandex.cloud.iot.devices.v1.LogOptions",
+    disabled: false,
+    logGroupId: undefined,
+    folderId: undefined,
+    minLevel: 0,
+  };
+}
+
+export const LogOptions = {
+  $type: "yandex.cloud.iot.devices.v1.LogOptions" as const,
+
+  encode(message: LogOptions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.disabled === true) {
+      writer.uint32(8).bool(message.disabled);
+    }
+    if (message.logGroupId !== undefined) {
+      writer.uint32(18).string(message.logGroupId);
+    }
+    if (message.folderId !== undefined) {
+      writer.uint32(26).string(message.folderId);
+    }
+    if (message.minLevel !== 0) {
+      writer.uint32(32).int32(message.minLevel);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): LogOptions {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLogOptions();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.disabled = reader.bool();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.logGroupId = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.folderId = reader.string();
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.minLevel = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LogOptions {
+    return {
+      $type: LogOptions.$type,
+      disabled: isSet(object.disabled) ? globalThis.Boolean(object.disabled) : false,
+      logGroupId: isSet(object.logGroupId) ? globalThis.String(object.logGroupId) : undefined,
+      folderId: isSet(object.folderId) ? globalThis.String(object.folderId) : undefined,
+      minLevel: isSet(object.minLevel) ? logLevel_LevelFromJSON(object.minLevel) : 0,
+    };
+  },
+
+  toJSON(message: LogOptions): unknown {
+    const obj: any = {};
+    if (message.disabled === true) {
+      obj.disabled = message.disabled;
+    }
+    if (message.logGroupId !== undefined) {
+      obj.logGroupId = message.logGroupId;
+    }
+    if (message.folderId !== undefined) {
+      obj.folderId = message.folderId;
+    }
+    if (message.minLevel !== 0) {
+      obj.minLevel = logLevel_LevelToJSON(message.minLevel);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<LogOptions>, I>>(base?: I): LogOptions {
+    return LogOptions.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LogOptions>, I>>(object: I): LogOptions {
+    const message = createBaseLogOptions();
+    message.disabled = object.disabled ?? false;
+    message.logGroupId = object.logGroupId ?? undefined;
+    message.folderId = object.folderId ?? undefined;
+    message.minLevel = object.minLevel ?? 0;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(LogOptions.$type, LogOptions);
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 

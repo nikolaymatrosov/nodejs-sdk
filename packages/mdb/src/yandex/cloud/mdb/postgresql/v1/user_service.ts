@@ -14,7 +14,15 @@ import { Operation } from "@yandex-cloud/core/dist/generated/yandex/cloud/operat
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { messageTypeRegistry } from "../../../../../typeRegistry";
-import { Permission, User, UserSettings, UserSpec } from "./user";
+import {
+  Permission,
+  User,
+  UserPasswordEncryption,
+  userPasswordEncryptionFromJSON,
+  userPasswordEncryptionToJSON,
+  UserSettings,
+  UserSpec,
+} from "./user";
 
 export const protobufPackage = "yandex.cloud.mdb.postgresql.v1";
 
@@ -136,7 +144,14 @@ export interface UpdateUserRequest {
    *
    * Default value: `unspecified` (inherits cluster's deletion_protection)
    */
-  deletionProtection?: boolean | undefined;
+  deletionProtection?:
+    | boolean
+    | undefined;
+  /**
+   * New password-based authentication method for user.
+   * Possible values are `` USER_PASSWORD_ENCRYPTION_MD5 `` or `` USER_PASSWORD_ENCRYPTION_SCRAM_SHA_256 ``.
+   */
+  userPasswordEncryption: UserPasswordEncryption;
 }
 
 export interface UpdateUserMetadata {
@@ -645,6 +660,7 @@ function createBaseUpdateUserRequest(): UpdateUserRequest {
     login: undefined,
     grants: [],
     deletionProtection: undefined,
+    userPasswordEncryption: 0,
   };
 }
 
@@ -685,6 +701,9 @@ export const UpdateUserRequest = {
         { $type: "google.protobuf.BoolValue", value: message.deletionProtection! },
         writer.uint32(82).fork(),
       ).ldelim();
+    }
+    if (message.userPasswordEncryption !== 0) {
+      writer.uint32(88).int32(message.userPasswordEncryption);
     }
     return writer;
   },
@@ -766,6 +785,13 @@ export const UpdateUserRequest = {
 
           message.deletionProtection = BoolValue.decode(reader, reader.uint32()).value;
           continue;
+        case 11:
+          if (tag !== 88) {
+            break;
+          }
+
+          message.userPasswordEncryption = reader.int32() as any;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -790,6 +816,9 @@ export const UpdateUserRequest = {
       login: isSet(object.login) ? Boolean(object.login) : undefined,
       grants: globalThis.Array.isArray(object?.grants) ? object.grants.map((e: any) => globalThis.String(e)) : [],
       deletionProtection: isSet(object.deletionProtection) ? Boolean(object.deletionProtection) : undefined,
+      userPasswordEncryption: isSet(object.userPasswordEncryption)
+        ? userPasswordEncryptionFromJSON(object.userPasswordEncryption)
+        : 0,
     };
   },
 
@@ -825,6 +854,9 @@ export const UpdateUserRequest = {
     if (message.deletionProtection !== undefined) {
       obj.deletionProtection = message.deletionProtection;
     }
+    if (message.userPasswordEncryption !== 0) {
+      obj.userPasswordEncryption = userPasswordEncryptionToJSON(message.userPasswordEncryption);
+    }
     return obj;
   },
 
@@ -845,6 +877,7 @@ export const UpdateUserRequest = {
     message.login = object.login ?? undefined;
     message.grants = object.grants?.map((e) => e) || [];
     message.deletionProtection = object.deletionProtection ?? undefined;
+    message.userPasswordEncryption = object.userPasswordEncryption ?? 0;
     return message;
   },
 };

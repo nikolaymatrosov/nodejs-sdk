@@ -8,6 +8,7 @@ import type {
   ServiceError,
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { Duration } from "@yandex-cloud/core/dist/generated/google/protobuf/duration";
 import { FieldMask } from "@yandex-cloud/core/dist/generated/google/protobuf/field_mask";
 import {
   ListAccessBindingsRequest,
@@ -19,7 +20,7 @@ import { Operation } from "@yandex-cloud/core/dist/generated/yandex/cloud/operat
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { messageTypeRegistry } from "../../../../typeRegistry";
-import { DiskPlacementPolicy } from "./disk";
+import { DiskPlacementPolicy, DiskPlacementPolicyChange } from "./disk";
 import {
   GpuSettings,
   Instance,
@@ -31,6 +32,7 @@ import {
   PlacementPolicy,
   SchedulingPolicy,
 } from "./instance";
+import { MaintenancePolicy, maintenancePolicyFromJSON, maintenancePolicyToJSON } from "./maintenance";
 
 export const protobufPackage = "yandex.cloud.compute.v1";
 
@@ -227,12 +229,18 @@ export interface CreateInstanceRequest {
   networkSettings?:
     | NetworkSettings
     | undefined;
+  /** Placement policy configuration. */
+  placementPolicy?:
+    | PlacementPolicy
+    | undefined;
   /** GPU settings. */
   gpuSettings?:
     | GpuSettings
     | undefined;
-  /** Placement policy configuration. */
-  placementPolicy?: PlacementPolicy | undefined;
+  /** Behaviour on maintenance events */
+  maintenancePolicy: MaintenancePolicy;
+  /** Time between notification via metadata service and maintenance */
+  maintenanceGracePeriod?: Duration | undefined;
 }
 
 export interface CreateInstanceRequest_LabelsEntry {
@@ -321,7 +329,13 @@ export interface UpdateInstanceRequest {
     | PlacementPolicy
     | undefined;
   /** Scheduling policy configuration. */
-  schedulingPolicy?: SchedulingPolicy | undefined;
+  schedulingPolicy?:
+    | SchedulingPolicy
+    | undefined;
+  /** Behaviour on maintenance events */
+  maintenancePolicy: MaintenancePolicy;
+  /** Time between notification via metadata service and maintenance */
+  maintenanceGracePeriod?: Duration | undefined;
 }
 
 export interface UpdateInstanceRequest_LabelsEntry {
@@ -570,7 +584,7 @@ export interface RemoveInstanceOneToOneNatMetadata {
 
 export interface UpdateInstanceNetworkInterfaceRequest {
   $type: "yandex.cloud.compute.v1.UpdateInstanceNetworkInterfaceRequest";
-  /** ID of the network interface that is being updated. */
+  /** ID of the instance that is being updated. */
   instanceId: string;
   /** The index of the network interface to be updated. */
   networkInterfaceIndex: string;
@@ -598,6 +612,16 @@ export interface UpdateInstanceNetworkInterfaceMetadata {
   instanceId: string;
   /** The index of the network interface. */
   networkInterfaceIndex: string;
+}
+
+export interface SimulateInstanceMaintenanceEventRequest {
+  $type: "yandex.cloud.compute.v1.SimulateInstanceMaintenanceEventRequest";
+  instanceId: string;
+}
+
+export interface SimulateInstanceMaintenanceEventMetadata {
+  $type: "yandex.cloud.compute.v1.SimulateInstanceMaintenanceEventMetadata";
+  instanceId: string;
 }
 
 export interface ListInstanceOperationsRequest {
@@ -898,6 +922,18 @@ export interface RelocateInstanceRequest {
    * To get the zone ID, make a [ZoneService.List] request.
    */
   destinationZoneId: string;
+  /**
+   * Network configuration for the instance. Specifies how the network interface is configured
+   * to interact with other services on the internal network and on the internet.
+   * Currently only one network interface is supported per instance.
+   */
+  networkInterfaceSpecs: NetworkInterfaceSpec[];
+  /** Boot disk placement policy configuration in target zone. Must be specified if disk has placement policy. */
+  bootDiskPlacement?:
+    | DiskPlacementPolicy
+    | undefined;
+  /** Secondary disk placement policy configurations in target zone. Must be specified for each disk that has placement policy. */
+  secondaryDiskPlacements: DiskPlacementPolicyChange[];
 }
 
 export interface RelocateInstanceMetadata {
@@ -1240,8 +1276,10 @@ function createBaseCreateInstanceRequest(): CreateInstanceRequest {
     schedulingPolicy: undefined,
     serviceAccountId: "",
     networkSettings: undefined,
-    gpuSettings: undefined,
     placementPolicy: undefined,
+    gpuSettings: undefined,
+    maintenancePolicy: 0,
+    maintenanceGracePeriod: undefined,
   };
 }
 
@@ -1311,11 +1349,17 @@ export const CreateInstanceRequest = {
     if (message.networkSettings !== undefined) {
       NetworkSettings.encode(message.networkSettings, writer.uint32(122).fork()).ldelim();
     }
+    if (message.placementPolicy !== undefined) {
+      PlacementPolicy.encode(message.placementPolicy, writer.uint32(130).fork()).ldelim();
+    }
     if (message.gpuSettings !== undefined) {
       GpuSettings.encode(message.gpuSettings, writer.uint32(162).fork()).ldelim();
     }
-    if (message.placementPolicy !== undefined) {
-      PlacementPolicy.encode(message.placementPolicy, writer.uint32(130).fork()).ldelim();
+    if (message.maintenancePolicy !== 0) {
+      writer.uint32(168).int32(message.maintenancePolicy);
+    }
+    if (message.maintenanceGracePeriod !== undefined) {
+      Duration.encode(message.maintenanceGracePeriod, writer.uint32(178).fork()).ldelim();
     }
     return writer;
   },
@@ -1459,6 +1503,13 @@ export const CreateInstanceRequest = {
 
           message.networkSettings = NetworkSettings.decode(reader, reader.uint32());
           continue;
+        case 16:
+          if (tag !== 130) {
+            break;
+          }
+
+          message.placementPolicy = PlacementPolicy.decode(reader, reader.uint32());
+          continue;
         case 20:
           if (tag !== 162) {
             break;
@@ -1466,12 +1517,19 @@ export const CreateInstanceRequest = {
 
           message.gpuSettings = GpuSettings.decode(reader, reader.uint32());
           continue;
-        case 16:
-          if (tag !== 130) {
+        case 21:
+          if (tag !== 168) {
             break;
           }
 
-          message.placementPolicy = PlacementPolicy.decode(reader, reader.uint32());
+          message.maintenancePolicy = reader.int32() as any;
+          continue;
+        case 22:
+          if (tag !== 178) {
+            break;
+          }
+
+          message.maintenanceGracePeriod = Duration.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1521,8 +1579,12 @@ export const CreateInstanceRequest = {
       schedulingPolicy: isSet(object.schedulingPolicy) ? SchedulingPolicy.fromJSON(object.schedulingPolicy) : undefined,
       serviceAccountId: isSet(object.serviceAccountId) ? globalThis.String(object.serviceAccountId) : "",
       networkSettings: isSet(object.networkSettings) ? NetworkSettings.fromJSON(object.networkSettings) : undefined,
-      gpuSettings: isSet(object.gpuSettings) ? GpuSettings.fromJSON(object.gpuSettings) : undefined,
       placementPolicy: isSet(object.placementPolicy) ? PlacementPolicy.fromJSON(object.placementPolicy) : undefined,
+      gpuSettings: isSet(object.gpuSettings) ? GpuSettings.fromJSON(object.gpuSettings) : undefined,
+      maintenancePolicy: isSet(object.maintenancePolicy) ? maintenancePolicyFromJSON(object.maintenancePolicy) : 0,
+      maintenanceGracePeriod: isSet(object.maintenanceGracePeriod)
+        ? Duration.fromJSON(object.maintenanceGracePeriod)
+        : undefined,
     };
   },
 
@@ -1594,11 +1656,17 @@ export const CreateInstanceRequest = {
     if (message.networkSettings !== undefined) {
       obj.networkSettings = NetworkSettings.toJSON(message.networkSettings);
     }
+    if (message.placementPolicy !== undefined) {
+      obj.placementPolicy = PlacementPolicy.toJSON(message.placementPolicy);
+    }
     if (message.gpuSettings !== undefined) {
       obj.gpuSettings = GpuSettings.toJSON(message.gpuSettings);
     }
-    if (message.placementPolicy !== undefined) {
-      obj.placementPolicy = PlacementPolicy.toJSON(message.placementPolicy);
+    if (message.maintenancePolicy !== 0) {
+      obj.maintenancePolicy = maintenancePolicyToJSON(message.maintenancePolicy);
+    }
+    if (message.maintenanceGracePeriod !== undefined) {
+      obj.maintenanceGracePeriod = Duration.toJSON(message.maintenanceGracePeriod);
     }
     return obj;
   },
@@ -1646,12 +1714,17 @@ export const CreateInstanceRequest = {
     message.networkSettings = (object.networkSettings !== undefined && object.networkSettings !== null)
       ? NetworkSettings.fromPartial(object.networkSettings)
       : undefined;
-    message.gpuSettings = (object.gpuSettings !== undefined && object.gpuSettings !== null)
-      ? GpuSettings.fromPartial(object.gpuSettings)
-      : undefined;
     message.placementPolicy = (object.placementPolicy !== undefined && object.placementPolicy !== null)
       ? PlacementPolicy.fromPartial(object.placementPolicy)
       : undefined;
+    message.gpuSettings = (object.gpuSettings !== undefined && object.gpuSettings !== null)
+      ? GpuSettings.fromPartial(object.gpuSettings)
+      : undefined;
+    message.maintenancePolicy = object.maintenancePolicy ?? 0;
+    message.maintenanceGracePeriod =
+      (object.maintenanceGracePeriod !== undefined && object.maintenanceGracePeriod !== null)
+        ? Duration.fromPartial(object.maintenanceGracePeriod)
+        : undefined;
     return message;
   },
 };
@@ -1904,6 +1977,8 @@ function createBaseUpdateInstanceRequest(): UpdateInstanceRequest {
     networkSettings: undefined,
     placementPolicy: undefined,
     schedulingPolicy: undefined,
+    maintenancePolicy: 0,
+    maintenanceGracePeriod: undefined,
   };
 }
 
@@ -1957,6 +2032,12 @@ export const UpdateInstanceRequest = {
     }
     if (message.schedulingPolicy !== undefined) {
       SchedulingPolicy.encode(message.schedulingPolicy, writer.uint32(98).fork()).ldelim();
+    }
+    if (message.maintenancePolicy !== 0) {
+      writer.uint32(112).int32(message.maintenancePolicy);
+    }
+    if (message.maintenanceGracePeriod !== undefined) {
+      Duration.encode(message.maintenanceGracePeriod, writer.uint32(122).fork()).ldelim();
     }
     return writer;
   },
@@ -2065,6 +2146,20 @@ export const UpdateInstanceRequest = {
 
           message.schedulingPolicy = SchedulingPolicy.decode(reader, reader.uint32());
           continue;
+        case 14:
+          if (tag !== 112) {
+            break;
+          }
+
+          message.maintenancePolicy = reader.int32() as any;
+          continue;
+        case 15:
+          if (tag !== 122) {
+            break;
+          }
+
+          message.maintenanceGracePeriod = Duration.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2100,6 +2195,10 @@ export const UpdateInstanceRequest = {
       networkSettings: isSet(object.networkSettings) ? NetworkSettings.fromJSON(object.networkSettings) : undefined,
       placementPolicy: isSet(object.placementPolicy) ? PlacementPolicy.fromJSON(object.placementPolicy) : undefined,
       schedulingPolicy: isSet(object.schedulingPolicy) ? SchedulingPolicy.fromJSON(object.schedulingPolicy) : undefined,
+      maintenancePolicy: isSet(object.maintenancePolicy) ? maintenancePolicyFromJSON(object.maintenancePolicy) : 0,
+      maintenanceGracePeriod: isSet(object.maintenanceGracePeriod)
+        ? Duration.fromJSON(object.maintenanceGracePeriod)
+        : undefined,
     };
   },
 
@@ -2156,6 +2255,12 @@ export const UpdateInstanceRequest = {
     if (message.schedulingPolicy !== undefined) {
       obj.schedulingPolicy = SchedulingPolicy.toJSON(message.schedulingPolicy);
     }
+    if (message.maintenancePolicy !== 0) {
+      obj.maintenancePolicy = maintenancePolicyToJSON(message.maintenancePolicy);
+    }
+    if (message.maintenanceGracePeriod !== undefined) {
+      obj.maintenanceGracePeriod = Duration.toJSON(message.maintenanceGracePeriod);
+    }
     return obj;
   },
 
@@ -2197,6 +2302,11 @@ export const UpdateInstanceRequest = {
     message.schedulingPolicy = (object.schedulingPolicy !== undefined && object.schedulingPolicy !== null)
       ? SchedulingPolicy.fromPartial(object.schedulingPolicy)
       : undefined;
+    message.maintenancePolicy = object.maintenancePolicy ?? 0;
+    message.maintenanceGracePeriod =
+      (object.maintenanceGracePeriod !== undefined && object.maintenanceGracePeriod !== null)
+        ? Duration.fromPartial(object.maintenanceGracePeriod)
+        : undefined;
     return message;
   },
 };
@@ -4679,6 +4789,142 @@ export const UpdateInstanceNetworkInterfaceMetadata = {
 
 messageTypeRegistry.set(UpdateInstanceNetworkInterfaceMetadata.$type, UpdateInstanceNetworkInterfaceMetadata);
 
+function createBaseSimulateInstanceMaintenanceEventRequest(): SimulateInstanceMaintenanceEventRequest {
+  return { $type: "yandex.cloud.compute.v1.SimulateInstanceMaintenanceEventRequest", instanceId: "" };
+}
+
+export const SimulateInstanceMaintenanceEventRequest = {
+  $type: "yandex.cloud.compute.v1.SimulateInstanceMaintenanceEventRequest" as const,
+
+  encode(message: SimulateInstanceMaintenanceEventRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.instanceId !== "") {
+      writer.uint32(10).string(message.instanceId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SimulateInstanceMaintenanceEventRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSimulateInstanceMaintenanceEventRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.instanceId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SimulateInstanceMaintenanceEventRequest {
+    return {
+      $type: SimulateInstanceMaintenanceEventRequest.$type,
+      instanceId: isSet(object.instanceId) ? globalThis.String(object.instanceId) : "",
+    };
+  },
+
+  toJSON(message: SimulateInstanceMaintenanceEventRequest): unknown {
+    const obj: any = {};
+    if (message.instanceId !== "") {
+      obj.instanceId = message.instanceId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SimulateInstanceMaintenanceEventRequest>, I>>(
+    base?: I,
+  ): SimulateInstanceMaintenanceEventRequest {
+    return SimulateInstanceMaintenanceEventRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SimulateInstanceMaintenanceEventRequest>, I>>(
+    object: I,
+  ): SimulateInstanceMaintenanceEventRequest {
+    const message = createBaseSimulateInstanceMaintenanceEventRequest();
+    message.instanceId = object.instanceId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(SimulateInstanceMaintenanceEventRequest.$type, SimulateInstanceMaintenanceEventRequest);
+
+function createBaseSimulateInstanceMaintenanceEventMetadata(): SimulateInstanceMaintenanceEventMetadata {
+  return { $type: "yandex.cloud.compute.v1.SimulateInstanceMaintenanceEventMetadata", instanceId: "" };
+}
+
+export const SimulateInstanceMaintenanceEventMetadata = {
+  $type: "yandex.cloud.compute.v1.SimulateInstanceMaintenanceEventMetadata" as const,
+
+  encode(message: SimulateInstanceMaintenanceEventMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.instanceId !== "") {
+      writer.uint32(10).string(message.instanceId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SimulateInstanceMaintenanceEventMetadata {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSimulateInstanceMaintenanceEventMetadata();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.instanceId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SimulateInstanceMaintenanceEventMetadata {
+    return {
+      $type: SimulateInstanceMaintenanceEventMetadata.$type,
+      instanceId: isSet(object.instanceId) ? globalThis.String(object.instanceId) : "",
+    };
+  },
+
+  toJSON(message: SimulateInstanceMaintenanceEventMetadata): unknown {
+    const obj: any = {};
+    if (message.instanceId !== "") {
+      obj.instanceId = message.instanceId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SimulateInstanceMaintenanceEventMetadata>, I>>(
+    base?: I,
+  ): SimulateInstanceMaintenanceEventMetadata {
+    return SimulateInstanceMaintenanceEventMetadata.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SimulateInstanceMaintenanceEventMetadata>, I>>(
+    object: I,
+  ): SimulateInstanceMaintenanceEventMetadata {
+    const message = createBaseSimulateInstanceMaintenanceEventMetadata();
+    message.instanceId = object.instanceId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(SimulateInstanceMaintenanceEventMetadata.$type, SimulateInstanceMaintenanceEventMetadata);
+
 function createBaseListInstanceOperationsRequest(): ListInstanceOperationsRequest {
   return { $type: "yandex.cloud.compute.v1.ListInstanceOperationsRequest", instanceId: "", pageSize: 0, pageToken: "" };
 }
@@ -6050,7 +6296,14 @@ export const MoveInstanceMetadata = {
 messageTypeRegistry.set(MoveInstanceMetadata.$type, MoveInstanceMetadata);
 
 function createBaseRelocateInstanceRequest(): RelocateInstanceRequest {
-  return { $type: "yandex.cloud.compute.v1.RelocateInstanceRequest", instanceId: "", destinationZoneId: "" };
+  return {
+    $type: "yandex.cloud.compute.v1.RelocateInstanceRequest",
+    instanceId: "",
+    destinationZoneId: "",
+    networkInterfaceSpecs: [],
+    bootDiskPlacement: undefined,
+    secondaryDiskPlacements: [],
+  };
 }
 
 export const RelocateInstanceRequest = {
@@ -6062,6 +6315,15 @@ export const RelocateInstanceRequest = {
     }
     if (message.destinationZoneId !== "") {
       writer.uint32(18).string(message.destinationZoneId);
+    }
+    for (const v of message.networkInterfaceSpecs) {
+      NetworkInterfaceSpec.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.bootDiskPlacement !== undefined) {
+      DiskPlacementPolicy.encode(message.bootDiskPlacement, writer.uint32(34).fork()).ldelim();
+    }
+    for (const v of message.secondaryDiskPlacements) {
+      DiskPlacementPolicyChange.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -6087,6 +6349,27 @@ export const RelocateInstanceRequest = {
 
           message.destinationZoneId = reader.string();
           continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.networkInterfaceSpecs.push(NetworkInterfaceSpec.decode(reader, reader.uint32()));
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.bootDiskPlacement = DiskPlacementPolicy.decode(reader, reader.uint32());
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.secondaryDiskPlacements.push(DiskPlacementPolicyChange.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -6101,6 +6384,15 @@ export const RelocateInstanceRequest = {
       $type: RelocateInstanceRequest.$type,
       instanceId: isSet(object.instanceId) ? globalThis.String(object.instanceId) : "",
       destinationZoneId: isSet(object.destinationZoneId) ? globalThis.String(object.destinationZoneId) : "",
+      networkInterfaceSpecs: globalThis.Array.isArray(object?.networkInterfaceSpecs)
+        ? object.networkInterfaceSpecs.map((e: any) => NetworkInterfaceSpec.fromJSON(e))
+        : [],
+      bootDiskPlacement: isSet(object.bootDiskPlacement)
+        ? DiskPlacementPolicy.fromJSON(object.bootDiskPlacement)
+        : undefined,
+      secondaryDiskPlacements: globalThis.Array.isArray(object?.secondaryDiskPlacements)
+        ? object.secondaryDiskPlacements.map((e: any) => DiskPlacementPolicyChange.fromJSON(e))
+        : [],
     };
   },
 
@@ -6112,6 +6404,15 @@ export const RelocateInstanceRequest = {
     if (message.destinationZoneId !== "") {
       obj.destinationZoneId = message.destinationZoneId;
     }
+    if (message.networkInterfaceSpecs?.length) {
+      obj.networkInterfaceSpecs = message.networkInterfaceSpecs.map((e) => NetworkInterfaceSpec.toJSON(e));
+    }
+    if (message.bootDiskPlacement !== undefined) {
+      obj.bootDiskPlacement = DiskPlacementPolicy.toJSON(message.bootDiskPlacement);
+    }
+    if (message.secondaryDiskPlacements?.length) {
+      obj.secondaryDiskPlacements = message.secondaryDiskPlacements.map((e) => DiskPlacementPolicyChange.toJSON(e));
+    }
     return obj;
   },
 
@@ -6122,6 +6423,12 @@ export const RelocateInstanceRequest = {
     const message = createBaseRelocateInstanceRequest();
     message.instanceId = object.instanceId ?? "";
     message.destinationZoneId = object.destinationZoneId ?? "";
+    message.networkInterfaceSpecs = object.networkInterfaceSpecs?.map((e) => NetworkInterfaceSpec.fromPartial(e)) || [];
+    message.bootDiskPlacement = (object.bootDiskPlacement !== undefined && object.bootDiskPlacement !== null)
+      ? DiskPlacementPolicy.fromPartial(object.bootDiskPlacement)
+      : undefined;
+    message.secondaryDiskPlacements =
+      object.secondaryDiskPlacements?.map((e) => DiskPlacementPolicyChange.fromPartial(e)) || [];
     return message;
   },
 };
@@ -6673,6 +6980,16 @@ export const InstanceServiceService = {
     responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Operation.decode(value),
   },
+  simulateMaintenanceEvent: {
+    path: "/yandex.cloud.compute.v1.InstanceService/SimulateMaintenanceEvent",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: SimulateInstanceMaintenanceEventRequest) =>
+      Buffer.from(SimulateInstanceMaintenanceEventRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => SimulateInstanceMaintenanceEventRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
   /** Lists access bindings for the instance. */
   listAccessBindings: {
     path: "/yandex.cloud.compute.v1.InstanceService/ListAccessBindings",
@@ -6788,6 +7105,7 @@ export interface InstanceServiceServer extends UntypedServiceImplementation {
    * Running instance will be restarted during this operation.
    */
   relocate: handleUnaryCall<RelocateInstanceRequest, Operation>;
+  simulateMaintenanceEvent: handleUnaryCall<SimulateInstanceMaintenanceEventRequest, Operation>;
   /** Lists access bindings for the instance. */
   listAccessBindings: handleUnaryCall<ListAccessBindingsRequest, ListAccessBindingsResponse>;
   /** Sets access bindings for the instance. */
@@ -7149,6 +7467,21 @@ export interface InstanceServiceClient extends Client {
   ): ClientUnaryCall;
   relocate(
     request: RelocateInstanceRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  simulateMaintenanceEvent(
+    request: SimulateInstanceMaintenanceEventRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  simulateMaintenanceEvent(
+    request: SimulateInstanceMaintenanceEventRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  simulateMaintenanceEvent(
+    request: SimulateInstanceMaintenanceEventRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Operation) => void,

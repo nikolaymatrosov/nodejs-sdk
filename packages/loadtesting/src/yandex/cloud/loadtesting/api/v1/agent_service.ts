@@ -19,44 +19,107 @@ export const protobufPackage = "yandex.cloud.loadtesting.api.v1";
 
 export interface CreateAgentRequest {
   $type: "yandex.cloud.loadtesting.api.v1.CreateAgentRequest";
+  /** ID of the folder to create an agent in. */
   folderId: string;
+  /**
+   * Name of the agent.
+   *
+   * A created compute instance will have the same name.
+   */
   name: string;
+  /**
+   * Description of the agent.
+   *
+   * A created compute instance will have the same description.
+   */
   description: string;
-  computeInstanceParams?: CreateComputeInstance | undefined;
+  /** Parameters for compute instance to be created. */
+  computeInstanceParams?:
+    | CreateComputeInstance
+    | undefined;
+  /**
+   * Version of the agent.
+   *
+   * If not provided, the most recent agent version will be used.
+   */
   agentVersion: string;
 }
 
 export interface CreateAgentMetadata {
   $type: "yandex.cloud.loadtesting.api.v1.CreateAgentMetadata";
+  /** ID of the agent that is being created. */
   agentId: string;
 }
 
 export interface GetAgentRequest {
   $type: "yandex.cloud.loadtesting.api.v1.GetAgentRequest";
+  /** ID of the agent to return. */
   agentId: string;
 }
 
 export interface DeleteAgentRequest {
   $type: "yandex.cloud.loadtesting.api.v1.DeleteAgentRequest";
+  /** ID of the agent to delete. */
   agentId: string;
 }
 
 export interface DeleteAgentMetadata {
   $type: "yandex.cloud.loadtesting.api.v1.DeleteAgentMetadata";
+  /** ID of the agent that is being deleted. */
   agentId: string;
 }
 
 export interface ListAgentsRequest {
   $type: "yandex.cloud.loadtesting.api.v1.ListAgentsRequest";
+  /** ID of the folder to list agents in. */
   folderId: string;
+  /**
+   * The maximum number of results per page to return. If the number of available
+   * results is larger than `page_size`, the service returns a [ListAgentsResponse.next_page_token]
+   * that can be used to get the next page of results in subsequent list requests.
+   * Default value: 100.
+   */
   pageSize: number;
+  /**
+   * Page token. To get the next page of results, set `page_token` to the
+   * [ListAgentsResponse.next_page_token] returned by a previous list request.
+   */
   pageToken: string;
+  /**
+   * A filter expression that filters agents listed in the response.
+   *
+   * The filter expression may contain multiple field expressions joined by `AND`.
+   * The field expression must specify:
+   * 1. The field name.
+   * 2. An operator:
+   *    - `=`, `!=`, `CONTAINS`, for single values.
+   *    - `IN` or `NOT IN` for lists of values.
+   * 3. The value. String values must be encosed in `"`, boolean values are {`true`, `false`}, timestamp values in ISO-8601.
+   *
+   * Currently supported fields:
+   * - `id` [yandex.cloud.loadtesting.api.v1.agent.Agent.id]
+   *   - operators: `=`, `!=`, `IN`, `NOT IN`
+   * - `name` [yandex.cloud.loadtesting.api.v1.agent.Agent.name]
+   *   - operators: `=`, `!=`, `IN`, `NOT IN`, `CONTAINS`
+   *
+   * Examples:
+   * - `id IN ("1", "2", "3")`
+   * - `name CONTAINS "compute-agent-large" AND id NOT IN ("4", "5")`
+   */
   filter: string;
 }
 
 export interface ListAgentsResponse {
   $type: "yandex.cloud.loadtesting.api.v1.ListAgentsResponse";
+  /** List of agents in the specified folder. */
   agents: Agent[];
+  /**
+   * Token for getting the next page of the list. If the number of results is greater than
+   * the specified [ListAgentsRequest.page_size], use `next_page_token` as the value
+   * for the [ListAgentsRequest.page_token] parameter in the next list request.
+   *
+   * Each subsequent page will have its own `next_page_token` to continue paging through the results.
+   */
   nextPageToken: string;
 }
 
@@ -640,8 +703,14 @@ export const ListAgentsResponse = {
 
 messageTypeRegistry.set(ListAgentsResponse.$type, ListAgentsResponse);
 
+/** A set of methods for managing Load Testing agents. */
 export type AgentServiceService = typeof AgentServiceService;
 export const AgentServiceService = {
+  /**
+   * Creates an agent in the specified folder.
+   *
+   * Also creates a corresponding compute instance.
+   */
   create: {
     path: "/yandex.cloud.loadtesting.api.v1.AgentService/Create",
     requestStream: false,
@@ -651,6 +720,11 @@ export const AgentServiceService = {
     responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Operation.decode(value),
   },
+  /**
+   * Returns the specified agent.
+   *
+   * To get the list of all available agents, make a [List] request.
+   */
   get: {
     path: "/yandex.cloud.loadtesting.api.v1.AgentService/Get",
     requestStream: false,
@@ -660,6 +734,7 @@ export const AgentServiceService = {
     responseSerialize: (value: Agent) => Buffer.from(Agent.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Agent.decode(value),
   },
+  /** Retrieves the list of agents in the specified folder. */
   list: {
     path: "/yandex.cloud.loadtesting.api.v1.AgentService/List",
     requestStream: false,
@@ -669,6 +744,11 @@ export const AgentServiceService = {
     responseSerialize: (value: ListAgentsResponse) => Buffer.from(ListAgentsResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => ListAgentsResponse.decode(value),
   },
+  /**
+   * Deletes the specified agent.
+   *
+   * Also deletes a corresponding compute instance.
+   */
   delete: {
     path: "/yandex.cloud.loadtesting.api.v1.AgentService/Delete",
     requestStream: false,
@@ -681,13 +761,34 @@ export const AgentServiceService = {
 } as const;
 
 export interface AgentServiceServer extends UntypedServiceImplementation {
+  /**
+   * Creates an agent in the specified folder.
+   *
+   * Also creates a corresponding compute instance.
+   */
   create: handleUnaryCall<CreateAgentRequest, Operation>;
+  /**
+   * Returns the specified agent.
+   *
+   * To get the list of all available agents, make a [List] request.
+   */
   get: handleUnaryCall<GetAgentRequest, Agent>;
+  /** Retrieves the list of agents in the specified folder. */
   list: handleUnaryCall<ListAgentsRequest, ListAgentsResponse>;
+  /**
+   * Deletes the specified agent.
+   *
+   * Also deletes a corresponding compute instance.
+   */
   delete: handleUnaryCall<DeleteAgentRequest, Operation>;
 }
 
 export interface AgentServiceClient extends Client {
+  /**
+   * Creates an agent in the specified folder.
+   *
+   * Also creates a corresponding compute instance.
+   */
   create(
     request: CreateAgentRequest,
     callback: (error: ServiceError | null, response: Operation) => void,
@@ -703,6 +804,11 @@ export interface AgentServiceClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Operation) => void,
   ): ClientUnaryCall;
+  /**
+   * Returns the specified agent.
+   *
+   * To get the list of all available agents, make a [List] request.
+   */
   get(request: GetAgentRequest, callback: (error: ServiceError | null, response: Agent) => void): ClientUnaryCall;
   get(
     request: GetAgentRequest,
@@ -715,6 +821,7 @@ export interface AgentServiceClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Agent) => void,
   ): ClientUnaryCall;
+  /** Retrieves the list of agents in the specified folder. */
   list(
     request: ListAgentsRequest,
     callback: (error: ServiceError | null, response: ListAgentsResponse) => void,
@@ -730,6 +837,11 @@ export interface AgentServiceClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: ListAgentsResponse) => void,
   ): ClientUnaryCall;
+  /**
+   * Deletes the specified agent.
+   *
+   * Also deletes a corresponding compute instance.
+   */
   delete(
     request: DeleteAgentRequest,
     callback: (error: ServiceError | null, response: Operation) => void,

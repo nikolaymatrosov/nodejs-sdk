@@ -20,6 +20,7 @@ import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { messageTypeRegistry } from "../../../../typeRegistry";
 import { Community } from "./community";
+import { ResourceType, resourceTypeFromJSON, resourceTypeToJSON } from "./resource_types";
 
 export const protobufPackage = "yandex.cloud.datasphere.v2";
 
@@ -147,6 +148,20 @@ export interface UpdateCommunityAccessBindingsMetadata {
   $type: "yandex.cloud.datasphere.v2.UpdateCommunityAccessBindingsMetadata";
   /** ID of the community which access bindings are updated. */
   communityId: string;
+}
+
+export interface AddCommunityResourceRequest {
+  $type: "yandex.cloud.datasphere.v2.AddCommunityResourceRequest";
+  communityId: string;
+  resourceType: ResourceType;
+  resourceId: string;
+}
+
+export interface RemoveCommunityResourceRequest {
+  $type: "yandex.cloud.datasphere.v2.RemoveCommunityResourceRequest";
+  communityId: string;
+  resourceType: ResourceType;
+  resourceId: string;
 }
 
 function createBaseCreateCommunityRequest(): CreateCommunityRequest {
@@ -1309,6 +1324,207 @@ export const UpdateCommunityAccessBindingsMetadata = {
 
 messageTypeRegistry.set(UpdateCommunityAccessBindingsMetadata.$type, UpdateCommunityAccessBindingsMetadata);
 
+function createBaseAddCommunityResourceRequest(): AddCommunityResourceRequest {
+  return {
+    $type: "yandex.cloud.datasphere.v2.AddCommunityResourceRequest",
+    communityId: "",
+    resourceType: 0,
+    resourceId: "",
+  };
+}
+
+export const AddCommunityResourceRequest = {
+  $type: "yandex.cloud.datasphere.v2.AddCommunityResourceRequest" as const,
+
+  encode(message: AddCommunityResourceRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.communityId !== "") {
+      writer.uint32(10).string(message.communityId);
+    }
+    if (message.resourceType !== 0) {
+      writer.uint32(16).int32(message.resourceType);
+    }
+    if (message.resourceId !== "") {
+      writer.uint32(26).string(message.resourceId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AddCommunityResourceRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAddCommunityResourceRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.communityId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.resourceType = reader.int32() as any;
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.resourceId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AddCommunityResourceRequest {
+    return {
+      $type: AddCommunityResourceRequest.$type,
+      communityId: isSet(object.communityId) ? globalThis.String(object.communityId) : "",
+      resourceType: isSet(object.resourceType) ? resourceTypeFromJSON(object.resourceType) : 0,
+      resourceId: isSet(object.resourceId) ? globalThis.String(object.resourceId) : "",
+    };
+  },
+
+  toJSON(message: AddCommunityResourceRequest): unknown {
+    const obj: any = {};
+    if (message.communityId !== "") {
+      obj.communityId = message.communityId;
+    }
+    if (message.resourceType !== 0) {
+      obj.resourceType = resourceTypeToJSON(message.resourceType);
+    }
+    if (message.resourceId !== "") {
+      obj.resourceId = message.resourceId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AddCommunityResourceRequest>, I>>(base?: I): AddCommunityResourceRequest {
+    return AddCommunityResourceRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AddCommunityResourceRequest>, I>>(object: I): AddCommunityResourceRequest {
+    const message = createBaseAddCommunityResourceRequest();
+    message.communityId = object.communityId ?? "";
+    message.resourceType = object.resourceType ?? 0;
+    message.resourceId = object.resourceId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(AddCommunityResourceRequest.$type, AddCommunityResourceRequest);
+
+function createBaseRemoveCommunityResourceRequest(): RemoveCommunityResourceRequest {
+  return {
+    $type: "yandex.cloud.datasphere.v2.RemoveCommunityResourceRequest",
+    communityId: "",
+    resourceType: 0,
+    resourceId: "",
+  };
+}
+
+export const RemoveCommunityResourceRequest = {
+  $type: "yandex.cloud.datasphere.v2.RemoveCommunityResourceRequest" as const,
+
+  encode(message: RemoveCommunityResourceRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.communityId !== "") {
+      writer.uint32(10).string(message.communityId);
+    }
+    if (message.resourceType !== 0) {
+      writer.uint32(16).int32(message.resourceType);
+    }
+    if (message.resourceId !== "") {
+      writer.uint32(26).string(message.resourceId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RemoveCommunityResourceRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRemoveCommunityResourceRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.communityId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.resourceType = reader.int32() as any;
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.resourceId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RemoveCommunityResourceRequest {
+    return {
+      $type: RemoveCommunityResourceRequest.$type,
+      communityId: isSet(object.communityId) ? globalThis.String(object.communityId) : "",
+      resourceType: isSet(object.resourceType) ? resourceTypeFromJSON(object.resourceType) : 0,
+      resourceId: isSet(object.resourceId) ? globalThis.String(object.resourceId) : "",
+    };
+  },
+
+  toJSON(message: RemoveCommunityResourceRequest): unknown {
+    const obj: any = {};
+    if (message.communityId !== "") {
+      obj.communityId = message.communityId;
+    }
+    if (message.resourceType !== 0) {
+      obj.resourceType = resourceTypeToJSON(message.resourceType);
+    }
+    if (message.resourceId !== "") {
+      obj.resourceId = message.resourceId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RemoveCommunityResourceRequest>, I>>(base?: I): RemoveCommunityResourceRequest {
+    return RemoveCommunityResourceRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RemoveCommunityResourceRequest>, I>>(
+    object: I,
+  ): RemoveCommunityResourceRequest {
+    const message = createBaseRemoveCommunityResourceRequest();
+    message.communityId = object.communityId ?? "";
+    message.resourceType = object.resourceType ?? 0;
+    message.resourceId = object.resourceId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(RemoveCommunityResourceRequest.$type, RemoveCommunityResourceRequest);
+
+/** A set of methods for managing Community resources. */
 export type CommunityServiceService = typeof CommunityServiceService;
 export const CommunityServiceService = {
   /** Creates community in specified organization. */
@@ -1394,6 +1610,28 @@ export const CommunityServiceService = {
     responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Operation.decode(value),
   },
+  /** Adds shared resource to community */
+  addResource: {
+    path: "/yandex.cloud.datasphere.v2.CommunityService/AddResource",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: AddCommunityResourceRequest) =>
+      Buffer.from(AddCommunityResourceRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AddCommunityResourceRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
+  /** Removes shared resource from community */
+  removeResource: {
+    path: "/yandex.cloud.datasphere.v2.CommunityService/RemoveResource",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: RemoveCommunityResourceRequest) =>
+      Buffer.from(RemoveCommunityResourceRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => RemoveCommunityResourceRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
 } as const;
 
 export interface CommunityServiceServer extends UntypedServiceImplementation {
@@ -1413,6 +1651,10 @@ export interface CommunityServiceServer extends UntypedServiceImplementation {
   setAccessBindings: handleUnaryCall<SetAccessBindingsRequest, Operation>;
   /** Updates access bindings for specified community. */
   updateAccessBindings: handleUnaryCall<UpdateAccessBindingsRequest, Operation>;
+  /** Adds shared resource to community */
+  addResource: handleUnaryCall<AddCommunityResourceRequest, Operation>;
+  /** Removes shared resource from community */
+  removeResource: handleUnaryCall<RemoveCommunityResourceRequest, Operation>;
 }
 
 export interface CommunityServiceClient extends Client {
@@ -1540,6 +1782,38 @@ export interface CommunityServiceClient extends Client {
   ): ClientUnaryCall;
   updateAccessBindings(
     request: UpdateAccessBindingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  /** Adds shared resource to community */
+  addResource(
+    request: AddCommunityResourceRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  addResource(
+    request: AddCommunityResourceRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  addResource(
+    request: AddCommunityResourceRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  /** Removes shared resource from community */
+  removeResource(
+    request: RemoveCommunityResourceRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  removeResource(
+    request: RemoveCommunityResourceRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  removeResource(
+    request: RemoveCommunityResourceRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Operation) => void,

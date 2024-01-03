@@ -9,6 +9,12 @@ import type {
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 import { FieldMask } from "@yandex-cloud/core/dist/generated/google/protobuf/field_mask";
+import {
+  ListAccessBindingsRequest,
+  ListAccessBindingsResponse,
+  SetAccessBindingsRequest,
+  UpdateAccessBindingsRequest,
+} from "@yandex-cloud/core/dist/generated/yandex/cloud/access/access";
 import { Operation } from "@yandex-cloud/core/dist/generated/yandex/cloud/operation/operation";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
@@ -1470,6 +1476,39 @@ export const SnapshotServiceService = {
       Buffer.from(ListSnapshotOperationsResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => ListSnapshotOperationsResponse.decode(value),
   },
+  /** Lists access bindings for the snapshot. */
+  listAccessBindings: {
+    path: "/yandex.cloud.compute.v1.SnapshotService/ListAccessBindings",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ListAccessBindingsRequest) =>
+      Buffer.from(ListAccessBindingsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => ListAccessBindingsRequest.decode(value),
+    responseSerialize: (value: ListAccessBindingsResponse) =>
+      Buffer.from(ListAccessBindingsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => ListAccessBindingsResponse.decode(value),
+  },
+  /** Sets access bindings for the snapshot. */
+  setAccessBindings: {
+    path: "/yandex.cloud.compute.v1.SnapshotService/SetAccessBindings",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: SetAccessBindingsRequest) => Buffer.from(SetAccessBindingsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => SetAccessBindingsRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
+  /** Updates access bindings for the snapshot. */
+  updateAccessBindings: {
+    path: "/yandex.cloud.compute.v1.SnapshotService/UpdateAccessBindings",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: UpdateAccessBindingsRequest) =>
+      Buffer.from(UpdateAccessBindingsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => UpdateAccessBindingsRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
 } as const;
 
 export interface SnapshotServiceServer extends UntypedServiceImplementation {
@@ -1497,6 +1536,12 @@ export interface SnapshotServiceServer extends UntypedServiceImplementation {
   delete: handleUnaryCall<DeleteSnapshotRequest, Operation>;
   /** Lists operations for the specified snapshot. */
   listOperations: handleUnaryCall<ListSnapshotOperationsRequest, ListSnapshotOperationsResponse>;
+  /** Lists access bindings for the snapshot. */
+  listAccessBindings: handleUnaryCall<ListAccessBindingsRequest, ListAccessBindingsResponse>;
+  /** Sets access bindings for the snapshot. */
+  setAccessBindings: handleUnaryCall<SetAccessBindingsRequest, Operation>;
+  /** Updates access bindings for the snapshot. */
+  updateAccessBindings: handleUnaryCall<UpdateAccessBindingsRequest, Operation>;
 }
 
 export interface SnapshotServiceClient extends Client {
@@ -1604,6 +1649,54 @@ export interface SnapshotServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: ListSnapshotOperationsResponse) => void,
+  ): ClientUnaryCall;
+  /** Lists access bindings for the snapshot. */
+  listAccessBindings(
+    request: ListAccessBindingsRequest,
+    callback: (error: ServiceError | null, response: ListAccessBindingsResponse) => void,
+  ): ClientUnaryCall;
+  listAccessBindings(
+    request: ListAccessBindingsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ListAccessBindingsResponse) => void,
+  ): ClientUnaryCall;
+  listAccessBindings(
+    request: ListAccessBindingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ListAccessBindingsResponse) => void,
+  ): ClientUnaryCall;
+  /** Sets access bindings for the snapshot. */
+  setAccessBindings(
+    request: SetAccessBindingsRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  setAccessBindings(
+    request: SetAccessBindingsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  setAccessBindings(
+    request: SetAccessBindingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  /** Updates access bindings for the snapshot. */
+  updateAccessBindings(
+    request: UpdateAccessBindingsRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  updateAccessBindings(
+    request: UpdateAccessBindingsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  updateAccessBindings(
+    request: UpdateAccessBindingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
   ): ClientUnaryCall;
 }
 

@@ -5,16 +5,31 @@ import { Status, statusFromJSON, statusToJSON } from "./status";
 
 export const protobufPackage = "yandex.cloud.loadtesting.api.v1.agent";
 
+/** Load testing agent on which tests are executed. */
 export interface Agent {
   $type: "yandex.cloud.loadtesting.api.v1.agent.Agent";
+  /** ID of the agent. Generated at creation time. */
   id: string;
+  /** ID of the folder that the agent belongs to. */
   folderId: string;
+  /** Name of the agent. */
   name: string;
+  /** Description of the agent. */
   description: string;
+  /**
+   * ID of the compute instance managed by the agent.
+   *
+   * Empty if there is no such instance (i.e. the case of external agent).
+   */
   computeInstanceId: string;
+  /** Status of the agent. */
   status: Status;
+  /** List of errors reported by the agent. */
   errors: string[];
+  /** ID of the test that is currently being executed by the agent. */
   currentJobId: string;
+  /** Version of the agent. */
+  agentVersionId: string;
 }
 
 function createBaseAgent(): Agent {
@@ -28,6 +43,7 @@ function createBaseAgent(): Agent {
     status: 0,
     errors: [],
     currentJobId: "",
+    agentVersionId: "",
   };
 }
 
@@ -58,6 +74,9 @@ export const Agent = {
     }
     if (message.currentJobId !== "") {
       writer.uint32(74).string(message.currentJobId);
+    }
+    if (message.agentVersionId !== "") {
+      writer.uint32(82).string(message.agentVersionId);
     }
     return writer;
   },
@@ -125,6 +144,13 @@ export const Agent = {
 
           message.currentJobId = reader.string();
           continue;
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.agentVersionId = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -145,6 +171,7 @@ export const Agent = {
       status: isSet(object.status) ? statusFromJSON(object.status) : 0,
       errors: globalThis.Array.isArray(object?.errors) ? object.errors.map((e: any) => globalThis.String(e)) : [],
       currentJobId: isSet(object.currentJobId) ? globalThis.String(object.currentJobId) : "",
+      agentVersionId: isSet(object.agentVersionId) ? globalThis.String(object.agentVersionId) : "",
     };
   },
 
@@ -174,6 +201,9 @@ export const Agent = {
     if (message.currentJobId !== "") {
       obj.currentJobId = message.currentJobId;
     }
+    if (message.agentVersionId !== "") {
+      obj.agentVersionId = message.agentVersionId;
+    }
     return obj;
   },
 
@@ -190,6 +220,7 @@ export const Agent = {
     message.status = object.status ?? 0;
     message.errors = object.errors?.map((e) => e) || [];
     message.currentJobId = object.currentJobId ?? "";
+    message.agentVersionId = object.agentVersionId ?? "";
     return message;
   },
 };

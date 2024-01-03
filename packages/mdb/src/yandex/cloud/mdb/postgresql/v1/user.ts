@@ -6,6 +6,45 @@ import { messageTypeRegistry } from "../../../../../typeRegistry";
 
 export const protobufPackage = "yandex.cloud.mdb.postgresql.v1";
 
+export enum UserPasswordEncryption {
+  USER_PASSWORD_ENCRYPTION_UNSPECIFIED = 0,
+  USER_PASSWORD_ENCRYPTION_MD5 = 1,
+  USER_PASSWORD_ENCRYPTION_SCRAM_SHA_256 = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function userPasswordEncryptionFromJSON(object: any): UserPasswordEncryption {
+  switch (object) {
+    case 0:
+    case "USER_PASSWORD_ENCRYPTION_UNSPECIFIED":
+      return UserPasswordEncryption.USER_PASSWORD_ENCRYPTION_UNSPECIFIED;
+    case 1:
+    case "USER_PASSWORD_ENCRYPTION_MD5":
+      return UserPasswordEncryption.USER_PASSWORD_ENCRYPTION_MD5;
+    case 2:
+    case "USER_PASSWORD_ENCRYPTION_SCRAM_SHA_256":
+      return UserPasswordEncryption.USER_PASSWORD_ENCRYPTION_SCRAM_SHA_256;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return UserPasswordEncryption.UNRECOGNIZED;
+  }
+}
+
+export function userPasswordEncryptionToJSON(object: UserPasswordEncryption): string {
+  switch (object) {
+    case UserPasswordEncryption.USER_PASSWORD_ENCRYPTION_UNSPECIFIED:
+      return "USER_PASSWORD_ENCRYPTION_UNSPECIFIED";
+    case UserPasswordEncryption.USER_PASSWORD_ENCRYPTION_MD5:
+      return "USER_PASSWORD_ENCRYPTION_MD5";
+    case UserPasswordEncryption.USER_PASSWORD_ENCRYPTION_SCRAM_SHA_256:
+      return "USER_PASSWORD_ENCRYPTION_SCRAM_SHA_256";
+    case UserPasswordEncryption.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 /**
  * A PostgreSQL User resource. For more information, see
  * the [Developer's Guide](/docs/managed-postgresql/concepts).
@@ -50,7 +89,15 @@ export interface User {
    *
    * Default value: `unspecified` (inherits cluster's deletion_protection)
    */
-  deletionProtection?: boolean | undefined;
+  deletionProtection?:
+    | boolean
+    | undefined;
+  /**
+   * Password-based authentication method for user.
+   * Possible values are `` USER_PASSWORD_ENCRYPTION_MD5 `` or `` USER_PASSWORD_ENCRYPTION_SCRAM_SHA_256 ``.
+   * The default is `` password_encryption `` setting for cluster.
+   */
+  userPasswordEncryption: UserPasswordEncryption;
 }
 
 export interface Permission {
@@ -102,7 +149,15 @@ export interface UserSpec {
    *
    * Default value: `unspecified` (inherits cluster's deletion_protection)
    */
-  deletionProtection?: boolean | undefined;
+  deletionProtection?:
+    | boolean
+    | undefined;
+  /**
+   * Password-based authentication method for user.
+   * Possible values are `` USER_PASSWORD_ENCRYPTION_MD5 `` or `` USER_PASSWORD_ENCRYPTION_SCRAM_SHA_256 ``.
+   * The default is `` password_encryption `` setting for cluster.
+   */
+  userPasswordEncryption: UserPasswordEncryption;
 }
 
 /** PostgreSQL user settings. */
@@ -472,6 +527,7 @@ function createBaseUser(): User {
     login: undefined,
     grants: [],
     deletionProtection: undefined,
+    userPasswordEncryption: 0,
   };
 }
 
@@ -506,6 +562,9 @@ export const User = {
         { $type: "google.protobuf.BoolValue", value: message.deletionProtection! },
         writer.uint32(66).fork(),
       ).ldelim();
+    }
+    if (message.userPasswordEncryption !== 0) {
+      writer.uint32(72).int32(message.userPasswordEncryption);
     }
     return writer;
   },
@@ -573,6 +632,13 @@ export const User = {
 
           message.deletionProtection = BoolValue.decode(reader, reader.uint32()).value;
           continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.userPasswordEncryption = reader.int32() as any;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -595,6 +661,9 @@ export const User = {
       login: isSet(object.login) ? Boolean(object.login) : undefined,
       grants: globalThis.Array.isArray(object?.grants) ? object.grants.map((e: any) => globalThis.String(e)) : [],
       deletionProtection: isSet(object.deletionProtection) ? Boolean(object.deletionProtection) : undefined,
+      userPasswordEncryption: isSet(object.userPasswordEncryption)
+        ? userPasswordEncryptionFromJSON(object.userPasswordEncryption)
+        : 0,
     };
   },
 
@@ -624,6 +693,9 @@ export const User = {
     if (message.deletionProtection !== undefined) {
       obj.deletionProtection = message.deletionProtection;
     }
+    if (message.userPasswordEncryption !== 0) {
+      obj.userPasswordEncryption = userPasswordEncryptionToJSON(message.userPasswordEncryption);
+    }
     return obj;
   },
 
@@ -642,6 +714,7 @@ export const User = {
     message.login = object.login ?? undefined;
     message.grants = object.grants?.map((e) => e) || [];
     message.deletionProtection = object.deletionProtection ?? undefined;
+    message.userPasswordEncryption = object.userPasswordEncryption ?? 0;
     return message;
   },
 };
@@ -723,6 +796,7 @@ function createBaseUserSpec(): UserSpec {
     login: undefined,
     grants: [],
     deletionProtection: undefined,
+    userPasswordEncryption: 0,
   };
 }
 
@@ -758,6 +832,9 @@ export const UserSpec = {
         { $type: "google.protobuf.BoolValue", value: message.deletionProtection! },
         writer.uint32(66).fork(),
       ).ldelim();
+    }
+    if (message.userPasswordEncryption !== 0) {
+      writer.uint32(72).int32(message.userPasswordEncryption);
     }
     return writer;
   },
@@ -825,6 +902,13 @@ export const UserSpec = {
 
           message.deletionProtection = BoolValue.decode(reader, reader.uint32()).value;
           continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.userPasswordEncryption = reader.int32() as any;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -847,6 +931,9 @@ export const UserSpec = {
       login: isSet(object.login) ? Boolean(object.login) : undefined,
       grants: globalThis.Array.isArray(object?.grants) ? object.grants.map((e: any) => globalThis.String(e)) : [],
       deletionProtection: isSet(object.deletionProtection) ? Boolean(object.deletionProtection) : undefined,
+      userPasswordEncryption: isSet(object.userPasswordEncryption)
+        ? userPasswordEncryptionFromJSON(object.userPasswordEncryption)
+        : 0,
     };
   },
 
@@ -876,6 +963,9 @@ export const UserSpec = {
     if (message.deletionProtection !== undefined) {
       obj.deletionProtection = message.deletionProtection;
     }
+    if (message.userPasswordEncryption !== 0) {
+      obj.userPasswordEncryption = userPasswordEncryptionToJSON(message.userPasswordEncryption);
+    }
     return obj;
   },
 
@@ -894,6 +984,7 @@ export const UserSpec = {
     message.login = object.login ?? undefined;
     message.grants = object.grants?.map((e) => e) || [];
     message.deletionProtection = object.deletionProtection ?? undefined;
+    message.userPasswordEncryption = object.userPasswordEncryption ?? 0;
     return message;
   },
 };

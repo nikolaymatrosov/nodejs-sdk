@@ -125,6 +125,14 @@ export interface DiskPlacementPolicy {
   placementGroupPartition: number;
 }
 
+export interface DiskPlacementPolicyChange {
+  $type: "yandex.cloud.compute.v1.DiskPlacementPolicyChange";
+  /** Disk ID. */
+  diskId: string;
+  /** Placement policy configuration for given disk. */
+  diskPlacementPolicy?: DiskPlacementPolicy | undefined;
+}
+
 function createBaseDisk(): Disk {
   return {
     $type: "yandex.cloud.compute.v1.Disk",
@@ -621,6 +629,89 @@ export const DiskPlacementPolicy = {
 };
 
 messageTypeRegistry.set(DiskPlacementPolicy.$type, DiskPlacementPolicy);
+
+function createBaseDiskPlacementPolicyChange(): DiskPlacementPolicyChange {
+  return { $type: "yandex.cloud.compute.v1.DiskPlacementPolicyChange", diskId: "", diskPlacementPolicy: undefined };
+}
+
+export const DiskPlacementPolicyChange = {
+  $type: "yandex.cloud.compute.v1.DiskPlacementPolicyChange" as const,
+
+  encode(message: DiskPlacementPolicyChange, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.diskId !== "") {
+      writer.uint32(10).string(message.diskId);
+    }
+    if (message.diskPlacementPolicy !== undefined) {
+      DiskPlacementPolicy.encode(message.diskPlacementPolicy, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DiskPlacementPolicyChange {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDiskPlacementPolicyChange();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.diskId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.diskPlacementPolicy = DiskPlacementPolicy.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DiskPlacementPolicyChange {
+    return {
+      $type: DiskPlacementPolicyChange.$type,
+      diskId: isSet(object.diskId) ? globalThis.String(object.diskId) : "",
+      diskPlacementPolicy: isSet(object.diskPlacementPolicy)
+        ? DiskPlacementPolicy.fromJSON(object.diskPlacementPolicy)
+        : undefined,
+    };
+  },
+
+  toJSON(message: DiskPlacementPolicyChange): unknown {
+    const obj: any = {};
+    if (message.diskId !== "") {
+      obj.diskId = message.diskId;
+    }
+    if (message.diskPlacementPolicy !== undefined) {
+      obj.diskPlacementPolicy = DiskPlacementPolicy.toJSON(message.diskPlacementPolicy);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DiskPlacementPolicyChange>, I>>(base?: I): DiskPlacementPolicyChange {
+    return DiskPlacementPolicyChange.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DiskPlacementPolicyChange>, I>>(object: I): DiskPlacementPolicyChange {
+    const message = createBaseDiskPlacementPolicyChange();
+    message.diskId = object.diskId ?? "";
+    message.diskPlacementPolicy = (object.diskPlacementPolicy !== undefined && object.diskPlacementPolicy !== null)
+      ? DiskPlacementPolicy.fromPartial(object.diskPlacementPolicy)
+      : undefined;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(DiskPlacementPolicyChange.$type, DiskPlacementPolicyChange);
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 

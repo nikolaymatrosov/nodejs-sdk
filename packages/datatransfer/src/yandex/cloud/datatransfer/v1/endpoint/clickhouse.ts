@@ -88,6 +88,7 @@ export interface ClickhouseSharding {
   columnValueHash?: ClickhouseSharding_ColumnValueHash | undefined;
   customMapping?: ClickhouseSharding_ColumnValueMapping | undefined;
   transferId?: Empty | undefined;
+  roundRobin?: Empty | undefined;
 }
 
 export interface ClickhouseSharding_ColumnValueHash {
@@ -543,6 +544,7 @@ function createBaseClickhouseSharding(): ClickhouseSharding {
     columnValueHash: undefined,
     customMapping: undefined,
     transferId: undefined,
+    roundRobin: undefined,
   };
 }
 
@@ -558,6 +560,9 @@ export const ClickhouseSharding = {
     }
     if (message.transferId !== undefined) {
       Empty.encode(message.transferId, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.roundRobin !== undefined) {
+      Empty.encode(message.roundRobin, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -590,6 +595,13 @@ export const ClickhouseSharding = {
 
           message.transferId = Empty.decode(reader, reader.uint32());
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.roundRobin = Empty.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -609,6 +621,7 @@ export const ClickhouseSharding = {
         ? ClickhouseSharding_ColumnValueMapping.fromJSON(object.customMapping)
         : undefined,
       transferId: isSet(object.transferId) ? Empty.fromJSON(object.transferId) : undefined,
+      roundRobin: isSet(object.roundRobin) ? Empty.fromJSON(object.roundRobin) : undefined,
     };
   },
 
@@ -622,6 +635,9 @@ export const ClickhouseSharding = {
     }
     if (message.transferId !== undefined) {
       obj.transferId = Empty.toJSON(message.transferId);
+    }
+    if (message.roundRobin !== undefined) {
+      obj.roundRobin = Empty.toJSON(message.roundRobin);
     }
     return obj;
   },
@@ -639,6 +655,9 @@ export const ClickhouseSharding = {
       : undefined;
     message.transferId = (object.transferId !== undefined && object.transferId !== null)
       ? Empty.fromPartial(object.transferId)
+      : undefined;
+    message.roundRobin = (object.roundRobin !== undefined && object.roundRobin !== null)
+      ? Empty.fromPartial(object.roundRobin)
       : undefined;
     return message;
   },

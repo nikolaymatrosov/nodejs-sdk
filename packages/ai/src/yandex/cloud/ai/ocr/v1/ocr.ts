@@ -29,6 +29,9 @@ export interface TextAnnotation {
   blocks: Block[];
   /** Recognized entities. */
   entities: Entity[];
+  tables: Table[];
+  /** Full text recognized from image. */
+  fullText: string;
 }
 
 export interface Entity {
@@ -49,6 +52,8 @@ export interface Block {
   lines: Line[];
   /** A list of detected languages */
   languages: Block_DetectedLanguage[];
+  /** Block position from full_text string. */
+  textSegments: TextSegments[];
 }
 
 export interface Block_DetectedLanguage {
@@ -65,8 +70,10 @@ export interface Line {
     | undefined;
   /** Recognized text. */
   text: string;
-  /** Recognized words */
+  /** Recognized words. */
   words: Word[];
+  /** Line position from full_text string. */
+  textSegments: TextSegments[];
 }
 
 export interface Word {
@@ -79,6 +86,50 @@ export interface Word {
   text: string;
   /** ID of the recognized word in entities array. */
   entityIndex: number;
+  /** Word position from full_text string. */
+  textSegments: TextSegments[];
+}
+
+export interface TextSegments {
+  $type: "yandex.cloud.ai.ocr.v1.TextSegments";
+  /** Start character position from full_text string. */
+  startIndex: number;
+  /** Text segment length. */
+  length: number;
+}
+
+export interface Table {
+  $type: "yandex.cloud.ai.ocr.v1.Table";
+  /** Area on the page where the table is located. */
+  boundingBox?:
+    | Polygon
+    | undefined;
+  /** Number of rows in table. */
+  rowCount: number;
+  /** Number of columns in table. */
+  columnCount: number;
+  /** Table cells. */
+  cells: TableCell[];
+}
+
+export interface TableCell {
+  $type: "yandex.cloud.ai.ocr.v1.TableCell";
+  /** Area on the page where the table cell is located. */
+  boundingBox?:
+    | Polygon
+    | undefined;
+  /** Row index. */
+  rowIndex: number;
+  /** Column index. */
+  columnIndex: number;
+  /** Column span. */
+  columnSpan: number;
+  /** Row span. */
+  rowSpan: number;
+  /** Text in cell. */
+  text: string;
+  /** Table cell position from full_text string. */
+  textSegments: TextSegments[];
 }
 
 function createBasePolygon(): Polygon {
@@ -225,7 +276,15 @@ export const Vertex = {
 messageTypeRegistry.set(Vertex.$type, Vertex);
 
 function createBaseTextAnnotation(): TextAnnotation {
-  return { $type: "yandex.cloud.ai.ocr.v1.TextAnnotation", width: 0, height: 0, blocks: [], entities: [] };
+  return {
+    $type: "yandex.cloud.ai.ocr.v1.TextAnnotation",
+    width: 0,
+    height: 0,
+    blocks: [],
+    entities: [],
+    tables: [],
+    fullText: "",
+  };
 }
 
 export const TextAnnotation = {
@@ -243,6 +302,12 @@ export const TextAnnotation = {
     }
     for (const v of message.entities) {
       Entity.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    for (const v of message.tables) {
+      Table.encode(v!, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.fullText !== "") {
+      writer.uint32(50).string(message.fullText);
     }
     return writer;
   },
@@ -282,6 +347,20 @@ export const TextAnnotation = {
 
           message.entities.push(Entity.decode(reader, reader.uint32()));
           continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.tables.push(Table.decode(reader, reader.uint32()));
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.fullText = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -298,6 +377,8 @@ export const TextAnnotation = {
       height: isSet(object.height) ? globalThis.Number(object.height) : 0,
       blocks: globalThis.Array.isArray(object?.blocks) ? object.blocks.map((e: any) => Block.fromJSON(e)) : [],
       entities: globalThis.Array.isArray(object?.entities) ? object.entities.map((e: any) => Entity.fromJSON(e)) : [],
+      tables: globalThis.Array.isArray(object?.tables) ? object.tables.map((e: any) => Table.fromJSON(e)) : [],
+      fullText: isSet(object.fullText) ? globalThis.String(object.fullText) : "",
     };
   },
 
@@ -315,6 +396,12 @@ export const TextAnnotation = {
     if (message.entities?.length) {
       obj.entities = message.entities.map((e) => Entity.toJSON(e));
     }
+    if (message.tables?.length) {
+      obj.tables = message.tables.map((e) => Table.toJSON(e));
+    }
+    if (message.fullText !== "") {
+      obj.fullText = message.fullText;
+    }
     return obj;
   },
 
@@ -327,6 +414,8 @@ export const TextAnnotation = {
     message.height = object.height ?? 0;
     message.blocks = object.blocks?.map((e) => Block.fromPartial(e)) || [];
     message.entities = object.entities?.map((e) => Entity.fromPartial(e)) || [];
+    message.tables = object.tables?.map((e) => Table.fromPartial(e)) || [];
+    message.fullText = object.fullText ?? "";
     return message;
   },
 };
@@ -413,7 +502,7 @@ export const Entity = {
 messageTypeRegistry.set(Entity.$type, Entity);
 
 function createBaseBlock(): Block {
-  return { $type: "yandex.cloud.ai.ocr.v1.Block", boundingBox: undefined, lines: [], languages: [] };
+  return { $type: "yandex.cloud.ai.ocr.v1.Block", boundingBox: undefined, lines: [], languages: [], textSegments: [] };
 }
 
 export const Block = {
@@ -428,6 +517,9 @@ export const Block = {
     }
     for (const v of message.languages) {
       Block_DetectedLanguage.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    for (const v of message.textSegments) {
+      TextSegments.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -460,6 +552,13 @@ export const Block = {
 
           message.languages.push(Block_DetectedLanguage.decode(reader, reader.uint32()));
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.textSegments.push(TextSegments.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -477,6 +576,9 @@ export const Block = {
       languages: globalThis.Array.isArray(object?.languages)
         ? object.languages.map((e: any) => Block_DetectedLanguage.fromJSON(e))
         : [],
+      textSegments: globalThis.Array.isArray(object?.textSegments)
+        ? object.textSegments.map((e: any) => TextSegments.fromJSON(e))
+        : [],
     };
   },
 
@@ -491,6 +593,9 @@ export const Block = {
     if (message.languages?.length) {
       obj.languages = message.languages.map((e) => Block_DetectedLanguage.toJSON(e));
     }
+    if (message.textSegments?.length) {
+      obj.textSegments = message.textSegments.map((e) => TextSegments.toJSON(e));
+    }
     return obj;
   },
 
@@ -504,6 +609,7 @@ export const Block = {
       : undefined;
     message.lines = object.lines?.map((e) => Line.fromPartial(e)) || [];
     message.languages = object.languages?.map((e) => Block_DetectedLanguage.fromPartial(e)) || [];
+    message.textSegments = object.textSegments?.map((e) => TextSegments.fromPartial(e)) || [];
     return message;
   },
 };
@@ -575,7 +681,7 @@ export const Block_DetectedLanguage = {
 messageTypeRegistry.set(Block_DetectedLanguage.$type, Block_DetectedLanguage);
 
 function createBaseLine(): Line {
-  return { $type: "yandex.cloud.ai.ocr.v1.Line", boundingBox: undefined, text: "", words: [] };
+  return { $type: "yandex.cloud.ai.ocr.v1.Line", boundingBox: undefined, text: "", words: [], textSegments: [] };
 }
 
 export const Line = {
@@ -590,6 +696,9 @@ export const Line = {
     }
     for (const v of message.words) {
       Word.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    for (const v of message.textSegments) {
+      TextSegments.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -622,6 +731,13 @@ export const Line = {
 
           message.words.push(Word.decode(reader, reader.uint32()));
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.textSegments.push(TextSegments.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -637,6 +753,9 @@ export const Line = {
       boundingBox: isSet(object.boundingBox) ? Polygon.fromJSON(object.boundingBox) : undefined,
       text: isSet(object.text) ? globalThis.String(object.text) : "",
       words: globalThis.Array.isArray(object?.words) ? object.words.map((e: any) => Word.fromJSON(e)) : [],
+      textSegments: globalThis.Array.isArray(object?.textSegments)
+        ? object.textSegments.map((e: any) => TextSegments.fromJSON(e))
+        : [],
     };
   },
 
@@ -651,6 +770,9 @@ export const Line = {
     if (message.words?.length) {
       obj.words = message.words.map((e) => Word.toJSON(e));
     }
+    if (message.textSegments?.length) {
+      obj.textSegments = message.textSegments.map((e) => TextSegments.toJSON(e));
+    }
     return obj;
   },
 
@@ -664,6 +786,7 @@ export const Line = {
       : undefined;
     message.text = object.text ?? "";
     message.words = object.words?.map((e) => Word.fromPartial(e)) || [];
+    message.textSegments = object.textSegments?.map((e) => TextSegments.fromPartial(e)) || [];
     return message;
   },
 };
@@ -671,7 +794,7 @@ export const Line = {
 messageTypeRegistry.set(Line.$type, Line);
 
 function createBaseWord(): Word {
-  return { $type: "yandex.cloud.ai.ocr.v1.Word", boundingBox: undefined, text: "", entityIndex: 0 };
+  return { $type: "yandex.cloud.ai.ocr.v1.Word", boundingBox: undefined, text: "", entityIndex: 0, textSegments: [] };
 }
 
 export const Word = {
@@ -686,6 +809,9 @@ export const Word = {
     }
     if (message.entityIndex !== 0) {
       writer.uint32(24).int64(message.entityIndex);
+    }
+    for (const v of message.textSegments) {
+      TextSegments.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -718,6 +844,13 @@ export const Word = {
 
           message.entityIndex = longToNumber(reader.int64() as Long);
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.textSegments.push(TextSegments.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -733,6 +866,9 @@ export const Word = {
       boundingBox: isSet(object.boundingBox) ? Polygon.fromJSON(object.boundingBox) : undefined,
       text: isSet(object.text) ? globalThis.String(object.text) : "",
       entityIndex: isSet(object.entityIndex) ? globalThis.Number(object.entityIndex) : 0,
+      textSegments: globalThis.Array.isArray(object?.textSegments)
+        ? object.textSegments.map((e: any) => TextSegments.fromJSON(e))
+        : [],
     };
   },
 
@@ -747,6 +883,9 @@ export const Word = {
     if (message.entityIndex !== 0) {
       obj.entityIndex = Math.round(message.entityIndex);
     }
+    if (message.textSegments?.length) {
+      obj.textSegments = message.textSegments.map((e) => TextSegments.toJSON(e));
+    }
     return obj;
   },
 
@@ -760,11 +899,369 @@ export const Word = {
       : undefined;
     message.text = object.text ?? "";
     message.entityIndex = object.entityIndex ?? 0;
+    message.textSegments = object.textSegments?.map((e) => TextSegments.fromPartial(e)) || [];
     return message;
   },
 };
 
 messageTypeRegistry.set(Word.$type, Word);
+
+function createBaseTextSegments(): TextSegments {
+  return { $type: "yandex.cloud.ai.ocr.v1.TextSegments", startIndex: 0, length: 0 };
+}
+
+export const TextSegments = {
+  $type: "yandex.cloud.ai.ocr.v1.TextSegments" as const,
+
+  encode(message: TextSegments, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.startIndex !== 0) {
+      writer.uint32(8).int64(message.startIndex);
+    }
+    if (message.length !== 0) {
+      writer.uint32(16).int64(message.length);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TextSegments {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTextSegments();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.startIndex = longToNumber(reader.int64() as Long);
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.length = longToNumber(reader.int64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TextSegments {
+    return {
+      $type: TextSegments.$type,
+      startIndex: isSet(object.startIndex) ? globalThis.Number(object.startIndex) : 0,
+      length: isSet(object.length) ? globalThis.Number(object.length) : 0,
+    };
+  },
+
+  toJSON(message: TextSegments): unknown {
+    const obj: any = {};
+    if (message.startIndex !== 0) {
+      obj.startIndex = Math.round(message.startIndex);
+    }
+    if (message.length !== 0) {
+      obj.length = Math.round(message.length);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TextSegments>, I>>(base?: I): TextSegments {
+    return TextSegments.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TextSegments>, I>>(object: I): TextSegments {
+    const message = createBaseTextSegments();
+    message.startIndex = object.startIndex ?? 0;
+    message.length = object.length ?? 0;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(TextSegments.$type, TextSegments);
+
+function createBaseTable(): Table {
+  return { $type: "yandex.cloud.ai.ocr.v1.Table", boundingBox: undefined, rowCount: 0, columnCount: 0, cells: [] };
+}
+
+export const Table = {
+  $type: "yandex.cloud.ai.ocr.v1.Table" as const,
+
+  encode(message: Table, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.boundingBox !== undefined) {
+      Polygon.encode(message.boundingBox, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.rowCount !== 0) {
+      writer.uint32(16).int64(message.rowCount);
+    }
+    if (message.columnCount !== 0) {
+      writer.uint32(24).int64(message.columnCount);
+    }
+    for (const v of message.cells) {
+      TableCell.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Table {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTable();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.boundingBox = Polygon.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.rowCount = longToNumber(reader.int64() as Long);
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.columnCount = longToNumber(reader.int64() as Long);
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.cells.push(TableCell.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Table {
+    return {
+      $type: Table.$type,
+      boundingBox: isSet(object.boundingBox) ? Polygon.fromJSON(object.boundingBox) : undefined,
+      rowCount: isSet(object.rowCount) ? globalThis.Number(object.rowCount) : 0,
+      columnCount: isSet(object.columnCount) ? globalThis.Number(object.columnCount) : 0,
+      cells: globalThis.Array.isArray(object?.cells) ? object.cells.map((e: any) => TableCell.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: Table): unknown {
+    const obj: any = {};
+    if (message.boundingBox !== undefined) {
+      obj.boundingBox = Polygon.toJSON(message.boundingBox);
+    }
+    if (message.rowCount !== 0) {
+      obj.rowCount = Math.round(message.rowCount);
+    }
+    if (message.columnCount !== 0) {
+      obj.columnCount = Math.round(message.columnCount);
+    }
+    if (message.cells?.length) {
+      obj.cells = message.cells.map((e) => TableCell.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Table>, I>>(base?: I): Table {
+    return Table.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Table>, I>>(object: I): Table {
+    const message = createBaseTable();
+    message.boundingBox = (object.boundingBox !== undefined && object.boundingBox !== null)
+      ? Polygon.fromPartial(object.boundingBox)
+      : undefined;
+    message.rowCount = object.rowCount ?? 0;
+    message.columnCount = object.columnCount ?? 0;
+    message.cells = object.cells?.map((e) => TableCell.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+messageTypeRegistry.set(Table.$type, Table);
+
+function createBaseTableCell(): TableCell {
+  return {
+    $type: "yandex.cloud.ai.ocr.v1.TableCell",
+    boundingBox: undefined,
+    rowIndex: 0,
+    columnIndex: 0,
+    columnSpan: 0,
+    rowSpan: 0,
+    text: "",
+    textSegments: [],
+  };
+}
+
+export const TableCell = {
+  $type: "yandex.cloud.ai.ocr.v1.TableCell" as const,
+
+  encode(message: TableCell, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.boundingBox !== undefined) {
+      Polygon.encode(message.boundingBox, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.rowIndex !== 0) {
+      writer.uint32(16).int64(message.rowIndex);
+    }
+    if (message.columnIndex !== 0) {
+      writer.uint32(24).int64(message.columnIndex);
+    }
+    if (message.columnSpan !== 0) {
+      writer.uint32(32).int64(message.columnSpan);
+    }
+    if (message.rowSpan !== 0) {
+      writer.uint32(40).int64(message.rowSpan);
+    }
+    if (message.text !== "") {
+      writer.uint32(50).string(message.text);
+    }
+    for (const v of message.textSegments) {
+      TextSegments.encode(v!, writer.uint32(58).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TableCell {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTableCell();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.boundingBox = Polygon.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.rowIndex = longToNumber(reader.int64() as Long);
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.columnIndex = longToNumber(reader.int64() as Long);
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.columnSpan = longToNumber(reader.int64() as Long);
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.rowSpan = longToNumber(reader.int64() as Long);
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.text = reader.string();
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.textSegments.push(TextSegments.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TableCell {
+    return {
+      $type: TableCell.$type,
+      boundingBox: isSet(object.boundingBox) ? Polygon.fromJSON(object.boundingBox) : undefined,
+      rowIndex: isSet(object.rowIndex) ? globalThis.Number(object.rowIndex) : 0,
+      columnIndex: isSet(object.columnIndex) ? globalThis.Number(object.columnIndex) : 0,
+      columnSpan: isSet(object.columnSpan) ? globalThis.Number(object.columnSpan) : 0,
+      rowSpan: isSet(object.rowSpan) ? globalThis.Number(object.rowSpan) : 0,
+      text: isSet(object.text) ? globalThis.String(object.text) : "",
+      textSegments: globalThis.Array.isArray(object?.textSegments)
+        ? object.textSegments.map((e: any) => TextSegments.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: TableCell): unknown {
+    const obj: any = {};
+    if (message.boundingBox !== undefined) {
+      obj.boundingBox = Polygon.toJSON(message.boundingBox);
+    }
+    if (message.rowIndex !== 0) {
+      obj.rowIndex = Math.round(message.rowIndex);
+    }
+    if (message.columnIndex !== 0) {
+      obj.columnIndex = Math.round(message.columnIndex);
+    }
+    if (message.columnSpan !== 0) {
+      obj.columnSpan = Math.round(message.columnSpan);
+    }
+    if (message.rowSpan !== 0) {
+      obj.rowSpan = Math.round(message.rowSpan);
+    }
+    if (message.text !== "") {
+      obj.text = message.text;
+    }
+    if (message.textSegments?.length) {
+      obj.textSegments = message.textSegments.map((e) => TextSegments.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TableCell>, I>>(base?: I): TableCell {
+    return TableCell.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TableCell>, I>>(object: I): TableCell {
+    const message = createBaseTableCell();
+    message.boundingBox = (object.boundingBox !== undefined && object.boundingBox !== null)
+      ? Polygon.fromPartial(object.boundingBox)
+      : undefined;
+    message.rowIndex = object.rowIndex ?? 0;
+    message.columnIndex = object.columnIndex ?? 0;
+    message.columnSpan = object.columnSpan ?? 0;
+    message.rowSpan = object.rowSpan ?? 0;
+    message.text = object.text ?? "";
+    message.textSegments = object.textSegments?.map((e) => TextSegments.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+messageTypeRegistry.set(TableCell.$type, TableCell);
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 

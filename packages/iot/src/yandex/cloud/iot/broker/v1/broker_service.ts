@@ -13,7 +13,7 @@ import { Operation } from "@yandex-cloud/core/dist/generated/yandex/cloud/operat
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { messageTypeRegistry } from "../../../../../typeRegistry";
-import { Broker, BrokerCertificate, BrokerPassword } from "./broker";
+import { Broker, BrokerCertificate, BrokerPassword, LogOptions } from "./broker";
 
 export const protobufPackage = "yandex.cloud.iot.broker.v1";
 
@@ -85,6 +85,8 @@ export interface CreateBrokerRequest {
    * The password must contain at least three character categories among the following: upper case latin, lower case latin, numbers and special symbols.
    */
   password: string;
+  /** Options for logging broker events */
+  logOptions?: LogOptions | undefined;
 }
 
 export interface CreateBrokerRequest_LabelsEntry {
@@ -128,6 +130,8 @@ export interface UpdateBrokerRequest {
    * Existing set of `labels` is completely replaced by the provided set.
    */
   labels: { [key: string]: string };
+  /** Options for logging broker events */
+  logOptions?: LogOptions | undefined;
 }
 
 export interface UpdateBrokerRequest_LabelsEntry {
@@ -561,6 +565,7 @@ function createBaseCreateBrokerRequest(): CreateBrokerRequest {
     labels: {},
     certificates: [],
     password: "",
+    logOptions: undefined,
   };
 }
 
@@ -589,6 +594,9 @@ export const CreateBrokerRequest = {
     }
     if (message.password !== "") {
       writer.uint32(50).string(message.password);
+    }
+    if (message.logOptions !== undefined) {
+      LogOptions.encode(message.logOptions, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -645,6 +653,13 @@ export const CreateBrokerRequest = {
 
           message.password = reader.string();
           continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.logOptions = LogOptions.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -670,6 +685,7 @@ export const CreateBrokerRequest = {
         ? object.certificates.map((e: any) => CreateBrokerRequest_Certificate.fromJSON(e))
         : [],
       password: isSet(object.password) ? globalThis.String(object.password) : "",
+      logOptions: isSet(object.logOptions) ? LogOptions.fromJSON(object.logOptions) : undefined,
     };
   },
 
@@ -699,6 +715,9 @@ export const CreateBrokerRequest = {
     if (message.password !== "") {
       obj.password = message.password;
     }
+    if (message.logOptions !== undefined) {
+      obj.logOptions = LogOptions.toJSON(message.logOptions);
+    }
     return obj;
   },
 
@@ -718,6 +737,9 @@ export const CreateBrokerRequest = {
     }, {});
     message.certificates = object.certificates?.map((e) => CreateBrokerRequest_Certificate.fromPartial(e)) || [];
     message.password = object.password ?? "";
+    message.logOptions = (object.logOptions !== undefined && object.logOptions !== null)
+      ? LogOptions.fromPartial(object.logOptions)
+      : undefined;
     return message;
   },
 };
@@ -943,6 +965,7 @@ function createBaseUpdateBrokerRequest(): UpdateBrokerRequest {
     name: "",
     description: "",
     labels: {},
+    logOptions: undefined,
   };
 }
 
@@ -969,6 +992,9 @@ export const UpdateBrokerRequest = {
         value,
       }, writer.uint32(42).fork()).ldelim();
     });
+    if (message.logOptions !== undefined) {
+      LogOptions.encode(message.logOptions, writer.uint32(50).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -1017,6 +1043,13 @@ export const UpdateBrokerRequest = {
             message.labels[entry5.key] = entry5.value;
           }
           continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.logOptions = LogOptions.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1039,6 +1072,7 @@ export const UpdateBrokerRequest = {
           return acc;
         }, {})
         : {},
+      logOptions: isSet(object.logOptions) ? LogOptions.fromJSON(object.logOptions) : undefined,
     };
   },
 
@@ -1065,6 +1099,9 @@ export const UpdateBrokerRequest = {
         });
       }
     }
+    if (message.logOptions !== undefined) {
+      obj.logOptions = LogOptions.toJSON(message.logOptions);
+    }
     return obj;
   },
 
@@ -1083,6 +1120,9 @@ export const UpdateBrokerRequest = {
       }
       return acc;
     }, {});
+    message.logOptions = (object.logOptions !== undefined && object.logOptions !== null)
+      ? LogOptions.fromPartial(object.logOptions)
+      : undefined;
     return message;
   },
 };

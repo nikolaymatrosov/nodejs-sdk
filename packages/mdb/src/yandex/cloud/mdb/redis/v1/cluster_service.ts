@@ -46,6 +46,17 @@ import { MaintenanceWindow } from "./maintenance";
 
 export const protobufPackage = "yandex.cloud.mdb.redis.v1";
 
+export interface EnableShardingClusterMetadata {
+  $type: "yandex.cloud.mdb.redis.v1.EnableShardingClusterMetadata";
+  clusterId: string;
+}
+
+export interface EnableShardingClusterRequest {
+  $type: "yandex.cloud.mdb.redis.v1.EnableShardingClusterRequest";
+  /** Required. ID of the Redis cluster to return. */
+  clusterId: string;
+}
+
 export interface GetClusterRequest {
   $type: "yandex.cloud.mdb.redis.v1.GetClusterRequest";
   /**
@@ -949,6 +960,134 @@ export interface ConfigSpec {
   /** Unified configuration of a Redis cluster */
   redis?: RedisConfig | undefined;
 }
+
+function createBaseEnableShardingClusterMetadata(): EnableShardingClusterMetadata {
+  return { $type: "yandex.cloud.mdb.redis.v1.EnableShardingClusterMetadata", clusterId: "" };
+}
+
+export const EnableShardingClusterMetadata = {
+  $type: "yandex.cloud.mdb.redis.v1.EnableShardingClusterMetadata" as const,
+
+  encode(message: EnableShardingClusterMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.clusterId !== "") {
+      writer.uint32(10).string(message.clusterId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): EnableShardingClusterMetadata {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEnableShardingClusterMetadata();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.clusterId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EnableShardingClusterMetadata {
+    return {
+      $type: EnableShardingClusterMetadata.$type,
+      clusterId: isSet(object.clusterId) ? globalThis.String(object.clusterId) : "",
+    };
+  },
+
+  toJSON(message: EnableShardingClusterMetadata): unknown {
+    const obj: any = {};
+    if (message.clusterId !== "") {
+      obj.clusterId = message.clusterId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<EnableShardingClusterMetadata>): EnableShardingClusterMetadata {
+    return EnableShardingClusterMetadata.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<EnableShardingClusterMetadata>): EnableShardingClusterMetadata {
+    const message = createBaseEnableShardingClusterMetadata();
+    message.clusterId = object.clusterId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(EnableShardingClusterMetadata.$type, EnableShardingClusterMetadata);
+
+function createBaseEnableShardingClusterRequest(): EnableShardingClusterRequest {
+  return { $type: "yandex.cloud.mdb.redis.v1.EnableShardingClusterRequest", clusterId: "" };
+}
+
+export const EnableShardingClusterRequest = {
+  $type: "yandex.cloud.mdb.redis.v1.EnableShardingClusterRequest" as const,
+
+  encode(message: EnableShardingClusterRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.clusterId !== "") {
+      writer.uint32(10).string(message.clusterId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): EnableShardingClusterRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEnableShardingClusterRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.clusterId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EnableShardingClusterRequest {
+    return {
+      $type: EnableShardingClusterRequest.$type,
+      clusterId: isSet(object.clusterId) ? globalThis.String(object.clusterId) : "",
+    };
+  },
+
+  toJSON(message: EnableShardingClusterRequest): unknown {
+    const obj: any = {};
+    if (message.clusterId !== "") {
+      obj.clusterId = message.clusterId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<EnableShardingClusterRequest>): EnableShardingClusterRequest {
+    return EnableShardingClusterRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<EnableShardingClusterRequest>): EnableShardingClusterRequest {
+    const message = createBaseEnableShardingClusterRequest();
+    message.clusterId = object.clusterId ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(EnableShardingClusterRequest.$type, EnableShardingClusterRequest);
 
 function createBaseGetClusterRequest(): GetClusterRequest {
   return { $type: "yandex.cloud.mdb.redis.v1.GetClusterRequest", clusterId: "" };
@@ -6677,6 +6816,17 @@ export const ClusterServiceService = {
     responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Operation.decode(value),
   },
+  /** Enable Sharding on non sharded cluster */
+  enableSharding: {
+    path: "/yandex.cloud.mdb.redis.v1.ClusterService/EnableSharding",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: EnableShardingClusterRequest) =>
+      Buffer.from(EnableShardingClusterRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => EnableShardingClusterRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
 } as const;
 
 export interface ClusterServiceServer extends UntypedServiceImplementation {
@@ -6737,6 +6887,8 @@ export interface ClusterServiceServer extends UntypedServiceImplementation {
   deleteShard: handleUnaryCall<DeleteClusterShardRequest, Operation>;
   /** Rebalances the cluster. Evenly distributes all the hash slots between the shards. */
   rebalance: handleUnaryCall<RebalanceClusterRequest, Operation>;
+  /** Enable Sharding on non sharded cluster */
+  enableSharding: handleUnaryCall<EnableShardingClusterRequest, Operation>;
 }
 
 export interface ClusterServiceClient extends Client {
@@ -7131,6 +7283,22 @@ export interface ClusterServiceClient extends Client {
   ): ClientUnaryCall;
   rebalance(
     request: RebalanceClusterRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  /** Enable Sharding on non sharded cluster */
+  enableSharding(
+    request: EnableShardingClusterRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  enableSharding(
+    request: EnableShardingClusterRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  enableSharding(
+    request: EnableShardingClusterRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Operation) => void,

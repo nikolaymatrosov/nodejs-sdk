@@ -268,7 +268,11 @@ export interface PostgresqlConfig13 {
     | boolean
     | undefined;
   /** in milliseconds. The default is 1000 (1 sec). */
-  logAutovacuumMinDuration?: number | undefined;
+  logAutovacuumMinDuration?:
+    | number
+    | undefined;
+  /** A default value for `` user_password_encryption `` user-level setting, if it not specified for new users. Possible values are `` PASSWORD_ENCRYPTION_MD5 `` or `` PASSWORD_ENCRYPTION_SCRAM_SHA_256 ``. The default is `` PASSWORD_ENCRYPTION_MD5 ``. */
+  passwordEncryption: PostgresqlConfig13_PasswordEncryption;
 }
 
 export enum PostgresqlConfig13_BackslashQuote {
@@ -635,6 +639,45 @@ export function postgresqlConfig13_LogStatementToJSON(object: PostgresqlConfig13
     case PostgresqlConfig13_LogStatement.LOG_STATEMENT_ALL:
       return "LOG_STATEMENT_ALL";
     case PostgresqlConfig13_LogStatement.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+export enum PostgresqlConfig13_PasswordEncryption {
+  PASSWORD_ENCRYPTION_UNSPECIFIED = 0,
+  PASSWORD_ENCRYPTION_MD5 = 1,
+  PASSWORD_ENCRYPTION_SCRAM_SHA_256 = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function postgresqlConfig13_PasswordEncryptionFromJSON(object: any): PostgresqlConfig13_PasswordEncryption {
+  switch (object) {
+    case 0:
+    case "PASSWORD_ENCRYPTION_UNSPECIFIED":
+      return PostgresqlConfig13_PasswordEncryption.PASSWORD_ENCRYPTION_UNSPECIFIED;
+    case 1:
+    case "PASSWORD_ENCRYPTION_MD5":
+      return PostgresqlConfig13_PasswordEncryption.PASSWORD_ENCRYPTION_MD5;
+    case 2:
+    case "PASSWORD_ENCRYPTION_SCRAM_SHA_256":
+      return PostgresqlConfig13_PasswordEncryption.PASSWORD_ENCRYPTION_SCRAM_SHA_256;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return PostgresqlConfig13_PasswordEncryption.UNRECOGNIZED;
+  }
+}
+
+export function postgresqlConfig13_PasswordEncryptionToJSON(object: PostgresqlConfig13_PasswordEncryption): string {
+  switch (object) {
+    case PostgresqlConfig13_PasswordEncryption.PASSWORD_ENCRYPTION_UNSPECIFIED:
+      return "PASSWORD_ENCRYPTION_UNSPECIFIED";
+    case PostgresqlConfig13_PasswordEncryption.PASSWORD_ENCRYPTION_MD5:
+      return "PASSWORD_ENCRYPTION_MD5";
+    case PostgresqlConfig13_PasswordEncryption.PASSWORD_ENCRYPTION_SCRAM_SHA_256:
+      return "PASSWORD_ENCRYPTION_SCRAM_SHA_256";
+    case PostgresqlConfig13_PasswordEncryption.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
   }
@@ -1213,6 +1256,7 @@ function createBasePostgresqlConfig13(): PostgresqlConfig13 {
     sessionDurationTimeout: undefined,
     logReplicationCommands: undefined,
     logAutovacuumMinDuration: undefined,
+    passwordEncryption: 0,
   };
 }
 
@@ -2042,6 +2086,9 @@ export const PostgresqlConfig13 = {
         { $type: "google.protobuf.Int64Value", value: message.logAutovacuumMinDuration! },
         writer.uint32(1322).fork(),
       ).ldelim();
+    }
+    if (message.passwordEncryption !== 0) {
+      writer.uint32(1336).int32(message.passwordEncryption);
     }
     return writer;
   },
@@ -3134,6 +3181,13 @@ export const PostgresqlConfig13 = {
 
           message.logAutovacuumMinDuration = Int64Value.decode(reader, reader.uint32()).value;
           continue;
+        case 167:
+          if (tag !== 1336) {
+            break;
+          }
+
+          message.passwordEncryption = reader.int32() as any;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -3387,6 +3441,9 @@ export const PostgresqlConfig13 = {
       logAutovacuumMinDuration: isSet(object.logAutovacuumMinDuration)
         ? Number(object.logAutovacuumMinDuration)
         : undefined,
+      passwordEncryption: isSet(object.passwordEncryption)
+        ? postgresqlConfig13_PasswordEncryptionFromJSON(object.passwordEncryption)
+        : 0,
     };
   },
 
@@ -3855,6 +3912,9 @@ export const PostgresqlConfig13 = {
     if (message.logAutovacuumMinDuration !== undefined) {
       obj.logAutovacuumMinDuration = message.logAutovacuumMinDuration;
     }
+    if (message.passwordEncryption !== 0) {
+      obj.passwordEncryption = postgresqlConfig13_PasswordEncryptionToJSON(message.passwordEncryption);
+    }
     return obj;
   },
 
@@ -4016,6 +4076,7 @@ export const PostgresqlConfig13 = {
     message.sessionDurationTimeout = object.sessionDurationTimeout ?? undefined;
     message.logReplicationCommands = object.logReplicationCommands ?? undefined;
     message.logAutovacuumMinDuration = object.logAutovacuumMinDuration ?? undefined;
+    message.passwordEncryption = object.passwordEncryption ?? 0;
     return message;
   },
 };

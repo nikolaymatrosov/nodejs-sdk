@@ -9,6 +9,12 @@ import type {
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 import { FieldMask } from "@yandex-cloud/core/dist/generated/google/protobuf/field_mask";
+import {
+  ListAccessBindingsRequest,
+  ListAccessBindingsResponse,
+  SetAccessBindingsRequest,
+  UpdateAccessBindingsRequest,
+} from "@yandex-cloud/core/dist/generated/yandex/cloud/access/access";
 import { Operation } from "@yandex-cloud/core/dist/generated/yandex/cloud/operation/operation";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
@@ -1739,6 +1745,39 @@ export const ImageServiceService = {
       Buffer.from(ListImageOperationsResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => ListImageOperationsResponse.decode(value),
   },
+  /** Lists access bindings for the image. */
+  listAccessBindings: {
+    path: "/yandex.cloud.compute.v1.ImageService/ListAccessBindings",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ListAccessBindingsRequest) =>
+      Buffer.from(ListAccessBindingsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => ListAccessBindingsRequest.decode(value),
+    responseSerialize: (value: ListAccessBindingsResponse) =>
+      Buffer.from(ListAccessBindingsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => ListAccessBindingsResponse.decode(value),
+  },
+  /** Sets access bindings for the image. */
+  setAccessBindings: {
+    path: "/yandex.cloud.compute.v1.ImageService/SetAccessBindings",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: SetAccessBindingsRequest) => Buffer.from(SetAccessBindingsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => SetAccessBindingsRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
+  /** Updates access bindings for the image. */
+  updateAccessBindings: {
+    path: "/yandex.cloud.compute.v1.ImageService/UpdateAccessBindings",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: UpdateAccessBindingsRequest) =>
+      Buffer.from(UpdateAccessBindingsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => UpdateAccessBindingsRequest.decode(value),
+    responseSerialize: (value: Operation) => Buffer.from(Operation.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Operation.decode(value),
+  },
 } as const;
 
 export interface ImageServiceServer extends UntypedServiceImplementation {
@@ -1769,6 +1808,12 @@ export interface ImageServiceServer extends UntypedServiceImplementation {
   delete: handleUnaryCall<DeleteImageRequest, Operation>;
   /** Lists operations for the specified image. */
   listOperations: handleUnaryCall<ListImageOperationsRequest, ListImageOperationsResponse>;
+  /** Lists access bindings for the image. */
+  listAccessBindings: handleUnaryCall<ListAccessBindingsRequest, ListAccessBindingsResponse>;
+  /** Sets access bindings for the image. */
+  setAccessBindings: handleUnaryCall<SetAccessBindingsRequest, Operation>;
+  /** Updates access bindings for the image. */
+  updateAccessBindings: handleUnaryCall<UpdateAccessBindingsRequest, Operation>;
 }
 
 export interface ImageServiceClient extends Client {
@@ -1893,6 +1938,54 @@ export interface ImageServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: ListImageOperationsResponse) => void,
+  ): ClientUnaryCall;
+  /** Lists access bindings for the image. */
+  listAccessBindings(
+    request: ListAccessBindingsRequest,
+    callback: (error: ServiceError | null, response: ListAccessBindingsResponse) => void,
+  ): ClientUnaryCall;
+  listAccessBindings(
+    request: ListAccessBindingsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ListAccessBindingsResponse) => void,
+  ): ClientUnaryCall;
+  listAccessBindings(
+    request: ListAccessBindingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ListAccessBindingsResponse) => void,
+  ): ClientUnaryCall;
+  /** Sets access bindings for the image. */
+  setAccessBindings(
+    request: SetAccessBindingsRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  setAccessBindings(
+    request: SetAccessBindingsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  setAccessBindings(
+    request: SetAccessBindingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  /** Updates access bindings for the image. */
+  updateAccessBindings(
+    request: UpdateAccessBindingsRequest,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  updateAccessBindings(
+    request: UpdateAccessBindingsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Operation) => void,
+  ): ClientUnaryCall;
+  updateAccessBindings(
+    request: UpdateAccessBindingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Operation) => void,
   ): ClientUnaryCall;
 }
 

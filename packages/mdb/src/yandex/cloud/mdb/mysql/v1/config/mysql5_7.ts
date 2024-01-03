@@ -652,7 +652,23 @@ export interface MysqlConfig57 {
    *
    * For details, see [Percona documentation for the variable](https://docs.percona.com/percona-server/5.7/diagnostics/response_time_distribution.html#query_response_time_stats).
    */
-  queryResponseTimeStats?: boolean | undefined;
+  queryResponseTimeStats?:
+    | boolean
+    | undefined;
+  /**
+   * Enables or disables collection of statistics
+   *
+   * For details, see [Percona documentation for the variable](https://docs.percona.com/percona-server/5.7/diagnostics/user_stats.html#userstat).
+   */
+  userstat?:
+    | boolean
+    | undefined;
+  /**
+   * The execution timeout for SELECT statements, in milliseconds. If the value is 0, timeouts are not enabled.
+   *
+   * For details, see [MySQL documentation for the variable](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_max_execution_time)
+   */
+  maxExecutionTime?: number | undefined;
 }
 
 export enum MysqlConfig57_SQLMode {
@@ -1301,6 +1317,8 @@ function createBaseMysqlConfig57(): MysqlConfig57 {
     optimizerSwitch: "",
     optimizerSearchDepth: undefined,
     queryResponseTimeStats: undefined,
+    userstat: undefined,
+    maxExecutionTime: undefined,
   };
 }
 
@@ -1770,6 +1788,16 @@ export const MysqlConfig57 = {
       BoolValue.encode(
         { $type: "google.protobuf.BoolValue", value: message.queryResponseTimeStats! },
         writer.uint32(682).fork(),
+      ).ldelim();
+    }
+    if (message.userstat !== undefined) {
+      BoolValue.encode({ $type: "google.protobuf.BoolValue", value: message.userstat! }, writer.uint32(690).fork())
+        .ldelim();
+    }
+    if (message.maxExecutionTime !== undefined) {
+      Int64Value.encode(
+        { $type: "google.protobuf.Int64Value", value: message.maxExecutionTime! },
+        writer.uint32(698).fork(),
       ).ldelim();
     }
     return writer;
@@ -2397,6 +2425,20 @@ export const MysqlConfig57 = {
 
           message.queryResponseTimeStats = BoolValue.decode(reader, reader.uint32()).value;
           continue;
+        case 86:
+          if (tag !== 690) {
+            break;
+          }
+
+          message.userstat = BoolValue.decode(reader, reader.uint32()).value;
+          continue;
+        case 87:
+          if (tag !== 698) {
+            break;
+          }
+
+          message.maxExecutionTime = Int64Value.decode(reader, reader.uint32()).value;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2542,6 +2584,8 @@ export const MysqlConfig57 = {
       optimizerSwitch: isSet(object.optimizerSwitch) ? globalThis.String(object.optimizerSwitch) : "",
       optimizerSearchDepth: isSet(object.optimizerSearchDepth) ? Number(object.optimizerSearchDepth) : undefined,
       queryResponseTimeStats: isSet(object.queryResponseTimeStats) ? Boolean(object.queryResponseTimeStats) : undefined,
+      userstat: isSet(object.userstat) ? Boolean(object.userstat) : undefined,
+      maxExecutionTime: isSet(object.maxExecutionTime) ? Number(object.maxExecutionTime) : undefined,
     };
   },
 
@@ -2804,6 +2848,12 @@ export const MysqlConfig57 = {
     if (message.queryResponseTimeStats !== undefined) {
       obj.queryResponseTimeStats = message.queryResponseTimeStats;
     }
+    if (message.userstat !== undefined) {
+      obj.userstat = message.userstat;
+    }
+    if (message.maxExecutionTime !== undefined) {
+      obj.maxExecutionTime = message.maxExecutionTime;
+    }
     return obj;
   },
 
@@ -2897,6 +2947,8 @@ export const MysqlConfig57 = {
     message.optimizerSwitch = object.optimizerSwitch ?? "";
     message.optimizerSearchDepth = object.optimizerSearchDepth ?? undefined;
     message.queryResponseTimeStats = object.queryResponseTimeStats ?? undefined;
+    message.userstat = object.userstat ?? undefined;
+    message.maxExecutionTime = object.maxExecutionTime ?? undefined;
     return message;
   },
 };

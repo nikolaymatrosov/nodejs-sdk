@@ -1,3 +1,5 @@
+export * as foundation_models from './foundation_models/v1/foundation_models';
+export * as foundation_models_service from './foundation_models/v1/foundation_models_service';
 export * as ocr from './ocr/v1/ocr';
 export * as ocr_service from './ocr/v1/ocr_service';
 export * as stt_service from './stt/v2/stt_service';

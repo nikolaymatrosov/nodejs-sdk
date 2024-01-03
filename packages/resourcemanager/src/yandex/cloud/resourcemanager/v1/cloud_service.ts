@@ -192,7 +192,12 @@ export interface DeleteCloudMetadata {
   /** ID of the cloud that is being deleted. */
   cloudId: string;
   /** The timestamp after which the process of deleting the cloud should begin. */
-  deleteAfter?: Date | undefined;
+  deleteAfter?:
+    | Date
+    | undefined;
+  /** Information about operation cancellation */
+  cancelledBy: string;
+  cancelledAt?: Date | undefined;
 }
 
 function createBaseGetCloudRequest(): GetCloudRequest {
@@ -1292,7 +1297,13 @@ export const DeleteCloudRequest = {
 messageTypeRegistry.set(DeleteCloudRequest.$type, DeleteCloudRequest);
 
 function createBaseDeleteCloudMetadata(): DeleteCloudMetadata {
-  return { $type: "yandex.cloud.resourcemanager.v1.DeleteCloudMetadata", cloudId: "", deleteAfter: undefined };
+  return {
+    $type: "yandex.cloud.resourcemanager.v1.DeleteCloudMetadata",
+    cloudId: "",
+    deleteAfter: undefined,
+    cancelledBy: "",
+    cancelledAt: undefined,
+  };
 }
 
 export const DeleteCloudMetadata = {
@@ -1304,6 +1315,12 @@ export const DeleteCloudMetadata = {
     }
     if (message.deleteAfter !== undefined) {
       Timestamp.encode(toTimestamp(message.deleteAfter), writer.uint32(18).fork()).ldelim();
+    }
+    if (message.cancelledBy !== "") {
+      writer.uint32(26).string(message.cancelledBy);
+    }
+    if (message.cancelledAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.cancelledAt), writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -1329,6 +1346,20 @@ export const DeleteCloudMetadata = {
 
           message.deleteAfter = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.cancelledBy = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.cancelledAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1343,6 +1374,8 @@ export const DeleteCloudMetadata = {
       $type: DeleteCloudMetadata.$type,
       cloudId: isSet(object.cloudId) ? globalThis.String(object.cloudId) : "",
       deleteAfter: isSet(object.deleteAfter) ? fromJsonTimestamp(object.deleteAfter) : undefined,
+      cancelledBy: isSet(object.cancelledBy) ? globalThis.String(object.cancelledBy) : "",
+      cancelledAt: isSet(object.cancelledAt) ? fromJsonTimestamp(object.cancelledAt) : undefined,
     };
   },
 
@@ -1354,6 +1387,12 @@ export const DeleteCloudMetadata = {
     if (message.deleteAfter !== undefined) {
       obj.deleteAfter = message.deleteAfter.toISOString();
     }
+    if (message.cancelledBy !== "") {
+      obj.cancelledBy = message.cancelledBy;
+    }
+    if (message.cancelledAt !== undefined) {
+      obj.cancelledAt = message.cancelledAt.toISOString();
+    }
     return obj;
   },
 
@@ -1364,6 +1403,8 @@ export const DeleteCloudMetadata = {
     const message = createBaseDeleteCloudMetadata();
     message.cloudId = object.cloudId ?? "";
     message.deleteAfter = object.deleteAfter ?? undefined;
+    message.cancelledBy = object.cancelledBy ?? "";
+    message.cancelledAt = object.cancelledAt ?? undefined;
     return message;
   },
 };

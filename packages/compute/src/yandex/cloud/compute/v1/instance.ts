@@ -1,8 +1,10 @@
 /* eslint-disable */
+import { Duration } from "@yandex-cloud/core/dist/generated/google/protobuf/duration";
 import { Timestamp } from "@yandex-cloud/core/dist/generated/google/protobuf/timestamp";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { messageTypeRegistry } from "../../../../typeRegistry";
+import { MaintenancePolicy, maintenancePolicyFromJSON, maintenancePolicyToJSON } from "./maintenance";
 
 export const protobufPackage = "yandex.cloud.compute.v1";
 
@@ -168,6 +170,10 @@ export interface Instance {
   hostGroupId: string;
   /** ID of the dedicated host that the instance belongs to. */
   hostId: string;
+  /** Behaviour on maintenance events */
+  maintenancePolicy: MaintenancePolicy;
+  /** Time between notification via metadata service and maintenance */
+  maintenanceGracePeriod?: Duration | undefined;
 }
 
 export enum Instance_Status {
@@ -651,6 +657,8 @@ function createBaseInstance(): Instance {
     placementPolicy: undefined,
     hostGroupId: "",
     hostId: "",
+    maintenancePolicy: 0,
+    maintenanceGracePeriod: undefined,
   };
 }
 
@@ -738,6 +746,12 @@ export const Instance = {
     }
     if (message.hostId !== "") {
       writer.uint32(226).string(message.hostId);
+    }
+    if (message.maintenancePolicy !== 0) {
+      writer.uint32(232).int32(message.maintenancePolicy);
+    }
+    if (message.maintenanceGracePeriod !== undefined) {
+      Duration.encode(message.maintenanceGracePeriod, writer.uint32(242).fork()).ldelim();
     }
     return writer;
   },
@@ -930,6 +944,20 @@ export const Instance = {
 
           message.hostId = reader.string();
           continue;
+        case 29:
+          if (tag !== 232) {
+            break;
+          }
+
+          message.maintenancePolicy = reader.int32() as any;
+          continue;
+        case 30:
+          if (tag !== 242) {
+            break;
+          }
+
+          message.maintenanceGracePeriod = Duration.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -985,6 +1013,10 @@ export const Instance = {
       placementPolicy: isSet(object.placementPolicy) ? PlacementPolicy.fromJSON(object.placementPolicy) : undefined,
       hostGroupId: isSet(object.hostGroupId) ? globalThis.String(object.hostGroupId) : "",
       hostId: isSet(object.hostId) ? globalThis.String(object.hostId) : "",
+      maintenancePolicy: isSet(object.maintenancePolicy) ? maintenancePolicyFromJSON(object.maintenancePolicy) : 0,
+      maintenanceGracePeriod: isSet(object.maintenanceGracePeriod)
+        ? Duration.fromJSON(object.maintenanceGracePeriod)
+        : undefined,
     };
   },
 
@@ -1077,6 +1109,12 @@ export const Instance = {
     if (message.hostId !== "") {
       obj.hostId = message.hostId;
     }
+    if (message.maintenancePolicy !== 0) {
+      obj.maintenancePolicy = maintenancePolicyToJSON(message.maintenancePolicy);
+    }
+    if (message.maintenanceGracePeriod !== undefined) {
+      obj.maintenanceGracePeriod = Duration.toJSON(message.maintenanceGracePeriod);
+    }
     return obj;
   },
 
@@ -1134,6 +1172,11 @@ export const Instance = {
       : undefined;
     message.hostGroupId = object.hostGroupId ?? "";
     message.hostId = object.hostId ?? "";
+    message.maintenancePolicy = object.maintenancePolicy ?? 0;
+    message.maintenanceGracePeriod =
+      (object.maintenanceGracePeriod !== undefined && object.maintenanceGracePeriod !== null)
+        ? Duration.fromPartial(object.maintenanceGracePeriod)
+        : undefined;
     return message;
   },
 };

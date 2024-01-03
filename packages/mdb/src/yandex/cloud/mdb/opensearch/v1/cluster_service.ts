@@ -883,8 +883,14 @@ export interface OpenSearchNodeGroupUpdateSpec {
     | undefined;
   /** Number of hosts in the group. */
   hostsCount: number;
-  /** Roles of the host group. */
+  /** Opensearch roles applicable to the node group. */
   roles: OpenSearch_GroupRole[];
+  /** IDs of the availability zones for hosts */
+  zoneIds: string[];
+  /** IDs of the subnets for hosts */
+  subnetIds: string[];
+  /** Whether the hosts should get a public IP address. */
+  assignPublicIp: boolean;
 }
 
 export interface AddOpenSearchNodeGroupRequest {
@@ -933,6 +939,12 @@ export interface DashboardsNodeGroupUpdateSpec {
     | undefined;
   /** Number of hosts in the group. */
   hostsCount: number;
+  /** IDs of the availability zones for hosts */
+  zoneIds: string[];
+  /** IDs of the subnets for hosts */
+  subnetIds: string[];
+  /** Whether the hosts should get a public IP address. */
+  assignPublicIp: boolean;
 }
 
 export interface AddDashboardsNodeGroupRequest {
@@ -5694,6 +5706,9 @@ function createBaseOpenSearchNodeGroupUpdateSpec(): OpenSearchNodeGroupUpdateSpe
     resources: undefined,
     hostsCount: 0,
     roles: [],
+    zoneIds: [],
+    subnetIds: [],
+    assignPublicIp: false,
   };
 }
 
@@ -5712,6 +5727,15 @@ export const OpenSearchNodeGroupUpdateSpec = {
       writer.int32(v);
     }
     writer.ldelim();
+    for (const v of message.zoneIds) {
+      writer.uint32(34).string(v!);
+    }
+    for (const v of message.subnetIds) {
+      writer.uint32(42).string(v!);
+    }
+    if (message.assignPublicIp === true) {
+      writer.uint32(48).bool(message.assignPublicIp);
+    }
     return writer;
   },
 
@@ -5753,6 +5777,27 @@ export const OpenSearchNodeGroupUpdateSpec = {
           }
 
           break;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.zoneIds.push(reader.string());
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.subnetIds.push(reader.string());
+          continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.assignPublicIp = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -5770,6 +5815,11 @@ export const OpenSearchNodeGroupUpdateSpec = {
       roles: globalThis.Array.isArray(object?.roles)
         ? object.roles.map((e: any) => openSearch_GroupRoleFromJSON(e))
         : [],
+      zoneIds: globalThis.Array.isArray(object?.zoneIds) ? object.zoneIds.map((e: any) => globalThis.String(e)) : [],
+      subnetIds: globalThis.Array.isArray(object?.subnetIds)
+        ? object.subnetIds.map((e: any) => globalThis.String(e))
+        : [],
+      assignPublicIp: isSet(object.assignPublicIp) ? globalThis.Boolean(object.assignPublicIp) : false,
     };
   },
 
@@ -5784,6 +5834,15 @@ export const OpenSearchNodeGroupUpdateSpec = {
     if (message.roles?.length) {
       obj.roles = message.roles.map((e) => openSearch_GroupRoleToJSON(e));
     }
+    if (message.zoneIds?.length) {
+      obj.zoneIds = message.zoneIds;
+    }
+    if (message.subnetIds?.length) {
+      obj.subnetIds = message.subnetIds;
+    }
+    if (message.assignPublicIp === true) {
+      obj.assignPublicIp = message.assignPublicIp;
+    }
     return obj;
   },
 
@@ -5797,6 +5856,9 @@ export const OpenSearchNodeGroupUpdateSpec = {
       : undefined;
     message.hostsCount = object.hostsCount ?? 0;
     message.roles = object.roles?.map((e) => e) || [];
+    message.zoneIds = object.zoneIds?.map((e) => e) || [];
+    message.subnetIds = object.subnetIds?.map((e) => e) || [];
+    message.assignPublicIp = object.assignPublicIp ?? false;
     return message;
   },
 };
@@ -6089,7 +6151,14 @@ export const UpdateDashboardsNodeGroupRequest = {
 messageTypeRegistry.set(UpdateDashboardsNodeGroupRequest.$type, UpdateDashboardsNodeGroupRequest);
 
 function createBaseDashboardsNodeGroupUpdateSpec(): DashboardsNodeGroupUpdateSpec {
-  return { $type: "yandex.cloud.mdb.opensearch.v1.DashboardsNodeGroupUpdateSpec", resources: undefined, hostsCount: 0 };
+  return {
+    $type: "yandex.cloud.mdb.opensearch.v1.DashboardsNodeGroupUpdateSpec",
+    resources: undefined,
+    hostsCount: 0,
+    zoneIds: [],
+    subnetIds: [],
+    assignPublicIp: false,
+  };
 }
 
 export const DashboardsNodeGroupUpdateSpec = {
@@ -6101,6 +6170,15 @@ export const DashboardsNodeGroupUpdateSpec = {
     }
     if (message.hostsCount !== 0) {
       writer.uint32(16).int64(message.hostsCount);
+    }
+    for (const v of message.zoneIds) {
+      writer.uint32(26).string(v!);
+    }
+    for (const v of message.subnetIds) {
+      writer.uint32(34).string(v!);
+    }
+    if (message.assignPublicIp === true) {
+      writer.uint32(40).bool(message.assignPublicIp);
     }
     return writer;
   },
@@ -6126,6 +6204,27 @@ export const DashboardsNodeGroupUpdateSpec = {
 
           message.hostsCount = longToNumber(reader.int64() as Long);
           continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.zoneIds.push(reader.string());
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.subnetIds.push(reader.string());
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.assignPublicIp = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -6140,6 +6239,11 @@ export const DashboardsNodeGroupUpdateSpec = {
       $type: DashboardsNodeGroupUpdateSpec.$type,
       resources: isSet(object.resources) ? Resources.fromJSON(object.resources) : undefined,
       hostsCount: isSet(object.hostsCount) ? globalThis.Number(object.hostsCount) : 0,
+      zoneIds: globalThis.Array.isArray(object?.zoneIds) ? object.zoneIds.map((e: any) => globalThis.String(e)) : [],
+      subnetIds: globalThis.Array.isArray(object?.subnetIds)
+        ? object.subnetIds.map((e: any) => globalThis.String(e))
+        : [],
+      assignPublicIp: isSet(object.assignPublicIp) ? globalThis.Boolean(object.assignPublicIp) : false,
     };
   },
 
@@ -6150,6 +6254,15 @@ export const DashboardsNodeGroupUpdateSpec = {
     }
     if (message.hostsCount !== 0) {
       obj.hostsCount = Math.round(message.hostsCount);
+    }
+    if (message.zoneIds?.length) {
+      obj.zoneIds = message.zoneIds;
+    }
+    if (message.subnetIds?.length) {
+      obj.subnetIds = message.subnetIds;
+    }
+    if (message.assignPublicIp === true) {
+      obj.assignPublicIp = message.assignPublicIp;
     }
     return obj;
   },
@@ -6163,6 +6276,9 @@ export const DashboardsNodeGroupUpdateSpec = {
       ? Resources.fromPartial(object.resources)
       : undefined;
     message.hostsCount = object.hostsCount ?? 0;
+    message.zoneIds = object.zoneIds?.map((e) => e) || [];
+    message.subnetIds = object.subnetIds?.map((e) => e) || [];
+    message.assignPublicIp = object.assignPublicIp ?? false;
     return message;
   },
 };

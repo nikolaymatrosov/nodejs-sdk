@@ -109,6 +109,8 @@ export interface ChartWidget_Queries_Target {
   textMode: boolean;
   /** Checks that target is visible or invisible. */
   hidden: boolean;
+  /** Name of the query. */
+  name: string;
 }
 
 /** Visualization settings. */
@@ -910,7 +912,13 @@ export const ChartWidget_Queries = {
 messageTypeRegistry.set(ChartWidget_Queries.$type, ChartWidget_Queries);
 
 function createBaseChartWidget_Queries_Target(): ChartWidget_Queries_Target {
-  return { $type: "yandex.cloud.monitoring.v3.ChartWidget.Queries.Target", query: "", textMode: false, hidden: false };
+  return {
+    $type: "yandex.cloud.monitoring.v3.ChartWidget.Queries.Target",
+    query: "",
+    textMode: false,
+    hidden: false,
+    name: "",
+  };
 }
 
 export const ChartWidget_Queries_Target = {
@@ -925,6 +933,9 @@ export const ChartWidget_Queries_Target = {
     }
     if (message.hidden === true) {
       writer.uint32(24).bool(message.hidden);
+    }
+    if (message.name !== "") {
+      writer.uint32(34).string(message.name);
     }
     return writer;
   },
@@ -957,6 +968,13 @@ export const ChartWidget_Queries_Target = {
 
           message.hidden = reader.bool();
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -972,6 +990,7 @@ export const ChartWidget_Queries_Target = {
       query: isSet(object.query) ? globalThis.String(object.query) : "",
       textMode: isSet(object.textMode) ? globalThis.Boolean(object.textMode) : false,
       hidden: isSet(object.hidden) ? globalThis.Boolean(object.hidden) : false,
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
     };
   },
 
@@ -986,6 +1005,9 @@ export const ChartWidget_Queries_Target = {
     if (message.hidden === true) {
       obj.hidden = message.hidden;
     }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
     return obj;
   },
 
@@ -997,6 +1019,7 @@ export const ChartWidget_Queries_Target = {
     message.query = object.query ?? "";
     message.textMode = object.textMode ?? false;
     message.hidden = object.hidden ?? false;
+    message.name = object.name ?? "";
     return message;
   },
 };
