@@ -1,6 +1,6 @@
 {
   "name": "@yandex-cloud/vpc",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "Yandex.Cloud vpc SDK",
   "keywords": [
     "yandex-cloud",
