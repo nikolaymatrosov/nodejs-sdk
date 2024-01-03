@@ -1,6 +1,6 @@
 {
   "name": "@yandex-cloud/datatransfer",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "Yandex.Cloud datatransfer SDK",
   "keywords": [
     "yandex-cloud",
@@ -30,6 +30,6 @@
     "url": "https://github.com/yandex-cloud/nodejs-sdk/issues"
   },
   "dependencies": {
-    "@yandex-cloud/core": "^3.0.0"
+    "@yandex-cloud/core": "^3.0.2"
   }
 }

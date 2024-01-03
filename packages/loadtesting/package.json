@@ -1,6 +1,6 @@
 {
   "name": "@yandex-cloud/loadtesting",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "Yandex.Cloud loadtesting SDK",
   "keywords": [
     "yandex-cloud",
@@ -31,6 +31,6 @@
   },
   "dependencies": {
     "@yandex-cloud/compute": "file:*",
-    "@yandex-cloud/core": "^3.0.0"
+    "@yandex-cloud/core": "^3.0.2"
   }
 }
