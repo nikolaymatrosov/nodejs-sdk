@@ -104,7 +104,7 @@ export const servicesConfig: ServicesConfig = {
         node_service: { importClassName: 'NodeServiceClient' },
         project_data_service: { importClassName: 'ProjectDataServiceClient' },
         project_service: { importClassName: 'ProjectServiceClient' },
-        project_service_v2: { importClassName: 'ProjectServiceClient' },
+        project_service_v2: { importClassName: 'ProjectServiceClient', exportClassName: 'ProjectServiceClientV2'},
         community_service: { importClassName: 'CommunityServiceClient' },
     },
     datatransfer: {

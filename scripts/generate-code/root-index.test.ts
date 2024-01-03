@@ -22,7 +22,7 @@ describe('rootIndex', () => {
                 },
             },
         };
-        const result = rootIndex(registry, servicesConfig, root);
+        const result = rootIndex(registry, servicesConfig, root, 'project');
 
         expect(result.rootModuleContentParts).toEqual([
             "export * as project from './'",
@@ -58,7 +58,7 @@ describe('rootIndex', () => {
             },
         };
 
-        const result = rootIndex(registry, servicesConfig, root);
+        const result = rootIndex(registry, servicesConfig, root, 'ai');
 
         expect(result.rootModuleContentParts).toEqual([
             "export * as ai from './'",
@@ -75,7 +75,7 @@ describe('rootIndex', () => {
         const registry = {};
         const servicesConfig: ServicesConfig = {};
 
-        const result = rootIndex(registry, servicesConfig, root);
+        const result = rootIndex(registry, servicesConfig, root, 'core');
 
         expect(result.rootModuleContentParts).toEqual([]);
         expect(result.serviceClientsModuleContentParts).toEqual([

@@ -29,27 +29,47 @@
     "class-methods-use-this": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "import/prefer-default-export": "off",
-    "comma-dangle": ["error", "always-multiline"],
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
     "indent": "off",
-    "@typescript-eslint/indent": ["error", 4],
-    "max-len": ["error", 140],
+    "@typescript-eslint/indent": [
+      "error",
+      4
+    ],
+    "max-len": [
+      "error",
+      140
+    ],
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/prefer-optional-chain": "error",
-    "prefer-arrow-functions/prefer-arrow-functions": ["error"],
+    "prefer-arrow-functions/prefer-arrow-functions": [
+      "error",
+      {
+        "allowNamedFunctions": true
+      }
+    ],
     "unicorn/prevent-abbreviations": "off",
     "newline-after-var": "error",
     "newline-before-return": "error",
     "no-plusplus": "off",
     "unicorn/import-style": "off",
     "@typescript-eslint/no-var-requires": "off",
-    "no-underscore-dangle": ["error", {
-      "allowAfterThis": true,
-      "allowAfterSuper": false
-    }],
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allowAfterThis": true,
+        "allowAfterSuper": false
+      }
+    ],
     "unicorn/no-null": "off",
-    "import/no-extraneous-dependencies": ["error", {
-      "devDependencies": true
-    }],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
     "import/no-cycle": "off"
   }
 }

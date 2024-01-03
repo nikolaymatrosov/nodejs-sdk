@@ -1,7 +1,10 @@
 import path from 'path';
-import { ProjectMeta, ServiceMeta } from './interfaces';
-import { logger } from '../../src/utils/logger';
-import { ClassNameMappingRule, ServicesConfig } from './services';
+import log4js from 'log4js';
+
+import { ProjectMeta, ServiceMeta } from './interfaces.js';
+import { ClassNameMappingRule, ServicesConfig } from './services.js';
+
+const logger = log4js.getLogger();
 
 /**
  * Generates the content for the root index module and the service clients module.
@@ -10,15 +13,18 @@ import { ClassNameMappingRule, ServicesConfig } from './services';
  * @param {ServicesConfig} servicesConfig - The configuration for the services.
  * @param {string} rootPath - The root path of the project.
  *
+ * @param packageName
  * @returns {Object} An object containing two arrays of strings: `rootModuleContentParts` and `serviceClientsModuleContentParts`.
  * `rootModuleContentParts` contains the lines of code for the root index module.
  * `serviceClientsModuleContentParts` contains the lines of code for the service clients module.
  */
-export const rootIndex = (registry: Record<string, ProjectMeta>, servicesConfig: ServicesConfig, rootPath: string) => {
+export const rootIndex = (registry: Record<string, ProjectMeta>, servicesConfig: ServicesConfig, rootPath: string,
+                          packageName: string) => {
     const rootModuleContentParts: string[] = [];
     const serviceClientsModuleContentParts: string[] = [
         'import * as cloudApi from \'.\'',
     ];
+
 
     const pushExportStatment = (serviceConfig: ClassNameMappingRule, projectMeta: ProjectMeta, serviceMeta: ServiceMeta) => {
         serviceClientsModuleContentParts.push(
@@ -29,7 +35,7 @@ export const rootIndex = (registry: Record<string, ProjectMeta>, servicesConfig:
 
     for (const [indexModulePath, projectMeta] of Object.entries(registry)) {
         logger.debug(`Processing ${indexModulePath} module`);
-        const relativePath = path.relative(rootPath, indexModulePath).replace('index.ts', '');
+        const relativePath = path.relative(rootPath, indexModulePath).replace('/index.ts', '');
 
         rootModuleContentParts.push(`export * as ${projectMeta.name} from './${relativePath}'`);
 
@@ -49,6 +55,10 @@ export const rootIndex = (registry: Record<string, ProjectMeta>, servicesConfig:
             }
         }
     }
+
+    rootModuleContentParts.push(
+        `export * as ${packageName}Clients from './service_clients'`,
+    )
 
     return {
         rootModuleContentParts,

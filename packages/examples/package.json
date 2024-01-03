@@ -1,0 +1,25 @@
+{
+  "name": "examples",
+  "private": true,
+  "type": "module",
+  "version": "3.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@yandex-cloud/ai": "*",
+    "@yandex-cloud/compute": "*",
+    "@yandex-cloud/core": "*",
+    "@yandex-cloud/kms": "*",
+    "@yandex-cloud/serverless": "*",
+    "@yandex-cloud/vpc": "*",
+    "wav": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/wav": "^1.0.1"
+  }
+}

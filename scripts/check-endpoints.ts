@@ -1,49 +1,21 @@
-import * as fg from 'fast-glob';
-import * as path from 'path';
-import {
-    Namespace, NamespaceBase, Root, Service,
-} from 'protobufjs';
-import { SERVICE_ENDPOINTS_LIST } from '../src/service-endpoints';
+import fg from 'fast-glob';
+import path from 'path';
+import pb, { NamespaceBase, Service } from 'protobufjs';
+import { SERVICE_ENDPOINTS_LIST } from '@yandex-cloud/core/src/service-endpoints';
+import { createPbRoot } from './pbRoot';
 
 const PROTO_DIR = path.resolve('./cloudapi');
 
 const protoFiles = fg.sync('**/*.proto', { cwd: PROTO_DIR });
 
-const pbRoot = new Root();
-
-pbRoot.resolvePath = (origin, target) => {
-    const targets = target.split('/');
-
-    switch (targets[0]) {
-        case 'google': {
-            switch (targets[1]) {
-                case 'protobuf': {
-                    return `./node_modules/protobufjs/${target}`;
-                }
-                default: {
-                    return `./cloudapi/third_party/googleapis/${target}`;
-                }
-            }
-        }
-        case 'third_party': {
-            return `./cloudapi/${target}`;
-        }
-        case 'yandex': {
-            return `./cloudapi/${target}`;
-        }
-        default: {
-            return target;
-        }
-    }
-};
-
+const pbRoot = createPbRoot();
 const SERVICES: Service[] = [];
 const findServices = <T extends NamespaceBase>(node: T) => {
     for (const child of Object.values(node.nested ?? {})
         .sort((a, b) => (a.name < b.name ? -1 : (a.name === b.name ? 0 : 1)))) {
-        if (child instanceof Service) {
+        if (child instanceof pb.Service) {
             SERVICES.push(child);
-        } else if (child instanceof Namespace) {
+        } else if (child instanceof pb.Namespace) {
             findServices(child);
         }
     }

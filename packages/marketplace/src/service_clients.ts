@@ -1,0 +1,5 @@
+import * as cloudApi from '.'
+export const MarketplaceInstanceServiceClient = cloudApi.marketplace.licensemanager_instance_service.InstanceServiceClient;
+export const MarketplaceLockServiceClient = cloudApi.marketplace.licensemanager_lock_service.LockServiceClient;
+export const MarketplaceMeteringImageProductUsageServiceClient = cloudApi.marketplace.metering_image_product_usage_service.ImageProductUsageServiceClient;
+export const MarketplaceImageProductUsageServiceClient = cloudApi.marketplace.image_product_usage_service.ImageProductUsageServiceClient;
