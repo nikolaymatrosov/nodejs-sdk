@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as stream from 'stream';
 import * as wav from 'wav';
+import { URL } from 'node:url';
 import { getEnv } from '../utils/get-env';
 import { log } from '../utils/logger';
 
@@ -24,37 +25,35 @@ const formatPromise = new Promise<wav.Format>((resolve) => {
 file.pipe(reader);
 reader.pipe(data);
 
-(async () => {
-    const authToken = getEnv('YC_OAUTH_TOKEN');
-    const folderId = getEnv('YC_FOLDER_ID');
-    const session = new Session({ oauthToken: authToken });
-    const client = session.client(aiClients.SttServiceClient);
+const authToken = getEnv('YC_OAUTH_TOKEN');
+const folderId = getEnv('YC_FOLDER_ID');
+const session = new Session({ oauthToken: authToken });
+const client = session.client(aiClients.SttServiceClient);
 
-    async function* createRequest(): AsyncIterable<ai.stt_service.StreamingRecognitionRequest> {
-        const format = await formatPromise;
+async function* createRequest(): AsyncIterable<ai.stt_service.StreamingRecognitionRequest> {
+    const format = await formatPromise;
 
-        yield ai.stt_service.StreamingRecognitionRequest.fromPartial({
-            config: {
-                specification: {
-                    audioEncoding: ai.stt_service.RecognitionSpec_AudioEncoding.LINEAR16_PCM,
-                    sampleRateHertz: format.sampleRate,
-                    audioChannelCount: format.channels,
-                },
-                folderId,
+    yield ai.stt_service.StreamingRecognitionRequest.fromPartial({
+        config: {
+            specification: {
+                audioEncoding: ai.stt_service.RecognitionSpec_AudioEncoding.LINEAR16_PCM,
+                sampleRateHertz: format.sampleRate,
+                audioChannelCount: format.channels,
             },
+            folderId,
+        },
+    });
+    for await (const chunk of data) {
+        yield ai.stt_service.StreamingRecognitionRequest.fromPartial({
+            audioContent: chunk,
         });
-        for await (const chunk of data) {
-            yield ai.stt_service.StreamingRecognitionRequest.fromPartial({
-                audioContent: chunk,
-            });
-        }
     }
+}
 
-    try {
-        for await (const response of client.streamingRecognize(createRequest())) {
-            log(JSON.stringify(response, null, 2));
-        }
-    } catch (error) {
-        log(error);
+try {
+    for await (const response of client.streamingRecognize(createRequest())) {
+        log(JSON.stringify(response, null, 2));
     }
-})();
+} catch (error) {
+    log(error);
+}
